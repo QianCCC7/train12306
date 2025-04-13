@@ -1,4 +1,4 @@
-package com.xiaoqian.member.aspect;
+package com.xiaoqian.common.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
