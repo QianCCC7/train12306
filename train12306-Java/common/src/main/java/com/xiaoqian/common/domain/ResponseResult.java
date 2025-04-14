@@ -18,18 +18,18 @@ public class ResponseResult<T> implements Serializable {
      * 返回成功且有数据集
      */
     public static <T> ResponseResult<T> okResult(T data) {
-        return new ResponseResult<T>().ok(HttpCodeEnum.SUCCESS.getCode(), data, HttpCodeEnum.SUCCESS.getMsg());
+        return new ResponseResult<T>().ok(HttpCodeEnum.SUCCESS.getCode(), data, HttpCodeEnum.SUCCESS.getDesc());
     }
 
     public static <T> ResponseResult<T> okResult(HttpCodeEnum httpCodeEnum, T data) {
-        return new ResponseResult<T>().ok(httpCodeEnum.getCode(), data, httpCodeEnum.getMsg());
+        return new ResponseResult<T>().ok(httpCodeEnum.getCode(), data, httpCodeEnum.getDesc());
     }
 
     /**
      * 返回成功且数据为空(void类型返回值)
      */
     public static <T> ResponseResult<T> okEmptyResult() {
-        return new ResponseResult<T>().ok(HttpCodeEnum.SUCCESS.getCode(), null, HttpCodeEnum.SUCCESS.getMsg());
+        return new ResponseResult<T>().ok(HttpCodeEnum.SUCCESS.getCode(), null, HttpCodeEnum.SUCCESS.getDesc());
     }
 
     /**
@@ -57,7 +57,7 @@ public class ResponseResult<T> implements Serializable {
 
     private ResponseResult<T> error(HttpCodeEnum httpCodeEnum) {
         this.code = httpCodeEnum.getCode();
-        this.msg = httpCodeEnum.getMsg();
+        this.msg = httpCodeEnum.getDesc();
         this.data = null;
         return this;
     }

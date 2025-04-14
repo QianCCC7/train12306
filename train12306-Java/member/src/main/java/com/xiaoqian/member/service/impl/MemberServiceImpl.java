@@ -1,6 +1,8 @@
 package com.xiaoqian.member.service.impl;
 
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.domain.pojo.Member;
 import com.xiaoqian.member.mapper.MemberMapper;
@@ -25,7 +27,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
                 .eq(Member::getMobile, memberRegisterDTO.getMobile())
                 .one();
         if (oldMember != null) {
-            throw new RuntimeException("手机号已存在");
+            throw new BizException(HttpCodeEnum.MEMBER_MOBILE_EXIST);
         }
         Member member = new Member(System.currentTimeMillis(), memberRegisterDTO.getMobile());
         save(member);

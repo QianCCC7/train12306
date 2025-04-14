@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum HttpCodeEnum {
     SUCCESS(200,"操作成功！"),
-    BIZ_ERROR(400, "发生业务异常！"),
+    MEMBER_MOBILE_EXIST(400, "手机号已注册！"),
     ;
 
     private final Integer code;
-    private final String msg;
+    private final String desc;
 }
