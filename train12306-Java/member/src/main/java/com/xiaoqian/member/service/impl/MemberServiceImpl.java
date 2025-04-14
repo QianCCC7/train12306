@@ -3,6 +3,7 @@ package com.xiaoqian.member.service.impl;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
+import com.xiaoqian.common.utils.SnowUtil;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.domain.pojo.Member;
 import com.xiaoqian.member.mapper.MemberMapper;
@@ -29,7 +30,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         if (oldMember != null) {
             throw new BizException(HttpCodeEnum.MEMBER_MOBILE_EXIST);
         }
-        Member member = new Member(System.currentTimeMillis(), memberRegisterDTO.getMobile());
+        Member member = new Member(SnowUtil.getSnowFlakeNextId(), memberRegisterDTO.getMobile());
         save(member);
 
         return ResponseResult.okResult(member.getId());
