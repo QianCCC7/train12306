@@ -1,5 +1,6 @@
 package com.xiaoqian.member.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +10,7 @@ import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 @ComponentScan("com.xiaoqian")
+@MapperScan("com.xiaoqian.member.mapper")
 public class MemberApplication {
     private final static Logger LOG = LoggerFactory.getLogger(MemberApplication.class);
     public static void main(String[] args) {
