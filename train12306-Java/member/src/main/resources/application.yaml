@@ -10,3 +10,6 @@ server:
   port: 8001
   servlet:
     context-path: /member # 路由前缀，方便后期网关管理路由
+logging:
+  level:
+    com.xiaoqian: debug
