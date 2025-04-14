@@ -1,6 +1,7 @@
 package com.xiaoqian.member.controller;
 
 
+import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.service.IMemberService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class MemberController {
     private final IMemberService memberService;
 
     @PostMapping("/register")
-    public Long register(@RequestBody MemberRegisterDTO memberRegisterDTO) {
+    public ResponseResult<Long> register(@RequestBody MemberRegisterDTO memberRegisterDTO) {
         return memberService.register(memberRegisterDTO);
     }
 

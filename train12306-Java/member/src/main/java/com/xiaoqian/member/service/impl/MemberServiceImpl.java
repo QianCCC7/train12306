@@ -1,5 +1,6 @@
 package com.xiaoqian.member.service.impl;
 
+import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.domain.pojo.Member;
 import com.xiaoqian.member.mapper.MemberMapper;
@@ -19,9 +20,16 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements IMemberService {
-    public Long register(MemberRegisterDTO memberRegisterDTO) {
+    public ResponseResult<Long> register(MemberRegisterDTO memberRegisterDTO) {
+        Member oldMember = lambdaQuery()
+                .eq(Member::getMobile, memberRegisterDTO.getMobile())
+                .one();
+        if (oldMember != null) {
+            throw new RuntimeException("手机号已存在");
+        }
         Member member = new Member(System.currentTimeMillis(), memberRegisterDTO.getMobile());
         save(member);
-        return member.getId();
+
+        return ResponseResult.okResult(member.getId());
     }
 }
