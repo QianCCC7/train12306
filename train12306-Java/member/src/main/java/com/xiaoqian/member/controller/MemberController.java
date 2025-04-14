@@ -4,6 +4,7 @@ package com.xiaoqian.member.controller;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.service.IMemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ public class MemberController {
     private final IMemberService memberService;
 
     @PostMapping("/register")
-    public ResponseResult<Long> register(@RequestBody MemberRegisterDTO memberRegisterDTO) {
+    public ResponseResult<Long> register(@Valid @RequestBody MemberRegisterDTO memberRegisterDTO) {
         return memberService.register(memberRegisterDTO);
     }
 
