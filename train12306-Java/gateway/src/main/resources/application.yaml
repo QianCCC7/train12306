@@ -1,2 +1,11 @@
 server:
   port: 8000
+spring:
+  cloud:
+    gateway:
+      routes:
+        # 当请求是以member为前缀时就会转发到8001端口
+        - id: member
+          uri: http://localhost:8001
+          predicates:
+            - Path=/member/**
