@@ -1,9 +1,11 @@
 package com.xiaoqian.member.service;
 
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.member.domain.dto.MemberLoginDTO;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.domain.pojo.Member;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xiaoqian.member.domain.vo.MemberInfoVo;
 
 /**
  * <p>
@@ -17,4 +19,6 @@ public interface IMemberService extends IService<Member> {
     ResponseResult<Long> register(MemberRegisterDTO memberRegisterDTO);
 
     ResponseResult<String> sendCode(MemberRegisterDTO memberRegisterDTO);
+
+    ResponseResult<MemberInfoVo> login(MemberLoginDTO memberLoginDTO);
 }

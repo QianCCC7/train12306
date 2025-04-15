@@ -1,12 +1,15 @@
 package com.xiaoqian.member.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.utils.SnowUtil;
+import com.xiaoqian.member.domain.dto.MemberLoginDTO;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
 import com.xiaoqian.member.domain.pojo.Member;
+import com.xiaoqian.member.domain.vo.MemberInfoVo;
 import com.xiaoqian.member.mapper.MemberMapper;
 import com.xiaoqian.member.service.IMemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,9 +41,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     }
 
     public ResponseResult<String> sendCode(MemberRegisterDTO memberRegisterDTO) {
-        Member oldMember = lambdaQuery()
-                .eq(Member::getMobile, memberRegisterDTO.getMobile())
-                .one();
+        Member oldMember = getMemberByMoBile(memberRegisterDTO.getMobile());
         // 手机号不存在则自动注册手机号
         if (oldMember == null) {
             Member member = new Member(SnowUtil.getSnowFlakeNextId(), memberRegisterDTO.getMobile());
@@ -50,5 +51,23 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         // TODO: 设置验证码有效期
 
         return ResponseResult.okResult(code);
+    }
+
+    public ResponseResult<MemberInfoVo> login(MemberLoginDTO memberLoginDTO) {
+        Member oldMember = getMemberByMoBile(memberLoginDTO.getMobile());
+        if (oldMember == null) {
+            throw new BizException(HttpCodeEnum.MEMBER_MOBILE_NOT_EXIST);
+        }
+        // TODO: 修改校验验证码逻辑
+        if (!memberLoginDTO.getCode().equals("8888")) {
+            throw new BizException(HttpCodeEnum.CODE_ERROR);
+        }
+        return ResponseResult.okResult(BeanUtil.copyProperties(oldMember, MemberInfoVo.class));
+    }
+
+    private Member getMemberByMoBile(String mobile) {
+        return lambdaQuery()
+                .eq(Member::getMobile, mobile)
+                .one();
     }
 }

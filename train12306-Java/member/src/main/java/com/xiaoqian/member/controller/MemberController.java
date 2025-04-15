@@ -2,7 +2,9 @@ package com.xiaoqian.member.controller;
 
 
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.member.domain.dto.MemberLoginDTO;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
+import com.xiaoqian.member.domain.vo.MemberInfoVo;
 import com.xiaoqian.member.service.IMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,11 @@ public class MemberController {
     @PostMapping("/sendCode")
     public ResponseResult<String> sendCode(@Valid @RequestBody MemberRegisterDTO memberRegisterDTO) {
         return memberService.sendCode(memberRegisterDTO);
+    }
+
+    @PostMapping("/login")
+    public ResponseResult<MemberInfoVo> login(@Valid @RequestBody MemberLoginDTO memberLoginDTO) {
+        return memberService.login(memberLoginDTO);
     }
 
 }
