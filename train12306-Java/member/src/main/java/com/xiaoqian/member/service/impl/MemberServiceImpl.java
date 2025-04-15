@@ -2,6 +2,7 @@ package com.xiaoqian.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.jwt.JWTUtil;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
@@ -15,6 +16,8 @@ import com.xiaoqian.member.service.IMemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -62,7 +65,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         if (!memberLoginDTO.getCode().equals("8888")) {
             throw new BizException(HttpCodeEnum.CODE_ERROR);
         }
-        return ResponseResult.okResult(BeanUtil.copyProperties(oldMember, MemberInfoVo.class));
+        // 生成JWT
+        MemberInfoVo memberInfoVo = BeanUtil.copyProperties(oldMember, MemberInfoVo.class);
+        String key = "xiaoqian666"; // 密钥
+        Map<String, Object> payloadMap = BeanUtil.beanToMap(memberInfoVo);
+        String token = JWTUtil.createToken(payloadMap, key.getBytes());
+        memberInfoVo.setToken(token);
+
+        return ResponseResult.okResult(memberInfoVo);
     }
 
     private Member getMemberByMoBile(String mobile) {
