@@ -59,12 +59,12 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { PhoneOutlined, SafetyOutlined } from '@ant-design/icons-vue';
+import axios from "axios";
 
 const userinfo = reactive({
   mobile: '',
   code: '',
 });
-
 const countdown = ref(0);
 
 const getVerificationCode = () => {
@@ -72,7 +72,12 @@ const getVerificationCode = () => {
     alert('请输入正确的手机号码');
     return;
   }
-
+  axios.post("http://localhost:8000/member/member/sendCode", {
+    mobile: userinfo.mobile,
+    code: userinfo.code
+  }).then(res => {
+    console.log('userinfo', res)
+  })
   countdown.value = 60;
   const timer = setInterval(() => {
     countdown.value--;
@@ -80,8 +85,6 @@ const getVerificationCode = () => {
       clearInterval(timer);
     }
   }, 1000);
-
-  console.log('发送验证码到:', userinfo.mobile);
 };
 
 const onFinish = (values) => {
