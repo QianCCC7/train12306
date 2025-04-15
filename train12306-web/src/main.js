@@ -10,6 +10,7 @@ createApp(App).use(store)
     .use(Antd)
     .mount('#app')
 
+axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 axios.interceptors.request.use(config => {
     console.log('请求参数：', config.data);
     return config;
@@ -23,3 +24,6 @@ axios.interceptors.response.use(res => {
     console.log('返回错误：', error);
     return Promise.reject(error);
 });
+
+console.log("当前环境：", process.env.NODE_ENV);
+console.log("服务端地址：", process.env.VUE_APP_SERVER);

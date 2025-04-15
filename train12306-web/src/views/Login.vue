@@ -72,7 +72,7 @@ const getVerificationCode = () => {
     message.error('请输入正确的手机号码');
     return;
   }
-  axios.post("http://localhost:8000/member/member/sendCode", {
+  axios.post("/member/member/sendCode", {
     mobile: userinfo.mobile,
   }).then(() => {
     message.success("验证码已发送");
@@ -93,7 +93,7 @@ const login = () => {
     message.error('请输入正确的手机号码');
     return;
   }
-  axios.post("http://localhost:8000/member/member/login", {
+  axios.post("/member/member/login", {
     mobile: userinfo.mobile,
     code: userinfo.code
   }).then(res => {
