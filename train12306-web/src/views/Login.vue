@@ -2,10 +2,11 @@
   <div class="login-container">
     <div class="login-card">
       <h1 class="title">12306售票系统</h1>
-      <a-form :model="userinfo" @finish="onFinish" class="login-form">
+      <a-form :model="userinfo" class="login-form">
         <a-form-item
-            name="phone"
-            :rules="[{ required: true, message: '请输入手机号码!' }, { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码!' }]"
+            name="mobile"
+            :rules="[{ required: true, message: '请输入手机号码!' },
+            { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码!' }]"
         >
           <a-input v-model:value="userinfo.mobile" size="large" placeholder="请输入手机号码">
             <template #prefix>
@@ -15,7 +16,7 @@
         </a-form-item>
 
         <a-form-item
-            name="verificationCode"
+            name="code"
             :rules="[{ required: true, message: '请输入验证码!' }]"
         >
           <div class="verification-code-container">
@@ -43,11 +44,8 @@
 
         <a-form-item>
           <div class="button-group">
-            <a-button type="primary" html-type="submit" size="large" block>
+            <a-button type="primary" html-type="submit" size="large" block @click="login">
               登录
-            </a-button>
-            <a-button type="default" size="large" block @click="register">
-              注册
             </a-button>
           </div>
         </a-form-item>
@@ -60,6 +58,7 @@
 import { ref, reactive } from 'vue';
 import { PhoneOutlined, SafetyOutlined } from '@ant-design/icons-vue';
 import axios from "axios";
+import {message} from "ant-design-vue";
 
 const userinfo = reactive({
   mobile: '',
@@ -67,16 +66,18 @@ const userinfo = reactive({
 });
 const countdown = ref(0);
 
+// 获取验证码
 const getVerificationCode = () => {
   if (!/^1[3-9]\d{9}$/.test(userinfo.mobile)) {
-    alert('请输入正确的手机号码');
+    message.error('请输入正确的手机号码');
     return;
   }
   axios.post("http://localhost:8000/member/member/sendCode", {
     mobile: userinfo.mobile,
-    code: userinfo.code
-  }).then(res => {
-    console.log('userinfo', res)
+  }).then(() => {
+    message.success("验证码已发送");
+  }).catch(err => {
+    message.error(err);
   })
   countdown.value = 60;
   const timer = setInterval(() => {
@@ -86,14 +87,26 @@ const getVerificationCode = () => {
     }
   }, 1000);
 };
-
-const onFinish = (values) => {
-  console.log('登录信息:', values);
-};
-
-const register = () => {
-  console.log('注册信息:', userinfo);
-};
+// 登录
+const login = () => {
+  if (!/^1[3-9]\d{9}$/.test(userinfo.mobile)) {
+    message.error('请输入正确的手机号码');
+    return;
+  }
+  axios.post("http://localhost:8000/member/member/login", {
+    mobile: userinfo.mobile,
+    code: userinfo.code
+  }).then(res => {
+    const data = res.data
+    if (data.code === 200) {
+      message.success("登录成功");
+    } else {
+      message.error(data.msg);
+    }
+  }).catch(err => {
+    message.error(err);
+  })
+}
 </script>
 
 <style scoped>
