@@ -31,4 +31,9 @@ public class MemberController {
         return memberService.register(memberRegisterDTO);
     }
 
+    @PostMapping("/sendCode")
+    public ResponseResult<String> sendCode(@Valid @RequestBody MemberRegisterDTO memberRegisterDTO) {
+        return memberService.sendCode(memberRegisterDTO);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.xiaoqian.member.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
@@ -34,5 +35,20 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         save(member);
 
         return ResponseResult.okResult(member.getId());
+    }
+
+    public ResponseResult<String> sendCode(MemberRegisterDTO memberRegisterDTO) {
+        Member oldMember = lambdaQuery()
+                .eq(Member::getMobile, memberRegisterDTO.getMobile())
+                .one();
+        // 手机号不存在则自动注册手机号
+        if (oldMember == null) {
+            Member member = new Member(SnowUtil.getSnowFlakeNextId(), memberRegisterDTO.getMobile());
+            save(member);
+        }
+        String code = RandomUtil.randomString(4);
+        // TODO: 设置验证码有效期
+
+        return ResponseResult.okResult(code);
     }
 }
