@@ -6,6 +6,7 @@ import cn.hutool.jwt.JWTUtil;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
+import com.xiaoqian.common.utils.JwtUtil;
 import com.xiaoqian.common.utils.SnowUtil;
 import com.xiaoqian.member.domain.dto.MemberLoginDTO;
 import com.xiaoqian.member.domain.dto.MemberRegisterDTO;
@@ -67,10 +68,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
         // 生成JWT
         MemberInfoVo memberInfoVo = BeanUtil.copyProperties(oldMember, MemberInfoVo.class);
-        String key = "xiaoqian666"; // 密钥
-        Map<String, Object> payloadMap = BeanUtil.beanToMap(memberInfoVo);
-        String token = JWTUtil.createToken(payloadMap, key.getBytes());
-        memberInfoVo.setToken(token);
+        memberInfoVo.setToken(JwtUtil.createToken(memberInfoVo.getId(), memberInfoVo.getMobile()));
 
         return ResponseResult.okResult(memberInfoVo);
     }
