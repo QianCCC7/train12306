@@ -4,8 +4,14 @@ import router from './router'
 import store from './store'
 import Antd from 'ant-design-vue';
 import axios from "axios";
+import * as Icons from "@ant-design/icons-vue";
 
-createApp(App).use(store)
+const app = createApp(App)
+app.config.globalProperties.$icons= Icons
+Object.keys(Icons).forEach((key) => {
+    app.component(key, Icons[key])
+})
+app.use(store)
     .use(router)
     .use(Antd)
     .mount('#app')
