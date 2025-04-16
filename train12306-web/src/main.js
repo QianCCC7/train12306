@@ -18,6 +18,10 @@ app.use(store)
 
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 axios.interceptors.request.use(config => {
+    const token = store.state.member.token
+    if (token) {
+        config.headers.token = token
+    }
     console.log('请求参数：', config.data);
     return config;
 }, error => {
