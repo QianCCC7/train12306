@@ -1,5 +1,7 @@
 package com.xiaoqian.member.service;
 
+import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.member.domain.dto.PassengerDTO;
 import com.xiaoqian.member.domain.pojo.Passenger;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPassengerService extends IService<Passenger> {
 
+    ResponseResult<Void> savePassenger(PassengerDTO passengerDTO);
 }

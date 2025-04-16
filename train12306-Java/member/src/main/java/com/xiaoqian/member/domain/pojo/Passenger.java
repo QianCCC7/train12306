@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.xiaoqian.member.enums.PassengerTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -49,7 +51,7 @@ public class Passenger implements Serializable {
     /**
      * 旅客类型
      */
-    private String type;
+    private PassengerTypeEnum type;
 
     /**
      * 新增时间
