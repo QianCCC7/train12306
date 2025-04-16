@@ -47,7 +47,7 @@ public class Passenger implements Serializable {
     private String idCard;
 
     /**
-     * 旅客类型|枚举[PassengerTypeEnum]
+     * 旅客类型
      */
     private String type;
 
