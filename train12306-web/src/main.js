@@ -2,7 +2,7 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Antd from 'ant-design-vue';
+import Antd, {message} from 'ant-design-vue';
 import axios from "axios";
 import * as Icons from "@ant-design/icons-vue";
 
@@ -31,7 +31,12 @@ axios.interceptors.response.use(res => {
     console.log('返回结果：', res.data);
     return res;
 }, error => {
-    console.log('返回错误：', error);
+    // 网络错误、请求超时、后端响应4xx、5xx的状态码时进入
+    if (error.response.data.code === 401) {
+        message.error("用户未登录或Token无效");
+        store.commit('setMember', {})
+        router.push("/login")
+    }
     return Promise.reject(error);
 });
 
