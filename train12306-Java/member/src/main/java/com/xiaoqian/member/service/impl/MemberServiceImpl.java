@@ -2,7 +2,6 @@ package com.xiaoqian.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.jwt.JWTUtil;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
@@ -18,7 +17,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 
 /**
  * <p>

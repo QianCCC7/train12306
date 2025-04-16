@@ -60,6 +60,7 @@ import { PhoneOutlined, SafetyOutlined } from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {useRouter} from "vue-router";
+import store from "@/store";
 
 const router = useRouter()
 const userinfo = reactive({
@@ -102,6 +103,7 @@ const login = () => {
     const data = res.data
     if (data.code === 200) {
       message.success("登录成功");
+      store.commit('setMember', data.data)
       router.push("/")
     } else {
       message.error(data.msg);
