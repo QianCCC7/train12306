@@ -7,7 +7,7 @@
       </a-button>
     </div>
     <div>
-      <a-table :dataSource="passengerList" :columns="columns" />
+      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination"/>
     </div>
 
     <a-modal
@@ -92,8 +92,11 @@ const rules = {
     {required: true, message: '请选择乘客类型', trigger: 'change'}
   ]
 };
-const pageNum = ref(1)
-const pageSize = ref(10)
+const pagination = reactive({
+  total: 0, // 数据总条数
+  current: 1, // 当前页码
+  pageSize: 2, // 每页条数
+})
 
 const showModal = () => {
   visible.value = true;
@@ -134,11 +137,12 @@ const resetForm = () => {
 const listPassengers = () => {
   axios.get('/member/passenger/listPassengers', {
     params: {
-      pageNum: pageNum.value,
-      pageSize: pageSize.value
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize
     }
   }).then(res => {
     passengerList.value = res.data.data.rows
+    pagination.total = res.data.data.totalRecords
   }).catch(err => {
     message.error('加载乘客列表错误:', err);
   })

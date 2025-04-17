@@ -13,10 +13,10 @@ public enum PassengerTypeEnum {
     ADULT("1", "成人"),
     CHILD("2", "儿童"),
     STUDENT("3", "学生");
-    @JsonValue
+
     @EnumValue
     private final String code;
-
+    @JsonValue
     private final String desc;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
