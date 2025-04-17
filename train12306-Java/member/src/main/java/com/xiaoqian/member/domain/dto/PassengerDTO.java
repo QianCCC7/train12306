@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PassengerDTO {
+    private Long id;
     @NotBlank(message = "乘客姓名不能为空")
     private String name;
     @NotBlank(message = "乘客身份证号不能为空")

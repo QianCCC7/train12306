@@ -33,12 +33,18 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
     @Override
     public ResponseResult<Void> savePassenger(PassengerDTO passengerDTO) {
         Passenger passenger = BeanUtil.copyProperties(passengerDTO, Passenger.class);
-        passenger.setId(SnowUtil.getSnowFlakeNextId());
-        LocalDateTime now = LocalDateTime.now();
-        passenger.setMemberId(MemberContext.getId());
-        passenger.setUpdateTime(now);
-        passenger.setCreateTime(now);
-        save(passenger);
+        if (passengerDTO.getId() == null) {
+            passenger.setId(SnowUtil.getSnowFlakeNextId());
+            passenger.setMemberId(MemberContext.getId());
+            LocalDateTime now = LocalDateTime.now();
+            passenger.setUpdateTime(now);
+            passenger.setCreateTime(now);
+            save(passenger);
+        } else {
+            passenger.setUpdateTime(LocalDateTime.now());
+            updateById(passenger);
+        }
+
 
         return ResponseResult.okEmptyResult();
     }
