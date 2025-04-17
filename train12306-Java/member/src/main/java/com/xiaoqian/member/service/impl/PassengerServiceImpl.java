@@ -61,4 +61,10 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
 
         return ResponseResult.okResult(new PageVo<>(passengerVoList, page.getPages(), page.getTotal()));
     }
+
+    @Override
+    public ResponseResult<Void> deleteById(Long id) {
+        removeById(id);
+        return ResponseResult.okEmptyResult();
+    }
 }

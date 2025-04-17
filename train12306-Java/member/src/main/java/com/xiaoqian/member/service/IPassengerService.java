@@ -21,4 +21,6 @@ public interface IPassengerService extends IService<Passenger> {
     ResponseResult<Void> savePassenger(PassengerDTO passengerDTO);
 
     ResponseResult<PageVo<PassengerVo>> listPassengers(PassengerQueryDTO query);
+
+    ResponseResult<Void> deleteById(Long id);
 }
