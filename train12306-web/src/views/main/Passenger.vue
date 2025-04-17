@@ -2,9 +2,14 @@
   <div class="passenger-management">
     <div class="header">
       <h2>乘客管理</h2>
-      <a-button type="primary" @click="showModal" class="add-button">
-        <plus-outlined /> 新增乘客
-      </a-button>
+      <div class="button-group">
+        <a-button @click="handleRefresh" class="refresh-button">
+          <reload-outlined /> 刷新
+        </a-button>
+        <a-button type="primary" @click="showModal" class="add-button">
+          <plus-outlined /> 新增乘客
+        </a-button>
+      </div>
     </div>
     <div>
       <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange"/>
@@ -150,6 +155,10 @@ const listPassengers = (pageNum, pageSize) => {
 const handleTableChange = (page) => {
   listPassengers(page.current, page.pageSize)
 }
+// 刷新
+const handleRefresh = () => {
+  listPassengers(1, pagination.pageSize)
+}
 
 onMounted(() => {
   listPassengers(pagination.current, pagination.pageSize)
@@ -179,7 +188,15 @@ onMounted(() => {
   font-weight: 500;
   color: rgba(0, 0, 0, 0.85);
 }
-
+.button-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.refresh-button {
+  display: flex;
+  align-items: center;
+}
 .add-button {
   display: flex;
   align-items: center;
