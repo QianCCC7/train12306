@@ -1,5 +1,6 @@
 package com.xiaoqian.member.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xiaoqian.member.enums.PassengerTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +22,9 @@ public class PassengerVo {
 
     private PassengerTypeEnum type;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
     private LocalDateTime updateTime;
 }
