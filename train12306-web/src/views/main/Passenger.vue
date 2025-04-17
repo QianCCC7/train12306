@@ -51,9 +51,7 @@
 
         <a-form-item name="type" label="乘客类型">
           <a-select v-model:value="passengerInfo.type" placeholder="请选择乘客类型">
-            <a-select-option value="1">成人</a-select-option>
-            <a-select-option value="2">儿童</a-select-option>
-            <a-select-option value="3">学生</a-select-option>
+            <a-select-option v-for="item in typeMap" :key="item.key" :value="item.key">{{item.value}}</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -117,11 +115,7 @@ const pagination = reactive({
   pageSize: 2, // 每页条数
 })
 const loading = ref(false)
-const typeMap = {
-  '成人': '1',
-  '儿童': '2',
-  '学生': '3'
-};
+const typeMap = window.PASSENGER_TYPE_ARRAY
 
 const handleAdd = () => {
   passengerInfo.value = {}
@@ -185,7 +179,14 @@ const handleRefresh = () => {
 }
 // 编辑乘客信息
 const handleEdit = (record) => {
-  passengerInfo.value = {...record, type: typeMap[record.type]};
+  let type = null;
+  for (const e of typeMap) {
+    if (e.value === record.type) {
+      type = e.key
+      break
+    }
+  }
+  passengerInfo.value = {...record, type: type};
   visible.value = true;
 }
 

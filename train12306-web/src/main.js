@@ -5,6 +5,7 @@ import store from './store'
 import Antd, {message} from 'ant-design-vue';
 import axios from "axios";
 import * as Icons from "@ant-design/icons-vue";
+import '@/assets/js/enums'
 
 const app = createApp(App)
 app.config.globalProperties.$icons= Icons
