@@ -1,6 +1,7 @@
 package com.xiaoqian.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.utils.SnowUtil;
 import com.xiaoqian.member.domain.dto.PassengerDTO;
@@ -28,9 +29,11 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
         Passenger passenger = BeanUtil.copyProperties(passengerDTO, Passenger.class);
         passenger.setId(SnowUtil.getSnowFlakeNextId());
         LocalDateTime now = LocalDateTime.now();
+        passenger.setMemberId(MemberContext.getId());
         passenger.setUpdateTime(now);
         passenger.setCreateTime(now);
         save(passenger);
+
         return ResponseResult.okEmptyResult();
     }
 }

@@ -7,15 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PassengerDTO {
-    private Long id;
-    @NotNull(message = "会员ID不能为空")
-    private Long memberId;
     @NotBlank(message = "乘客姓名不能为空")
     private String name;
     @NotBlank(message = "乘客身份证号不能为空")
@@ -23,7 +18,4 @@ public class PassengerDTO {
     @NotNull(message = "乘客类型不能为空")
     private PassengerTypeEnum type;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
 }

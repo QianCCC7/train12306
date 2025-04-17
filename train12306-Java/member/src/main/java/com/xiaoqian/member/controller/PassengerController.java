@@ -30,6 +30,6 @@ public class PassengerController {
 
     @GetMapping("/get")
     public ResponseResult<Passenger> getPassenger() {
-        return ResponseResult.okResult(passengerService.lambdaQuery().eq(Passenger::getMemberId, 1).one());
+        return ResponseResult.okResult(passengerService.lambdaQuery().eq(Passenger::getMemberId, 1912053495805120512L).one());
     }
 }
