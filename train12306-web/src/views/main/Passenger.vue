@@ -6,17 +6,23 @@
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
-        <a-button type="primary" @click="showModal" class="add-button">
+        <a-button type="primary" @click="handleAdd" class="add-button">
           <plus-outlined /> 新增乘客
         </a-button>
       </div>
     </div>
     <div>
-      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading"/>
+      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading">
+        <template #bodyCell="{ column,  record }">
+          <template v-if="column.dataIndex === 'operation'">
+            <a @click="handleEdit(record)">Edit</a>
+          </template>
+        </template>
+      </a-table>
     </div>
 
     <a-modal
-        v-model:visible="visible"
+        v-model:open="visible"
         title="新增乘客"
         @ok="handleOk"
         @cancel="handleCancel"
@@ -39,10 +45,7 @@
         </a-form-item>
 
         <a-form-item name="type" label="乘客类型">
-          <a-select
-              v-model:value="passengerInfo.type"
-              placeholder="请选择乘客类型"
-          >
+          <a-select v-model:value="passengerInfo.type" placeholder="请选择乘客类型">
             <a-select-option value="1">成人</a-select-option>
             <a-select-option value="2">儿童</a-select-option>
             <a-select-option value="3">学生</a-select-option>
@@ -79,8 +82,14 @@ const columns = [
     dataIndex: 'type',
     key: 'type',
   },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    key: 'operation',
+  },
 ]
-const passengerInfo = reactive({
+const passengerInfo = ref({
+  id: null,
   name: '',
   idCard: '',
   type: undefined
@@ -103,19 +112,26 @@ const pagination = reactive({
   pageSize: 2, // 每页条数
 })
 const loading = ref(false)
-
-const showModal = () => {
-  visible.value = true;
+const typeMap = {
+  '成人': '1',
+  '儿童': '2',
+  '学生': '3'
 };
+
+const handleAdd = () => {
+  passengerInfo.value = {}
+  visible.value = true;
+}
 
 const handleOk = () => {
   formRef.value.validate().then(() => {
     confirmLoading.value = true;
-    axios.post('/member/passenger/savePassenger', passengerInfo)
+    axios.post('/member/passenger/savePassenger', passengerInfo.value)
         .then(res => {
           if (res.data.code === 200) {
             message.success("保存成功");
             resetForm();
+            passengerInfo.value = {}
             visible.value = false;
             listPassengers(pagination.current, pagination.pageSize) // 刷新列表
           } else {
@@ -161,6 +177,11 @@ const handleTableChange = (page) => {
 // 刷新
 const handleRefresh = () => {
   listPassengers(1, pagination.pageSize)
+}
+// 编辑乘客信息
+const handleEdit = (record) => {
+  passengerInfo.value = {...record, type: typeMap[record.type]};
+  visible.value = true;
 }
 
 onMounted(() => {
