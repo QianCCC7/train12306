@@ -6,7 +6,7 @@
       <router-link to="/login">退出登录</router-link>
     </div>
     <a-menu
-        v-model:selectedKeys="selectedKeys1"
+        v-model:selectedKeys="selectedKeys"
         theme="dark"
         mode="horizontal"
         :style="{ lineHeight: '64px' }"
@@ -26,12 +26,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref, watch} from 'vue';
 import store from "@/store";
+import router from "@/router";
 
-const selectedKeys1 = ref(['/welcome']);
+const selectedKeys = ref([]);
 const member = store.state.member
-
+watch(() => router.currentRoute.value.path, (newValue) => {
+  selectedKeys.value = []
+  selectedKeys.value.push(newValue)
+}, {immediate: true})
 </script>
 
 <style scoped>
