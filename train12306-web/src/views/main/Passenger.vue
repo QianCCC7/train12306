@@ -23,7 +23,7 @@
 
     <a-modal
         v-model:open="visible"
-        title="新增乘客"
+        title="乘车人"
         @ok="handleOk"
         @cancel="handleCancel"
         :confirmLoading="confirmLoading"
