@@ -15,7 +15,12 @@
       <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading">
         <template #bodyCell="{ column,  record }">
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="handleEdit(record)">Edit</a>
+            <a-space>
+              <a @click="handleEdit(record)">Edit</a>
+              <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">
+                <a style="color: red">删除</a>
+              </a-popconfirm>
+            </a-space>
           </template>
         </template>
       </a-table>
@@ -182,6 +187,17 @@ const handleRefresh = () => {
 const handleEdit = (record) => {
   passengerInfo.value = {...record, type: typeMap[record.type]};
   visible.value = true;
+}
+
+const handleDelete = (record) => {
+  axios.delete(`/member/passenger/deleteById/${record.id}`).then(res => {
+    if (res.data.code === 200) {
+      message.success('删除成功');
+      listPassengers(pagination.current, pagination.pageSize)
+    }
+  }).catch(err => {
+    message.error('删除乘客出现错误:', err);
+  })
 }
 
 onMounted(() => {
