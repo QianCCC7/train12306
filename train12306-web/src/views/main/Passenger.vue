@@ -123,7 +123,6 @@ const handleOk = () => {
           }
         })
         .catch(err => {
-          console.log('error', err)
           message.error(err.data.msg);
         })
     confirmLoading.value = false;
