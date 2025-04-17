@@ -21,10 +21,12 @@
 
 <script setup>
 import {ref, watch} from 'vue';
-import router from "@/router";
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const selectedKeys = ref([]);
-watch(() => router.currentRoute.value.path, (newValue) => {
+watch(() => route.path, (newValue) => {
   selectedKeys.value = []
   selectedKeys.value.push(newValue)
 }, {immediate: true})

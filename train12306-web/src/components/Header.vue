@@ -28,11 +28,12 @@
 <script setup>
 import {ref, watch} from 'vue';
 import store from "@/store";
-import router from "@/router";
+import {useRoute} from 'vue-router'
+const route = useRoute()
 
 const selectedKeys = ref([]);
 const member = store.state.member
-watch(() => router.currentRoute.value.path, (newValue) => {
+watch(() => route.path, (newValue) => {
   selectedKeys.value = []
   selectedKeys.value.push(newValue)
 }, {immediate: true})
