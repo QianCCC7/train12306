@@ -117,6 +117,7 @@ const handleOk = () => {
             message.success("保存成功");
             resetForm();
             visible.value = false;
+            listPassengers(pagination.current, pagination.pageSize) // 刷新列表
           } else {
             message.error(res.data.msg);
           }

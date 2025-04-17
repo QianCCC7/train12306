@@ -47,7 +47,9 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
     public ResponseResult<PageVo<PassengerVo>> listPassengers(PassengerQueryDTO query) {
         Long memberId = query.getMemberId();
         Page<Passenger> page = new Page<>(query.getPageNum(), query.getPageSize());
-        page(page, new LambdaQueryWrapper<Passenger>().eq(memberId != null, Passenger::getMemberId, memberId));
+        page(page, new LambdaQueryWrapper<Passenger>()
+                .eq(memberId != null, Passenger::getMemberId, memberId)
+                .orderByAsc(true, Passenger::getId));
         List<Passenger> passengerList =page.getRecords();
         List<PassengerVo> passengerVoList = BeanUtil.copyToList(passengerList, PassengerVo.class);
 
