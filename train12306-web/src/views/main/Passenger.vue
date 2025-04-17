@@ -12,7 +12,7 @@
       </div>
     </div>
     <div>
-      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange"/>
+      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading"/>
     </div>
 
     <a-modal
@@ -102,6 +102,7 @@ const pagination = reactive({
   current: 1, // 当前页码
   pageSize: 2, // 每页条数
 })
+const loading = ref(false)
 
 const showModal = () => {
   visible.value = true;
@@ -140,9 +141,11 @@ const resetForm = () => {
 };
 // 分页查询乘客列表
 const listPassengers = (pageNum, pageSize) => {
+  loading.value = true;
   axios.get('/member/passenger/listPassengers', {
     params: { pageNum: pageNum, pageSize: pageSize }
   }).then(res => {
+    loading.value = false;
     passengerList.value = res.data.data.rows
     pagination.current = pageNum
     pagination.pageSize = pageSize
