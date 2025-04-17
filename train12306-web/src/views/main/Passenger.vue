@@ -6,6 +6,9 @@
         <plus-outlined /> 新增乘客
       </a-button>
     </div>
+    <div>
+      <a-table :dataSource="passengerList" :columns="columns" />
+    </div>
 
     <a-modal
         v-model:visible="visible"
@@ -46,7 +49,7 @@
 </template>
 
 <script setup>
-import {ref, reactive} from 'vue';
+import {ref, reactive, onMounted} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
@@ -54,13 +57,29 @@ import {message} from "ant-design-vue";
 const visible = ref(false);
 const confirmLoading = ref(false);
 const formRef = ref(null);
-
+const passengerList = ref([]);
+const columns = [
+  {
+    title: '姓名',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '身份证号',
+    dataIndex: 'idCard',
+    key: 'idCard',
+  },
+  {
+    title: '乘客类型',
+    dataIndex: 'type',
+    key: 'type',
+  },
+]
 const passengerInfo = reactive({
   name: '',
   idCard: '',
   type: undefined
 });
-
 const rules = {
   name: [
     {required: true, message: '请输入乘客姓名', trigger: 'blur'}
@@ -73,6 +92,8 @@ const rules = {
     {required: true, message: '请选择乘客类型', trigger: 'change'}
   ]
 };
+const pageNum = ref(1)
+const pageSize = ref(10)
 
 const showModal = () => {
   visible.value = true;
@@ -103,12 +124,29 @@ const handleOk = () => {
 };
 
 const handleCancel = () => {
-  formRef.value?.resetFields();
+  resetForm()
 };
 
 const resetForm = () => {
-
+  formRef.value?.resetFields();
 };
+// 分页查询乘客列表
+const listPassengers = () => {
+  axios.get('/member/passenger/listPassengers', {
+    params: {
+      pageNum: pageNum.value,
+      pageSize: pageSize.value
+    }
+  }).then(res => {
+    passengerList.value = res.data.data.rows
+  }).catch(err => {
+    message.error('加载乘客列表错误:', err);
+  })
+}
+
+onMounted(() => {
+  listPassengers()
+})
 </script>
 
 <style scoped>
