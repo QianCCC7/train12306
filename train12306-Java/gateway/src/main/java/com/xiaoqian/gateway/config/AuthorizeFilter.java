@@ -27,8 +27,8 @@ public class AuthorizeFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         log.info("path:{}", request.getPath());
-        log.info("uri:{}", request.getURI());
-        log.info("path2:{}", request.getURI().getPath());
+//        log.info("uri:{}", request.getURI());
+//        log.info("path2:{}", request.getURI().getPath());
         // 排除不需要拦截的请求
         String path = request.getURI().getPath();
         if (path.contains("/member/member/login")
