@@ -7,7 +7,7 @@
       </a-button>
     </div>
     <div>
-      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination"/>
+      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange"/>
     </div>
 
     <a-modal
@@ -134,22 +134,25 @@ const resetForm = () => {
   formRef.value?.resetFields();
 };
 // 分页查询乘客列表
-const listPassengers = () => {
+const listPassengers = (pageNum, pageSize) => {
   axios.get('/member/passenger/listPassengers', {
-    params: {
-      pageNum: pagination.current,
-      pageSize: pagination.pageSize
-    }
+    params: { pageNum: pageNum, pageSize: pageSize }
   }).then(res => {
     passengerList.value = res.data.data.rows
+    pagination.current = pageNum
+    pagination.pageSize = pageSize
     pagination.total = res.data.data.totalRecords
   }).catch(err => {
     message.error('加载乘客列表错误:', err);
   })
 }
+// 页码变化
+const handleTableChange = (page) => {
+  listPassengers(page.current, page.pageSize)
+}
 
 onMounted(() => {
-  listPassengers()
+  listPassengers(pagination.current, pagination.pageSize)
 })
 </script>
 
