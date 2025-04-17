@@ -27,7 +27,15 @@ const routes = [
         meta: {
           title: '欢迎访问'
         }
-      }
+      },
+      {
+        path: 'passenger',
+        name: 'passenger',
+        component: () => import('../views/main/Passenger.vue'),
+        meta: {
+          title: '乘客管理'
+        }
+      },
     ],
     meta: {
       title: '首页',
