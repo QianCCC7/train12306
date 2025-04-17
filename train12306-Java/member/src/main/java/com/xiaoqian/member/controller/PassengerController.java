@@ -3,6 +3,7 @@ package com.xiaoqian.member.controller;
 
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.member.domain.dto.PassengerDTO;
 import com.xiaoqian.member.domain.pojo.Passenger;
 import com.xiaoqian.member.domain.query.PassengerQueryDTO;
@@ -12,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ public class PassengerController {
     }
 
     @GetMapping("/listPassengers")
-    public ResponseResult<List<PassengerVo>> listPassengers(PassengerQueryDTO query) {
+    public ResponseResult<PageVo<PassengerVo>> listPassengers(PassengerQueryDTO query) {
         query.setMemberId(MemberContext.getId());
         return passengerService.listPassengers(query);
     }

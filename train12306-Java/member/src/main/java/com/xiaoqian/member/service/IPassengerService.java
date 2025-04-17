@@ -1,13 +1,12 @@
 package com.xiaoqian.member.service;
 
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.member.domain.dto.PassengerDTO;
 import com.xiaoqian.member.domain.pojo.Passenger;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaoqian.member.domain.query.PassengerQueryDTO;
 import com.xiaoqian.member.domain.vo.PassengerVo;
-
-import java.util.List;
 
 /**
  * <p>
@@ -21,5 +20,5 @@ public interface IPassengerService extends IService<Passenger> {
 
     ResponseResult<Void> savePassenger(PassengerDTO passengerDTO);
 
-    ResponseResult<List<PassengerVo>> listPassengers(PassengerQueryDTO query);
+    ResponseResult<PageVo<PassengerVo>> listPassengers(PassengerQueryDTO query);
 }

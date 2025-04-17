@@ -1,8 +1,11 @@
 package com.xiaoqian.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import com.xiaoqian.member.domain.dto.PassengerDTO;
 import com.xiaoqian.member.domain.pojo.Passenger;
@@ -41,11 +44,13 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
     }
 
     @Override
-    public ResponseResult<List<PassengerVo>> listPassengers(PassengerQueryDTO query) {
+    public ResponseResult<PageVo<PassengerVo>> listPassengers(PassengerQueryDTO query) {
         Long memberId = query.getMemberId();
-        List<Passenger> passengerList = lambdaQuery().eq(memberId != null, Passenger::getMemberId, memberId).list();
+        Page<Passenger> page = new Page<>(query.getPageNum(), query.getPageSize());
+        page(page, new LambdaQueryWrapper<Passenger>().eq(memberId != null, Passenger::getMemberId, memberId));
+        List<Passenger> passengerList =page.getRecords();
         List<PassengerVo> passengerVoList = BeanUtil.copyToList(passengerList, PassengerVo.class);
 
-        return ResponseResult.okResult(passengerVoList);
+        return ResponseResult.okResult(new PageVo<>(passengerVoList, page.getPages(), page.getTotal()));
     }
 }
