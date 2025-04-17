@@ -13,8 +13,22 @@ const routes = [
   },
   {
     path: '/',
+    redirect: '/welcome'
+  },
+  {
+    path: '/',
     name: 'main',
     component: () => import('../views/Main.vue'),
+    children: [
+      {
+        path: 'welcome',
+        name: 'welcome',
+        component: () => import('../views/main/Welcome.vue'),
+        meta: {
+          title: '欢迎访问'
+        }
+      }
+    ],
     meta: {
       title: '首页',
       requireLogin: true

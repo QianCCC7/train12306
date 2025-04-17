@@ -104,7 +104,7 @@ const login = () => {
     if (data.code === 200) {
       message.success("登录成功");
       store.commit('setMember', data.data)
-      router.push("/")
+      router.push("/welcome")
     } else {
       message.error(data.msg);
     }
