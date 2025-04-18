@@ -9,6 +9,7 @@ spring:
           '[/**]': # 拦截所有请求
             allowedOrigins: # 允许哪些网站的跨域请求
               - "http://localhost:9000"
+              - "http://localhost:9001"
             allowedMethods: # 允许的跨域ajax的请求方式
               - "GET"
               - "POST"
