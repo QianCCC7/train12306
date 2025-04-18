@@ -1,18 +1,18 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <h2>乘客管理</h2>
+      <h2>车站管理</h2>
       <div class="button-group">
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
         <a-button type="primary" @click="handleAdd" class="add-button">
-          <plus-outlined /> 新增乘客
+          <plus-outlined /> 新增车站
         </a-button>
       </div>
     </div>
     <div>
-      <a-table :dataSource="passengerList" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading">
+      <a-table :dataSource="dataSource" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading">
         <template #bodyCell="{ column,  record }">
           <template v-if="column.dataIndex === 'operation'">
             <a-space>
@@ -28,7 +28,7 @@
 
     <a-modal
         v-model:open="visible"
-        title="乘车人"
+        title="车站"
         @ok="handleOk"
         @cancel="handleCancel"
         :confirmLoading="confirmLoading"
@@ -36,23 +36,21 @@
         cancel-text="取消"
     >
       <a-form
-          :model="passengerInfo"
+          :model="formData"
           :rules="rules"
           ref="formRef"
           layout="vertical"
       >
-        <a-form-item name="name" label="姓名">
-          <a-input v-model:value="passengerInfo.name" placeholder="请输入乘客姓名" />
+        <a-form-item name="name" label="站名">
+          <a-input v-model:value="formData.name" placeholder="请输入车站名称" />
         </a-form-item>
 
-        <a-form-item name="idCard" label="身份证号">
-          <a-input v-model:value="passengerInfo.idCard" placeholder="请输入身份证号码" />
+        <a-form-item name="namePinyin" label="站名拼音">
+          <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" />
         </a-form-item>
 
-        <a-form-item name="type" label="乘客类型">
-          <a-select v-model:value="passengerInfo.type" placeholder="请选择乘客类型">
-            <a-select-option v-for="item in typeMap" :key="item.key" :value="item.key">{{item.value}}</a-select-option>
-          </a-select>
+        <a-form-item name="namePy" label="站名拼音首字母">
+          <a-input v-model:value="formData.namePy" placeholder="请输入站名拼音首字母" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -68,22 +66,22 @@ import {message} from "ant-design-vue";
 const visible = ref(false);
 const confirmLoading = ref(false);
 const formRef = ref(null);
-const passengerList = ref([]);
+const dataSource = ref([]);
 const columns = [
   {
-    title: '姓名',
+    title: '站名',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '身份证号',
-    dataIndex: 'idCard',
-    key: 'idCard',
+    title: '站名拼音',
+    dataIndex: 'namePinyin',
+    key: 'namePinyin',
   },
   {
-    title: '乘客类型',
-    dataIndex: 'type',
-    key: 'type',
+    title: '站名拼音首字母',
+    dataIndex: 'namePy',
+    key: 'namePy',
   },
   {
     title: '操作',
@@ -91,22 +89,16 @@ const columns = [
     key: 'operation',
   },
 ]
-const passengerInfo = ref({
-  id: null,
-  name: '',
-  idCard: '',
-  type: undefined
-});
+const formData = ref({})
 const rules = {
   name: [
-    {required: true, message: '请输入乘客姓名', trigger: 'blur'}
+    {required: true, message: '请输入车站名称', trigger: 'blur'}
   ],
-  idCard: [
-    {required: true, message: '请输入身份证号码', trigger: 'blur'},
-    // {pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '请输入正确的身份证号码', trigger: 'blur'}
+  namePinyin: [
+    {required: true, message: '请输入站名拼音', trigger: 'blur'},
   ],
-  type: [
-    {required: true, message: '请选择乘客类型', trigger: 'change'}
+  namePy: [
+    {required: true, message: '请输入站名拼音首字母', trigger: 'change'}
   ]
 };
 const pagination = reactive({
@@ -115,24 +107,23 @@ const pagination = reactive({
   pageSize: 2, // 每页条数
 })
 const loading = ref(false)
-const typeMap = window.PASSENGER_TYPE_ARRAY
 
 const handleAdd = () => {
-  passengerInfo.value = {}
+  formData.value = {}
   visible.value = true;
 }
 
 const handleOk = () => {
   formRef.value.validate().then(() => {
     confirmLoading.value = true;
-    axios.post('/member/passenger/savePassenger', passengerInfo.value)
+    axios.post('/business/admin/station/saveStation', formData.value)
         .then(res => {
           if (res.data.code === 200) {
             message.success("保存成功");
             resetForm();
-            passengerInfo.value = {}
+            formData.value = {}
             visible.value = false;
-            listPassengers(pagination.current, pagination.pageSize) // 刷新列表
+            listStations(pagination.current, pagination.pageSize) // 刷新列表
           } else {
             message.error(res.data.msg);
           }
@@ -154,56 +145,49 @@ const handleCancel = () => {
 const resetForm = () => {
   formRef.value?.resetFields();
 };
-// 分页查询乘客列表
-const listPassengers = (pageNum, pageSize) => {
+// 分页查询
+const listStations = (pageNum, pageSize) => {
   loading.value = true;
-  axios.get('/member/passenger/listPassengers', {
+  axios.get('/business/admin/station/listStations', {
     params: { pageNum: pageNum, pageSize: pageSize }
   }).then(res => {
     loading.value = false;
-    passengerList.value = res.data.data.rows
+    dataSource.value = res.data.data.rows
     pagination.current = pageNum
     pagination.pageSize = pageSize
     pagination.total = res.data.data.totalRecords
   }).catch(err => {
     loading.value = false;
-    message.error('加载乘客列表错误:', err);
+    message.error('加载车站列表错误:', err);
   })
 }
 // 页码变化
 const handleTableChange = (page) => {
-  listPassengers(page.current, page.pageSize)
+  listStations(page.current, page.pageSize)
 }
 // 刷新
 const handleRefresh = () => {
-  listPassengers(1, pagination.pageSize)
+  listStations(1, pagination.pageSize)
 }
-// 编辑乘客信息
+// 编辑
 const handleEdit = (record) => {
-  let type = null;
-  for (const e of typeMap) {
-    if (e.value === record.type) {
-      type = e.key
-      break
-    }
-  }
-  passengerInfo.value = {...record, type: type};
+  formData.value = {...record};
   visible.value = true;
 }
-
+// 删除
 const handleDelete = (record) => {
-  axios.delete(`/member/passenger/deleteById/${record.id}`).then(res => {
+  axios.delete(`/business/admin/station/deleteById/${record.id}`).then(res => {
     if (res.data.code === 200) {
       message.success('删除成功');
-      listPassengers(pagination.current, pagination.pageSize)
+      listStations(pagination.current, pagination.pageSize)
     }
   }).catch(err => {
-    message.error('删除乘客出现错误:', err);
+    message.error('删除车站出现错误:', err);
   })
 }
 
 onMounted(() => {
-  listPassengers(pagination.current, pagination.pageSize)
+  listStations(pagination.current, pagination.pageSize)
 })
 </script>
 

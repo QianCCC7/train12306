@@ -26,6 +26,14 @@ const routes = [
           title: '关于'
         }
       },
+      {
+        path: 'station',
+        name: 'station',
+        component: () => import('../views/main/Station.vue'),
+        meta: {
+          title: '车站管理'
+        }
+      },
     ],
     meta: {
       title: '首页',
@@ -37,6 +45,14 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.afterEach((to) => {
+  if (to.meta.title) {
+    document.title = to.meta.title
+  } else {
+    document.title = '' //此处写默认的title
+  }
 })
 
 
