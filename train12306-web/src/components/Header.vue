@@ -1,6 +1,10 @@
 <template>
   <a-layout-header class="header">
-    <div class="logo" />
+    <div class="logo">
+      <router-link to="/welcome" style="color: white">
+        12306平台
+      </router-link>
+    </div>
     <div style="float: right; color: white">
       您好:{{member.mobile}} &nbsp;&nbsp;
       <router-link to="/login">退出登录</router-link>
@@ -40,16 +44,11 @@ watch(() => route.path, (newValue) => {
 </script>
 
 <style scoped>
-#components-layout-demo-top-side-2 .logo {
+.logo {
   float: left;
-  width: 120px;
   height: 31px;
-  margin: 16px 24px 16px 0;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.ant-row-rtl #components-layout-demo-top-side-2 .logo {
-  float: right;
-  margin: 16px 0 16px 24px;
+  width: 150px;
+  color: white;
+  font-size: 20px;
 }
 </style>
