@@ -31,9 +31,10 @@ public class AuthorizeFilter implements GlobalFilter {
 //        log.info("path2:{}", request.getURI().getPath());
         // 排除不需要拦截的请求
         String path = request.getURI().getPath();
-        if (path.contains("/member/member/login")
-        || path.contains("/member/member/sendCode")
-        || path.contains("/member/member/register")) {
+        if (path.contains("/admin")
+                || path.contains("/member/member/login")
+                || path.contains("/member/member/sendCode")
+                || path.contains("/member/member/register")) {
             return chain.filter(exchange);
         }
         String token = request.getHeaders().getFirst("token");
