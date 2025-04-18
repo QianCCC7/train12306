@@ -1,9 +1,9 @@
 <template>
   <a-layout-header class="header">
-    <div class="logo" />
-    <div style="float: right; color: white">
-      您好:{{member.mobile}} &nbsp;&nbsp;
-      <router-link to="/login">退出登录</router-link>
+    <div class="logo">
+      <router-link to="/welcome" style="color: white">
+        12306控台
+      </router-link>
     </div>
     <a-menu
         v-model:selectedKeys="selectedKeys"
@@ -16,9 +16,9 @@
           <coffee-outlined />&nbsp; 欢迎
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/passenger">
-        <router-link to="/passenger">
-          <user-outlined />&nbsp; 乘车人管理
+      <a-menu-item key="/about">
+        <router-link to="/about">
+          <user-outlined />&nbsp; 关于
         </router-link>
       </a-menu-item>
     </a-menu>
@@ -27,12 +27,10 @@
 
 <script setup>
 import {ref, watch} from 'vue';
-import store from "@/store";
 import {useRoute} from 'vue-router'
 const route = useRoute()
 
 const selectedKeys = ref([]);
-const member = store.state.member
 watch(() => route.path, (newValue) => {
   selectedKeys.value = []
   selectedKeys.value.push(newValue)
@@ -40,16 +38,11 @@ watch(() => route.path, (newValue) => {
 </script>
 
 <style scoped>
-#components-layout-demo-top-side-2 .logo {
+.logo {
   float: left;
-  width: 120px;
   height: 31px;
-  margin: 16px 24px 16px 0;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.ant-row-rtl #components-layout-demo-top-side-2 .logo {
-  float: right;
-  margin: 16px 0 16px 24px;
+  width: 150px;
+  color: white;
+  font-size: 20px;
 }
 </style>
