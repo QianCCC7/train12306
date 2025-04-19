@@ -51,7 +51,7 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
         Page<Station> page = new Page<>(query.getPageNum(), query.getPageSize());
         page(page, new LambdaQueryWrapper<Station>()
                 .orderByAsc(true, Station::getId));
-        List<Station> stationList =page.getRecords();
+        List<Station> stationList = page.getRecords();
         List<StationVo> stationVoList = BeanUtil.copyToList(stationList, StationVo.class);
 
         return ResponseResult.okResult(new PageVo<>(stationVoList, page.getPages(), page.getTotal()));

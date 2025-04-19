@@ -51,10 +51,10 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
         Page<Train> page = new Page<>(query.getPageNum(), query.getPageSize());
         page(page, new LambdaQueryWrapper<Train>()
                 .orderByAsc(true, Train::getId));
-        List<Train> passengerList =page.getRecords();
-        List<TrainVo> passengerVoList = BeanUtil.copyToList(passengerList, TrainVo.class);
+        List<Train> trainList = page.getRecords();
+        List<TrainVo> trainVoList = BeanUtil.copyToList(trainList, TrainVo.class);
 
-        return ResponseResult.okResult(new PageVo<>(passengerVoList, page.getPages(), page.getTotal()));
+        return ResponseResult.okResult(new PageVo<>(trainVoList, page.getPages(), page.getTotal()));
     }
 
     @Override

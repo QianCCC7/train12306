@@ -1,0 +1,67 @@
+package com.xiaoqian.business.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xiaoqian.business.domain.dto.TrainStationDTO;
+import com.xiaoqian.business.domain.pojo.Train;
+import com.xiaoqian.business.domain.pojo.TrainStation;
+import com.xiaoqian.business.domain.query.TrainStationQueryDTO;
+import com.xiaoqian.business.domain.vo.TrainStationVo;
+import com.xiaoqian.business.domain.vo.TrainVo;
+import com.xiaoqian.business.mapper.TrainStationMapper;
+import com.xiaoqian.business.service.ITrainStationService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.query.PageVo;
+import com.xiaoqian.common.utils.SnowUtil;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * <p>
+ * 车次历经车站 服务实现类
+ * </p>
+ *
+ * @author xiaoqian
+ * @since 2025-04-19
+ */
+@Service
+public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, TrainStation> implements ITrainStationService {
+
+    @Override
+    public ResponseResult<Void> saveTrainStation(TrainStationDTO trainStationDTO) {
+        TrainStation trainStation = BeanUtil.copyProperties(trainStationDTO, TrainStation.class);
+        if (trainStationDTO.getId() == null) {
+            trainStation.setId(SnowUtil.getSnowFlakeNextId());
+            LocalDateTime now = LocalDateTime.now();
+            trainStation.setUpdateTime(now);
+            trainStation.setCreateTime(now);
+            save(trainStation);
+        } else {
+            trainStation.setUpdateTime(LocalDateTime.now());
+            updateById(trainStation);
+        }
+
+        return ResponseResult.okEmptyResult();
+    }
+
+    @Override
+    public ResponseResult<PageVo<TrainStationVo>> listTrainStations(TrainStationQueryDTO query) {
+        Page<TrainStation> page = new Page<>(query.getPageNum(), query.getPageSize());
+        page(page, new LambdaQueryWrapper<TrainStation>()
+                .orderByAsc(true, TrainStation::getId));
+        List<TrainStation> trainStationList = page.getRecords();
+        List<TrainStationVo> trainStationVoList = BeanUtil.copyToList(trainStationList, TrainStationVo.class);
+
+        return ResponseResult.okResult(new PageVo<>(trainStationVoList, page.getPages(), page.getTotal()));
+    }
+
+    @Override
+    public ResponseResult<Void> deleteById(Long id) {
+        removeById(id);
+        return ResponseResult.okEmptyResult();
+    }
+}
