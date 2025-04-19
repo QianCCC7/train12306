@@ -34,6 +34,14 @@ const routes = [
           title: '车站管理'
         }
       },
+      {
+        path: 'train',
+        name: 'train',
+        component: () => import('../views/main/Train.vue'),
+        meta: {
+          title: '车次管理'
+        }
+      },
     ],
     meta: {
       title: '首页',
