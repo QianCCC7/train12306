@@ -1,6 +1,8 @@
 package com.xiaoqian.business.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,12 +16,12 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrainStationVo implements Serializable {
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String trainCode;
 
-    private Integer index;
+    private Integer indexOrder;
 
     private String name;
 

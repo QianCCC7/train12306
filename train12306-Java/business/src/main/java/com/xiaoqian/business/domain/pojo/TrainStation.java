@@ -41,7 +41,7 @@ public class TrainStation implements Serializable {
     /**
      * 站序
      */
-    private Integer index;
+    private Integer indexOrder;
 
     /**
      * 站名
