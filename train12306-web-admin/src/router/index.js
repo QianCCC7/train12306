@@ -42,6 +42,14 @@ const routes = [
           title: '车次管理'
         }
       },
+      {
+        path: 'train-station',
+        name: 'train-station',
+        component: () => import('../views/main/TrainStation.vue'),
+        meta: {
+          title: '车次历经车站管理'
+        }
+      },
     ],
     meta: {
       title: '首页',
