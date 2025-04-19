@@ -16,7 +16,7 @@ public class TrainDTO {
     private Long id;
     @NotBlank(message = "车次编码不能为空")
     private String code;
-    @NotBlank(message = "车次类型不能为空")
+    @NotNull(message = "车次类型不能为空")
     private TrainTypeEnum type;
     @NotBlank(message = "始发站不能为空")
     private String start;
