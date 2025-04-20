@@ -26,5 +26,5 @@ public interface ITrainService extends IService<Train> {
 
     ResponseResult<Void> deleteById(Long id);
 
-    ResponseResult<List<TrainVo>> getAllTrains(TrainQueryDTO queryDTO);
+    ResponseResult<List<TrainVo>> getAllTrains();
 }

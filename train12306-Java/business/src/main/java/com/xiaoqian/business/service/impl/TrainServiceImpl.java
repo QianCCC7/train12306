@@ -58,7 +58,7 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
     }
 
     @Override
-    public ResponseResult<List<TrainVo>> getAllTrains(TrainQueryDTO queryDTO) {
+    public ResponseResult<List<TrainVo>> getAllTrains() {
         List<Train> trainList = lambdaQuery().orderByAsc(Train::getCode).list();
         List<TrainVo> trainVoList = BeanUtil.copyToList(trainList, TrainVo.class);
 

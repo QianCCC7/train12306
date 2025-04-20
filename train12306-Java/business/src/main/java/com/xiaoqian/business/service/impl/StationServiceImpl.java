@@ -58,6 +58,14 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
     }
 
     @Override
+    public ResponseResult<List<StationVo>> getAllStations() {
+        List<Station> stationList = lambdaQuery().orderByAsc(Station::getNamePinyin).list();
+        List<StationVo> stationVoList = BeanUtil.copyToList(stationList, StationVo.class);
+
+        return ResponseResult.okResult(stationVoList);
+    }
+
+    @Override
     public ResponseResult<Void> deleteById(Long id) {
         removeById(id);
         return ResponseResult.okEmptyResult();

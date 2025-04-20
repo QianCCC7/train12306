@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * 车站 前端控制器
@@ -33,6 +35,11 @@ public class StationController {
     @GetMapping("/listStations")
     public ResponseResult<PageVo<StationVo>> listStations(StationQueryDTO queryDTO) {
         return stationService.listStations(queryDTO);
+    }
+
+    @GetMapping("/getAllStations")
+    public ResponseResult<List<StationVo>> getAllStations() {
+        return stationService.getAllStations();
     }
 
     @DeleteMapping("/deleteById/{id}")

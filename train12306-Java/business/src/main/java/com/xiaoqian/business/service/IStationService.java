@@ -8,6 +8,8 @@ import com.xiaoqian.business.domain.vo.StationVo;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 车站 服务类
@@ -23,4 +25,6 @@ public interface IStationService extends IService<Station> {
     ResponseResult<PageVo<StationVo>> listStations(StationQueryDTO queryDTO);
 
     ResponseResult<Void> deleteById(Long id);
+
+    ResponseResult<List<StationVo>> getAllStations();
 }

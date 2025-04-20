@@ -38,8 +38,8 @@ public class TrainController {
     }
 
     @GetMapping("/getAllTrains")
-    public ResponseResult<List<TrainVo>> getAllTrains(TrainQueryDTO queryDTO) {
-        return trainService.getAllTrains(queryDTO);
+    public ResponseResult<List<TrainVo>> getAllTrains() {
+        return trainService.getAllTrains();
     }
 
     @DeleteMapping("/deleteById/{id}")
