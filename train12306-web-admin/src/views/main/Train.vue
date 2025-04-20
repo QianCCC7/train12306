@@ -53,7 +53,7 @@
           <a-input v-model:value="formData.start" placeholder="请输入始发站" />
         </a-form-item>
         <a-form-item name="startPinyin" label="始发站拼音">
-          <a-input v-model:value="formData.startPinyin" placeholder="请输入始发站拼音" />
+          <a-input v-model:value="formData.startPinyin" placeholder="请输入始发站拼音" disabled />
         </a-form-item>
         <a-form-item name="startTime" label="出发时间">
           <a-time-picker v-model:value="formData.startTime" value-format="HH:mm:ss" />
@@ -62,7 +62,7 @@
           <a-input v-model:value="formData.end" placeholder="请输入终点站" />
         </a-form-item>
         <a-form-item name="endPinyin" label="终点站拼音">
-          <a-input v-model:value="formData.endPinyin" placeholder="请输入终点站拼音" />
+          <a-input v-model:value="formData.endPinyin" placeholder="请输入终点站拼音" disabled />
         </a-form-item>
         <a-form-item name="endTime" label="到站时间">
           <a-time-picker v-model:value="formData.endTime" value-format="HH:mm:ss" />
@@ -73,10 +73,11 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue';
+import {ref, reactive, onMounted, watch} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
+import {pinyin} from "pinyin-pro";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -252,6 +253,16 @@ const handleDelete = (record) => {
 onMounted(() => {
   listTrains(pagination.current, pagination.pageSize)
 })
+watch(() => formData.value.start, () => {
+  if (formData.value.start) {
+    formData.value.startPinyin = pinyin(formData.value.start, {toneType: "none"}).replaceAll(" ", "")
+  }
+}, {immediate: true})
+watch(() => formData.value.end, () => {
+  if (formData.value.end) {
+    formData.value.endPinyin = pinyin(formData.value.end, {toneType: "none"}).replaceAll(" ", "")
+  }
+}, {immediate: true})
 </script>
 
 <style scoped>

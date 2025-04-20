@@ -51,7 +51,7 @@
           <a-input v-model:value="formData.name" placeholder="请输入站名" />
         </a-form-item>
         <a-form-item name="namePinyin" label="站名拼音">
-          <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" />
+          <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" disabled />
         </a-form-item>
         <a-form-item name="inTime" label="进站时间">
           <a-time-picker v-model:value="formData.inTime" value-format="HH:mm:ss" />
@@ -71,10 +71,11 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue';
+import {ref, reactive, onMounted, watch} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
+import {pinyin} from "pinyin-pro";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -250,6 +251,11 @@ const handleDelete = (record) => {
 onMounted(() => {
   listTrainStations(pagination.current, pagination.pageSize)
 })
+watch(() => formData.value.name, () => {
+  if (formData.value.name) {
+    formData.value.namePinyin = pinyin(formData.value.name, {toneType: "none"}).replaceAll(" ", "")
+  }
+}, {immediate: true})
 </script>
 
 <style scoped>
