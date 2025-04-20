@@ -42,7 +42,7 @@
           layout="vertical"
       >
         <a-form-item name="trainCode" label="车次编码">
-          <a-input v-model:value="formData.trainCode" placeholder="请输入车次编码" />
+          <train-select v-model="formData.trainCode" width="300px"></train-select>
         </a-form-item>
         <a-form-item name="indexOrder" label="厢号">
           <a-input v-model:value="formData.indexOrder" placeholder="请输入厢号" />
@@ -71,6 +71,7 @@ import {ref, reactive, onMounted} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
+import TrainSelect from "@/components/TrainSelect.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);

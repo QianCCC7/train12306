@@ -76,7 +76,7 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {pinyin} from "pinyin-pro";
-import TrainSelect from "@/components/Train-Select.vue";
+import TrainSelect from "@/components/TrainSelect.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
