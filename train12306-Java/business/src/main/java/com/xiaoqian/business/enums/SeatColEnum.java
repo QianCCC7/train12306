@@ -9,16 +9,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SeatColEnum {
-    YDZ_A("A", "一等座座位A"),
-    YDZ_C("C", "一等座座位C"),
-    YDZ_D("D", "一等座座位D"),
-    YDZ_F("F", "一等座座位F"),
+    YDZ_A("A1", "一等座座位A"),
+    YDZ_C("C1", "一等座座位C"),
+    YDZ_D("D1", "一等座座位D"),
+    YDZ_F("F1", "一等座座位F"),
 
-    EDZ_A("A", "二等座座位A"),
-    EDZ_B("B", "二等座座位B"),
-    EDZ_C("C", "二等座座位C"),
-    EDZ_D("D", "二等座座位D"),
-    EDZ_F("F", "二等座座位F");
+    EDZ_A("A2", "二等座座位A"),
+    EDZ_B("B2", "二等座座位B"),
+    EDZ_C("C2", "二等座座位C"),
+    EDZ_D("D2", "二等座座位D"),
+    EDZ_F("F2", "二等座座位F");
     @EnumValue
     private final String code;
     @JsonValue
@@ -31,6 +31,6 @@ public enum SeatColEnum {
                 return type;
             }
         }
-        throw new IllegalArgumentException("无效的车列类型: " + code);
+        throw new IllegalArgumentException("无效的座位信息: " + code);
     }
 }

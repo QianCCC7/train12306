@@ -47,7 +47,7 @@ public class TrainSeat implements Serializable {
     /**
      * 排号|01, 02
      */
-    private String row;
+    private String rowOrder;
 
     /**
      * 列号|枚举[SeatColEnum]
@@ -55,7 +55,7 @@ public class TrainSeat implements Serializable {
     private SeatColEnum col;
 
     /**
-     * 座位类型|枚举[SeatTypeEnum]
+     * 车座类型|枚举[SeatTypeEnum]
      */
     private SeatTypeEnum seatType;
 

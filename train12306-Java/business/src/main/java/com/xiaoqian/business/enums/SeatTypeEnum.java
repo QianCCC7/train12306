@@ -26,6 +26,6 @@ public enum SeatTypeEnum {
                 return type;
             }
         }
-        throw new IllegalArgumentException("无效的车厢类型: " + code);
+        throw new IllegalArgumentException("无效的车座类型: " + code);
     }
 }

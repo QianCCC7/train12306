@@ -50,6 +50,22 @@ const routes = [
           title: '车次历经车站管理'
         }
       },
+      {
+        path: 'train-carriage',
+        name: 'train-carriage',
+        component: () => import('../views/main/TrainCarriage.vue'),
+        meta: {
+          title: '车厢管理'
+        }
+      },
+      {
+        path: 'train-seat',
+        name: 'train-seat',
+        component: () => import('../views/main/TrainSeat.vue'),
+        meta: {
+          title: '车座管理'
+        }
+      },
     ],
     meta: {
       title: '首页',

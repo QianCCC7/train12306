@@ -185,7 +185,7 @@ const handleOk = () => {
           }
         })
         .catch(err => {
-          message.error(err.data.msg);
+          message.error(err);
         })
     confirmLoading.value = false;
   }).catch(error => {

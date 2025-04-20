@@ -1,13 +1,13 @@
 <template>
   <div class="wrapper">
     <div class="header">
-      <h2>车次历经车站管理</h2>
+      <h2>车厢管理</h2>
       <div class="button-group">
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
         <a-button type="primary" @click="handleAdd" class="add-button">
-          <plus-outlined /> 新增车次历经车站
+          <plus-outlined /> 新增车厢
         </a-button>
       </div>
     </div>
@@ -28,7 +28,7 @@
 
     <a-modal
         v-model:open="visible"
-        title="车次历经车站"
+        title="车厢"
         @ok="handleOk"
         @cancel="handleCancel"
         :confirmLoading="confirmLoading"
@@ -44,26 +44,22 @@
         <a-form-item name="trainCode" label="车次编码">
           <a-input v-model:value="formData.trainCode" placeholder="请输入车次编码" />
         </a-form-item>
-        <a-form-item name="indexOrder" label="站序">
-          <a-input v-model:value="formData.indexOrder" placeholder="请输入站序" />
+        <a-form-item name="indexOrder" label="厢号">
+          <a-input v-model:value="formData.indexOrder" placeholder="请输入厢号" />
         </a-form-item>
-        <a-form-item name="name" label="站名">
-          <a-input v-model:value="formData.name" placeholder="请输入站名" />
+        <a-form-item name="seatType" label="车座类型">
+          <a-select v-model:value="formData.seatType" placeholder="请选择车座类型">
+            <a-select-option v-for="item in typeMap" :key="item.key" :value="item.key">{{item.value}}</a-select-option>
+          </a-select>
         </a-form-item>
-        <a-form-item name="namePinyin" label="站名拼音">
-          <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" />
+        <a-form-item name="seatCount" label="座位数">
+          <a-input v-model:value="formData.seatCount" placeholder="请输入座位数" />
         </a-form-item>
-        <a-form-item name="inTime" label="进站时间">
-          <a-time-picker v-model:value="formData.inTime" value-format="HH:mm:ss" />
+        <a-form-item name="rowCount" label="座位排数">
+          <a-input v-model:value="formData.rowCount" placeholder="请输入座位排数" />
         </a-form-item>
-        <a-form-item name="outTime" label="出站时间">
-          <a-time-picker v-model:value="formData.outTime" value-format="HH:mm:ss" />
-        </a-form-item>
-        <a-form-item name="stopTime" label="停站时长">
-          <a-time-picker v-model:value="formData.stopTime" value-format="HH:mm:ss" />
-        </a-form-item>
-        <a-form-item name="km" label="里程">
-          <a-input v-model:value="formData.km" placeholder="请输入里程" />
+        <a-form-item name="colCount" label="座位列数">
+          <a-input v-model:value="formData.colCount" placeholder="请输入座位列数" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -87,39 +83,29 @@ const columns = [
     key: 'trainCode',
   },
   {
-    title: '站序',
+    title: '厢号',
     dataIndex: 'indexOrder',
     key: 'indexOrder',
   },
   {
-    title: '站名',
-    dataIndex: 'name',
-    key: 'name',
+    title: '车座类型',
+    dataIndex: 'seatType',
+    key: 'seatType',
   },
   {
-    title: '站名拼音',
-    dataIndex: 'namePinyin',
-    key: 'namePinyin',
+    title: '座位数',
+    dataIndex: 'seatCount',
+    key: 'seatCount',
   },
   {
-    title: '进站时间',
-    dataIndex: 'inTime',
-    key: 'inTime',
+    title: '座位排数',
+    dataIndex: 'rowCount',
+    key: 'rowCount',
   },
   {
-    title: '出站时间',
-    dataIndex: 'outTime',
-    key: 'outTime',
-  },
-  {
-    title: '停站时长',
-    dataIndex: 'stopTime',
-    key: 'stopTime',
-  },
-  {
-    title: '里程',
-    dataIndex: 'km',
-    key: 'km',
+    title: '座位列数',
+    dataIndex: 'colCount',
+    key: 'colCount',
   },
   {
     title: '操作',
@@ -135,23 +121,17 @@ const rules = {
   indexOrder: [
     {required: true, message: '请选择站序', trigger: 'blur'},
   ],
-  name: [
-    {required: true, message: '请输入站名', trigger: 'change'}
+  seatType: [
+    {required: true, message: '请输入车座类型', trigger: 'change'}
   ],
-  namePinyin: [
-    {required: true, message: '请输入站名拼音', trigger: 'change'}
+  seatCount: [
+    {required: true, message: '请输入座位数', trigger: 'change'}
   ],
-  inTime: [
-    {required: true, message: '请输入进站时间', trigger: 'change'}
+  rowCount: [
+    {required: true, message: '请输入座位排数', trigger: 'change'}
   ],
-  outTime: [
-    {required: true, message: '请输入出站时间', trigger: 'change'}
-  ],
-  stopTime: [
-    {required: true, message: '请输入停站时长', trigger: 'change'}
-  ],
-  km: [
-    {required: true, message: '请输入里程', trigger: 'change'}
+  colCount: [
+    {required: true, message: '请输入座位列数', trigger: 'change'}
   ],
 };
 const pagination = reactive({
@@ -159,7 +139,7 @@ const pagination = reactive({
   current: 1, // 当前页码
   pageSize: 2, // 每页条数
 })
-const typeMap = window.TRAIN_TYPE_ARRAY
+const typeMap = window.TRAIN_SEAT_TYPE_ARRAY
 const loading = ref(false)
 
 const handleAdd = () => {
@@ -170,14 +150,14 @@ const handleAdd = () => {
 const handleOk = () => {
   formRef.value.validate().then(() => {
     confirmLoading.value = true;
-    axios.post('/business/admin/train-station/saveTrainStation', formData.value)
+    axios.post('/business/admin/train-carriage/saveTrainCarriage', formData.value)
         .then(res => {
           if (res.data.code === 200) {
             message.success("保存成功");
             resetForm();
             formData.value = {}
             visible.value = false;
-            listTrainStations(pagination.current, pagination.pageSize)
+            listTrainCarriages(pagination.current, pagination.pageSize)
           } else {
             message.error(res.data.msg);
           }
@@ -200,9 +180,9 @@ const resetForm = () => {
   formRef.value?.resetFields();
 };
 // 分页查询
-const listTrainStations = (pageNum, pageSize) => {
+const listTrainCarriages = (pageNum, pageSize) => {
   loading.value = true;
-  axios.get('/business/admin/train-station/listTrainStations', {
+  axios.get('/business/admin/train-carriage/listTrainCarriages', {
     params: { pageNum: pageNum, pageSize: pageSize }
   }).then(res => {
     loading.value = false;
@@ -212,43 +192,43 @@ const listTrainStations = (pageNum, pageSize) => {
     pagination.total = res.data.data.totalRecords
   }).catch(err => {
     loading.value = false;
-    message.error('加载车次列表错误:', err);
+    message.error('加载车厢列表错误:', err);
   })
 }
 // 页码变化
 const handleTableChange = (page) => {
-  listTrainStations(page.current, page.pageSize)
+  listTrainCarriages(page.current, page.pageSize)
 }
 // 刷新
 const handleRefresh = () => {
-  listTrainStations(1, pagination.pageSize)
+  listTrainCarriages(1, pagination.pageSize)
 }
 // 编辑
 const handleEdit = (record) => {
-  let type = null;
+  let seatType = null;
   for (const e of typeMap) {
-    if (e.value === record.type) {
-      type = e.key
+    if (e.value === record.seatType) {
+      seatType = e.key
       break
     }
   }
-  formData.value = {...record, type: type};
+  formData.value = {...record, seatType: seatType};
   visible.value = true;
 }
 // 删除
 const handleDelete = (record) => {
-  axios.delete(`/business/admin/train-station/deleteById/${record.id}`).then(res => {
+  axios.delete(`/business/admin/train-carriage/deleteById/${record.id}`).then(res => {
     if (res.data.code === 200) {
       message.success('删除成功');
-      listTrainStations(pagination.current, pagination.pageSize)
+      listTrainCarriages(pagination.current, pagination.pageSize)
     }
   }).catch(err => {
-    message.error('删除车次历经车站出现错误:', err);
+    message.error('删除车厢出现错误:', err);
   })
 }
 
 onMounted(() => {
-  listTrainStations(pagination.current, pagination.pageSize)
+  listTrainCarriages(pagination.current, pagination.pageSize)
 })
 </script>
 

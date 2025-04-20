@@ -41,10 +41,10 @@ public class TrainCarriage implements Serializable {
     /**
      * 厢号
      */
-    private Integer index;
+    private Integer indexOrder;
 
     /**
-     * 座位类型|枚举[SeatTypeEnum]
+     * 车座类型|枚举[SeatTypeEnum]
      */
     private SeatTypeEnum seatType;
 
