@@ -46,11 +46,11 @@
         </a-form-item>
 
         <a-form-item name="namePinyin" label="站名拼音">
-          <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" />
+          <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" disabled />
         </a-form-item>
 
         <a-form-item name="namePy" label="站名拼音首字母">
-          <a-input v-model:value="formData.namePy" placeholder="请输入站名拼音首字母" />
+          <a-input v-model:value="formData.namePy" placeholder="请输入站名拼音首字母" disabled />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -58,10 +58,11 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue';
+import {ref, reactive, onMounted, watch} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
+import {pinyin} from "pinyin-pro";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -189,6 +190,13 @@ const handleDelete = (record) => {
 onMounted(() => {
   listStations(pagination.current, pagination.pageSize)
 })
+watch(() => formData.value.name, () => {
+  if (formData.value.name) {
+    // toneType不需要音调，最后将空格替换为空串
+    formData.value.namePinyin = pinyin(formData.value.name, {toneType: "none"}).replaceAll(" ", "")
+    formData.value.namePy = pinyin(formData.value.name, {toneType: "none", pattern: "first"}).replaceAll(" ", "")
+  }
+}, {immediate: true})
 </script>
 
 <style scoped>
