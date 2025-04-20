@@ -28,10 +28,10 @@ public class TrainSeatDTO {
     @NotNull(message = "厢号不能为空")
     private Integer carriageIndex;
     @NotBlank(message = "排号不能为空")
-    private String row;
+    private String rowOrder;
     @NotNull(message = "列号不能为空")
     private SeatColEnum col;
-    @NotNull(message = "座位类型不能为空")
+    @NotNull(message = "车座类型不能为空")
     private SeatTypeEnum seatType;
     @NotNull(message = "同车厢坐序不能为空")
     private Integer carriageSeatIndex;

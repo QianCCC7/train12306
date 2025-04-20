@@ -25,8 +25,8 @@ public class TrainCarriageDTO {
     @NotBlank(message = "车次编码不能为空")
     private String trainCode;
     @NotNull(message = "厢号不能为空")
-    private Integer index;
-    @NotNull(message = "座位类型不能为空")
+    private Integer indexOrder;
+    @NotNull(message = "车座类型不能为空")
     private SeatTypeEnum seatType;
     @NotNull(message = "座位数不能为空")
     private Integer seatCount;

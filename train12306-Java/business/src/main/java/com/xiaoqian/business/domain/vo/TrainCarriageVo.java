@@ -28,7 +28,7 @@ public class TrainCarriageVo {
 
     private String trainCode;
 
-    private Integer index;
+    private Integer indexOrder;
 
     private SeatTypeEnum seatType;
 
