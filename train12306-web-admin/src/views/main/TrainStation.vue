@@ -42,11 +42,7 @@
           layout="vertical"
       >
         <a-form-item name="trainCode" label="车次编码">
-          <a-select v-model:value="formData.trainCode" show-search :filter-option="filterTrainCodeOption">
-            <a-select-option v-for="item in trainList" :key="item.code" :value="item.code" :label="item.code + item.start + item.end">
-              {{item.code}} | {{item.start}} ~ {{item.end}}
-            </a-select-option>
-          </a-select>
+          <train-select v-model="formData.trainCode" @updateModalValue="trainCodeChange" width="300px"></train-select>
         </a-form-item>
         <a-form-item name="indexOrder" label="站序">
           <a-input v-model:value="formData.indexOrder" placeholder="请输入站序" />
@@ -80,6 +76,7 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {pinyin} from "pinyin-pro";
+import TrainSelect from "@/components/Train-Select.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -166,7 +163,6 @@ const pagination = reactive({
 })
 const typeMap = window.TRAIN_TYPE_ARRAY
 const loading = ref(false)
-const trainList = ref([])
 
 const handleAdd = () => {
   formData.value = {}
@@ -252,29 +248,12 @@ const handleDelete = (record) => {
     message.error('删除车次历经车站出现错误:', err);
   })
 }
-
-// 获取所有的车次
-const getAllTrains = () => {
-  axios.get(`/business/admin/train/getAllTrains`).then(res => {
-    if (res.data.code === 200) {
-      trainList.value = res.data.data;
-      console.log(res.data.data)
-    } else {
-      message.error(res.data.msg)
-    }
-  }).catch(err => {
-    message.error('删除车次历经车站出现错误:', err);
-  })
-}
-// 车次过滤
-const filterTrainCodeOption = (input, option) => {
-  // 通过自定义label属性进行数据过滤
-  return option.label.toLowerCase().indexOf(input.toLowerCase()) !== -1
+const trainCodeChange = (value) => {
+  console.log('当前选中了车次', value) // value是子组件通过自定义事件传递的数据
 }
 
 onMounted(() => {
   listTrainStations(pagination.current, pagination.pageSize)
-  getAllTrains();
 })
 watch(() => formData.value.name, () => {
   if (formData.value.name) {
