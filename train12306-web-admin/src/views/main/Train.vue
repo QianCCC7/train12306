@@ -50,7 +50,7 @@
           </a-select>
         </a-form-item>
         <a-form-item name="start" label="始发站">
-          <a-input v-model:value="formData.start" placeholder="请输入始发站" />
+          <staion-select v-model="formData.start" width="300px"></staion-select>
         </a-form-item>
         <a-form-item name="startPinyin" label="始发站拼音">
           <a-input v-model:value="formData.startPinyin" placeholder="请输入始发站拼音" disabled />
@@ -59,7 +59,7 @@
           <a-time-picker v-model:value="formData.startTime" value-format="HH:mm:ss" />
         </a-form-item>
         <a-form-item name="end" label="终点站">
-          <a-input v-model:value="formData.end" placeholder="请输入终点站" />
+          <staion-select v-model="formData.end" width="300px"></staion-select>
         </a-form-item>
         <a-form-item name="endPinyin" label="终点站拼音">
           <a-input v-model:value="formData.endPinyin" placeholder="请输入终点站拼音" disabled />
@@ -78,6 +78,7 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {pinyin} from "pinyin-pro";
+import StaionSelect from "@/components/StaionSelect.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);

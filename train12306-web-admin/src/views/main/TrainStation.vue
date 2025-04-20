@@ -48,7 +48,7 @@
           <a-input v-model:value="formData.indexOrder" placeholder="请输入站序" />
         </a-form-item>
         <a-form-item name="name" label="站名">
-          <a-input v-model:value="formData.name" placeholder="请输入站名" />
+          <staion-select v-model="formData.name" width="300px"></staion-select>
         </a-form-item>
         <a-form-item name="namePinyin" label="站名拼音">
           <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" disabled />
@@ -77,6 +77,7 @@ import axios from "axios";
 import {message} from "ant-design-vue";
 import {pinyin} from "pinyin-pro";
 import TrainSelect from "@/components/TrainSelect.vue";
+import StaionSelect from "@/components/StaionSelect.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);

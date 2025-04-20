@@ -30,7 +30,7 @@ const getAllTrains = () => {
       message.error(res.data.msg)
     }
   }).catch(err => {
-    message.error('删除车次历经车站出现错误:', err);
+    message.error('获取所有车次出现错误:', err);
   })
 }
 // 车次过滤
