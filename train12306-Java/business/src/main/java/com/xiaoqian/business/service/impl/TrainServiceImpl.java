@@ -58,6 +58,14 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
     }
 
     @Override
+    public ResponseResult<List<TrainVo>> getAllTrains(TrainQueryDTO queryDTO) {
+        List<Train> trainList = lambdaQuery().orderByAsc(Train::getCode).list();
+        List<TrainVo> trainVoList = BeanUtil.copyToList(trainList, TrainVo.class);
+
+        return ResponseResult.okResult(trainVoList);
+    }
+
+    @Override
     public ResponseResult<Void> deleteById(Long id) {
         removeById(id);
         return ResponseResult.okEmptyResult();
