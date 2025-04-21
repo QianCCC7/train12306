@@ -8,6 +8,8 @@ import com.xiaoqian.business.domain.vo.TrainCarriageVo;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 火车车厢 服务类
@@ -23,4 +25,6 @@ public interface ITrainCarriageService extends IService<TrainCarriage> {
     ResponseResult<PageVo<TrainCarriageVo>> listTrainCarriages(TrainCarriageQueryDTO queryDTO);
 
     ResponseResult<Void> deleteById(Long id);
+
+    List<TrainCarriage> selectByTrainCode(String trainCode);
 }

@@ -27,4 +27,6 @@ public interface ITrainService extends IService<Train> {
     ResponseResult<Void> deleteById(Long id);
 
     ResponseResult<List<TrainVo>> getAllTrains();
+
+    ResponseResult<Void> generateTrainSeats(String trainCode);
 }

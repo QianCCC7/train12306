@@ -46,4 +46,9 @@ public class TrainController {
     public ResponseResult<Void> deleteById(@PathVariable("id") Long id) {
         return trainService.deleteById(id);
     }
+
+    @GetMapping("/generateTrainSeats/{trainCode}")
+    public ResponseResult<Void> generateTrainSeats(@PathVariable("trainCode") String trainCode) {
+        return trainService.generateTrainSeats(trainCode);
+    }
 }

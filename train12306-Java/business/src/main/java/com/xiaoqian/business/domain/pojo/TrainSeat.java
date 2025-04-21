@@ -8,8 +8,10 @@ import java.io.Serializable;
 
 import com.xiaoqian.business.enums.SeatColEnum;
 import com.xiaoqian.business.enums.SeatTypeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,6 +26,8 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("train_seat")
+@AllArgsConstructor
+@NoArgsConstructor
 public class TrainSeat implements Serializable {
 
     private static final long serialVersionUID = 1L;
