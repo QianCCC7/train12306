@@ -4,6 +4,7 @@
     <div class="header">
       <h2>车座管理</h2>
       <div class="button-group">
+        <train-select v-model="queryParams.trainCode" width="400px"></train-select>
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
@@ -146,6 +147,7 @@ const pagination = reactive({
 const colMap = window.TRAIN_SEAT_COL_ARRAY
 const typeMap = window.TRAIN_SEAT_TYPE_ARRAY
 const loading = ref(false)
+const queryParams = ref({})
 
 const handleAdd = () => {
   formData.value = {}
@@ -188,7 +190,7 @@ const resetForm = () => {
 const listTrainSeats = (pageNum, pageSize) => {
   loading.value = true;
   axios.get('/business/admin/train-seat/listTrainSeats', {
-    params: { pageNum: pageNum, pageSize: pageSize }
+    params: { pageNum: pageNum, pageSize: pageSize, trainCode: queryParams.value.trainCode }
   }).then(res => {
     loading.value = false;
     dataSource.value = res.data.data.rows
