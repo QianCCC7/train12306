@@ -53,14 +53,14 @@
             <a-select-option v-for="item in typeMap" :key="item.key" :value="item.key">{{item.value}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item name="seatCount" label="座位数">
-          <a-input v-model:value="formData.seatCount" placeholder="请输入座位数" />
-        </a-form-item>
         <a-form-item name="rowCount" label="座位排数">
           <a-input v-model:value="formData.rowCount" placeholder="请输入座位排数" />
         </a-form-item>
         <a-form-item name="colCount" label="座位列数">
-          <a-input v-model:value="formData.colCount" placeholder="请输入座位列数" />
+          <a-input v-model:value="formData.colCount" placeholder="座位列数" disabled/>
+        </a-form-item>
+        <a-form-item name="seatCount" label="总座位数">
+          <a-input v-model:value="formData.seatCount" placeholder="总座位数" disabled/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue';
+import {ref, reactive, onMounted, watch} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
@@ -144,6 +144,7 @@ const pagination = reactive({
 const typeMap = window.TRAIN_SEAT_TYPE_ARRAY
 const loading = ref(false)
 const queryParams = ref({})
+const seatColMap = window.TRAIN_SEAT_COL_ARRAY
 
 const handleAdd = () => {
   formData.value = {}
@@ -232,6 +233,30 @@ const handleDelete = (record) => {
 
 onMounted(() => {
   listTrainCarriages(pagination.current, pagination.pageSize)
+})
+watch(() => formData.value.seatType, () => {
+  if (formData.value.seatType) {
+    if (formData.value.rowCount) {
+      const count = seatColMap.filter(seatCol => seatCol.type === formData.value.seatType).length
+      formData.value.colCount = count
+      formData.value.seatCount = formData.value.rowCount * count
+    }
+  } else {
+    formData.value.colCount = 0
+    formData.value.seatCount = 0
+  }
+})
+watch(() => formData.value.rowCount, () => {
+  if (formData.value.rowCount) {
+    if (formData.value.seatType) {
+      const count = seatColMap.filter(seatCol => seatCol.type === formData.value.seatType).length
+      formData.value.colCount = count
+      formData.value.seatCount = formData.value.rowCount * count
+    }
+  } else {
+    formData.value.colCount = 0
+    formData.value.seatCount = 0
+  }
 })
 </script>
 

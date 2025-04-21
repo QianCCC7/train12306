@@ -13,14 +13,14 @@ TRAIN_SEAT_TYPE_ARRAY = [
 ]
 // 具体座位信息
 TRAIN_SEAT_COL_ARRAY = [
-    {key: 'A1', value: '一等座座位A'},
-    {key: 'C1', value: '一等座座位C'},
-    {key: 'D1', value: '一等座座位D'},
-    {key: 'F1', value: '一等座座位F'},
+    {key: 'A1', value: '一等座座位A', type: '1'},
+    {key: 'C1', value: '一等座座位C', type: '1'},
+    {key: 'D1', value: '一等座座位D', type: '1'},
+    {key: 'F1', value: '一等座座位F', type: '1'},
 
-    {key: 'A2', value: '二等座座位A'},
-    {key: 'B2', value: '二等座座位B'},
-    {key: 'C2', value: '二等座座位C'},
-    {key: 'D2', value: '二等座座位D'},
-    {key: 'F2', value: '二等座座位F'},
+    {key: 'A2', value: '二等座座位A', type: '2'},
+    {key: 'B2', value: '二等座座位B', type: '2'},
+    {key: 'C2', value: '二等座座位C', type: '2'},
+    {key: 'D2', value: '二等座座位D', type: '2'},
+    {key: 'F2', value: '二等座座位F', type: '2'},
 ]
