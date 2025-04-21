@@ -11,6 +11,8 @@ import com.xiaoqian.business.mapper.TrainStationMapper;
 import com.xiaoqian.business.service.ITrainStationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,15 @@ public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, Tra
 
     @Override
     public ResponseResult<Void> saveTrainStation(TrainStationDTO trainStationDTO) {
-        TrainStation trainStation = BeanUtil.copyProperties(trainStationDTO, TrainStation.class);
+        TrainStation trainStation = getByCodeAndIndexOrder(trainStationDTO.getTrainCode(), trainStationDTO.getIndexOrder());
+        if (trainStation != null) {
+            throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_INDEX_EXIST);
+        }
+        trainStation = getByCodeAndName(trainStationDTO.getTrainCode(), trainStationDTO.getName());
+        if (trainStation != null) {
+            throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_NAME_EXIST);
+        }
+        trainStation = BeanUtil.copyProperties(trainStationDTO, TrainStation.class);
         if (trainStationDTO.getId() == null) {
             trainStation.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
@@ -45,6 +55,16 @@ public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, Tra
         }
 
         return ResponseResult.okEmptyResult();
+    }
+
+    private TrainStation getByCodeAndIndexOrder(String trainCode, Integer indexOrder) {
+        return lambdaQuery().eq(TrainStation::getTrainCode, trainCode)
+                .eq(TrainStation::getIndexOrder, indexOrder).one();
+    }
+
+    private TrainStation getByCodeAndName(String trainCode, String name) {
+        return lambdaQuery().eq(TrainStation::getTrainCode, trainCode)
+                .eq(TrainStation::getName, name).one();
     }
 
     @Override

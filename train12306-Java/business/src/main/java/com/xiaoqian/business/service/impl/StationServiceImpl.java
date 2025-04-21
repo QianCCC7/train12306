@@ -11,6 +11,8 @@ import com.xiaoqian.business.mapper.StationMapper;
 import com.xiaoqian.business.service.IStationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,11 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
 
     @Override
     public ResponseResult<Void> saveStation(StationDTO stationDTO) {
-        Station station = BeanUtil.copyProperties(stationDTO, Station.class);
+        Station station = getByName(stationDTO.getName());
+        if (station != null) {
+            throw new BizException(HttpCodeEnum.STATION_NAME_EXIST);
+        }
+        station = BeanUtil.copyProperties(stationDTO, Station.class);
         if (stationDTO.getId() == null) {
             station.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
@@ -44,6 +50,10 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
         }
 
         return ResponseResult.okEmptyResult();
+    }
+
+    private Station getByName(String name) {
+        return lambdaQuery().eq(Station::getName, name).one();
     }
 
     @Override

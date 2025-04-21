@@ -18,6 +18,8 @@ import com.xiaoqian.business.service.ITrainSeatService;
 import com.xiaoqian.business.service.ITrainService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +46,11 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
 
     @Override
     public ResponseResult<Void> saveTrain(TrainDTO trainDTO) {
-        Train train = BeanUtil.copyProperties(trainDTO, Train.class);
+        Train train = getByTrainCode(trainDTO.getCode());
+        if (train != null) {
+            throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
+        }
+        train = BeanUtil.copyProperties(trainDTO, Train.class);
         if (trainDTO.getId() == null) {
             train.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
@@ -57,6 +63,10 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
         }
 
         return ResponseResult.okEmptyResult();
+    }
+
+    private Train getByTrainCode(String trainCode) {
+        return lambdaQuery().eq(Train::getCode, trainCode).one();
     }
 
     @Override

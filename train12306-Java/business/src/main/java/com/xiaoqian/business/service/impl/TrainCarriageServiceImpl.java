@@ -11,6 +11,8 @@ import com.xiaoqian.business.mapper.TrainCarriageMapper;
 import com.xiaoqian.business.service.ITrainCarriageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,11 @@ public class TrainCarriageServiceImpl extends ServiceImpl<TrainCarriageMapper, T
 
     @Override
     public ResponseResult<Void> saveTrainCarriage(TrainCarriageDTO trainCarriageDTO) {
-        TrainCarriage trainCarriage = BeanUtil.copyProperties(trainCarriageDTO, TrainCarriage.class);
+        TrainCarriage trainCarriage = getByCodeAndIndexOrder(trainCarriageDTO.getTrainCode(), trainCarriageDTO.getIndexOrder());
+        if (trainCarriage != null) {
+            throw new BizException(HttpCodeEnum.TRAIN_CARRIAGE_CODE_INDEX_EXIST);
+        }
+        trainCarriage = BeanUtil.copyProperties(trainCarriageDTO, TrainCarriage.class);
         if (trainCarriageDTO.getId() == null) {
             trainCarriage.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
@@ -45,6 +51,12 @@ public class TrainCarriageServiceImpl extends ServiceImpl<TrainCarriageMapper, T
         }
 
         return ResponseResult.okEmptyResult();
+    }
+
+    private TrainCarriage getByCodeAndIndexOrder(String trainCode, Integer indexOrder) {
+        return lambdaQuery().eq(TrainCarriage::getTrainCode, trainCode)
+                .eq(TrainCarriage::getIndexOrder, indexOrder)
+                .one();
     }
 
     @Override
