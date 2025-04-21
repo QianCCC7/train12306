@@ -49,19 +49,19 @@
           <a-input v-model:value="formData.indexOrder" placeholder="请输入站序" />
         </a-form-item>
         <a-form-item name="name" label="站名">
-          <staion-select v-model="formData.name" width="300px"></staion-select>
+          <station-select v-model="formData.name" width="300px"></station-select>
         </a-form-item>
         <a-form-item name="namePinyin" label="站名拼音">
           <a-input v-model:value="formData.namePinyin" placeholder="请输入站名拼音" disabled />
         </a-form-item>
         <a-form-item name="inTime" label="进站时间">
-          <a-time-picker v-model:value="formData.inTime" value-format="HH:mm:ss" />
+          <a-time-picker v-model:value="formData.inTime" value-format="HH:mm:ss" placeholder="进站时间"/>
         </a-form-item>
         <a-form-item name="outTime" label="出站时间">
-          <a-time-picker v-model:value="formData.outTime" value-format="HH:mm:ss" />
+          <a-time-picker v-model:value="formData.outTime" value-format="HH:mm:ss" placeholder="出站时间"/>
         </a-form-item>
         <a-form-item name="stopTime" label="停站时长">
-          <a-time-picker v-model:value="formData.stopTime" value-format="HH:mm:ss" />
+          <a-time-picker v-model:value="formData.stopTime" value-format="HH:mm:ss" disabled placeholder="停站时长"/>
         </a-form-item>
         <a-form-item name="km" label="里程">
           <a-input v-model:value="formData.km" placeholder="请输入里程" />
@@ -78,7 +78,8 @@ import axios from "axios";
 import {message} from "ant-design-vue";
 import {pinyin} from "pinyin-pro";
 import TrainSelect from "@/components/TrainSelect.vue";
-import StaionSelect from "@/components/StaionSelect.vue";
+import StationSelect from "@/components/StationSelect.vue";
+import dayjs from 'dayjs'
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -263,6 +264,18 @@ watch(() => formData.value.name, () => {
     formData.value.namePinyin = pinyin(formData.value.name, {toneType: "none"}).replaceAll(" ", "")
   } else {
     formData.value.namePinyin = ''
+  }
+}, {immediate: true})
+watch(() => formData.value.inTime, () => {
+  if (formData.value.outTime) {
+    let diff = dayjs(formData.value.outTime, 'HH:mm:ss').diff(dayjs(formData.value.inTime, 'HH:mm:ss'), 'seconds')
+    formData.value.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss')
+  }
+}, {immediate: true})
+watch(() => formData.value.outTime, () => {
+  if (formData.value.inTime) {
+    let diff = dayjs(formData.value.outTime, 'HH:mm:ss').diff(dayjs(formData.value.inTime, 'HH:mm:ss'), 'seconds')
+    formData.value.stopTime = dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss')
   }
 }, {immediate: true})
 </script>
