@@ -4,11 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.TrainStationDTO;
-import com.xiaoqian.business.domain.pojo.Train;
 import com.xiaoqian.business.domain.pojo.TrainStation;
 import com.xiaoqian.business.domain.query.TrainStationQueryDTO;
 import com.xiaoqian.business.domain.vo.TrainStationVo;
-import com.xiaoqian.business.domain.vo.TrainVo;
 import com.xiaoqian.business.mapper.TrainStationMapper;
 import com.xiaoqian.business.service.ITrainStationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +14,7 @@ import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,8 +50,12 @@ public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, Tra
     @Override
     public ResponseResult<PageVo<TrainStationVo>> listTrainStations(TrainStationQueryDTO query) {
         Page<TrainStation> page = new Page<>(query.getPageNum(), query.getPageSize());
-        page(page, new LambdaQueryWrapper<TrainStation>()
-                .orderByAsc(true, TrainStation::getId));
+        LambdaQueryWrapper<TrainStation> queryWrapper = new LambdaQueryWrapper<TrainStation>()
+                .eq(StringUtils.hasText(query.getTrainCode()), TrainStation::getTrainCode, query.getTrainCode())
+                .orderByAsc(true, TrainStation::getTrainCode)
+                .orderByAsc(true, TrainStation::getIndexOrder);
+
+        page(page, queryWrapper);
         List<TrainStation> trainStationList = page.getRecords();
         List<TrainStationVo> trainStationVoList = BeanUtil.copyToList(trainStationList, TrainStationVo.class);
 

@@ -14,6 +14,7 @@ import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,8 +50,11 @@ public class TrainCarriageServiceImpl extends ServiceImpl<TrainCarriageMapper, T
     @Override
     public ResponseResult<PageVo<TrainCarriageVo>> listTrainCarriages(TrainCarriageQueryDTO query) {
         Page<TrainCarriage> page = new Page<>(query.getPageNum(), query.getPageSize());
-        page(page, new LambdaQueryWrapper<TrainCarriage>()
-                .orderByAsc(true, TrainCarriage::getId));
+        LambdaQueryWrapper<TrainCarriage> queryWrapper = new LambdaQueryWrapper<TrainCarriage>()
+                .eq(StringUtils.hasText(query.getTrainCode()), TrainCarriage::getTrainCode, query.getTrainCode())
+                .orderByAsc(true, TrainCarriage::getTrainCode)
+                .orderByAsc(true, TrainCarriage::getIndexOrder);
+        page(page, queryWrapper);
         List<TrainCarriage> trainCarriageList = page.getRecords();
         List<TrainCarriageVo> trainCarriageVoList = BeanUtil.copyToList(trainCarriageList, TrainCarriageVo.class);
 
