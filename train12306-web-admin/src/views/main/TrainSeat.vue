@@ -8,23 +8,23 @@
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
-        <a-button type="primary" @click="handleAdd" class="add-button">
-          <plus-outlined /> 新增车座
-        </a-button>
+<!--        <a-button type="primary" @click="handleAdd" class="add-button">-->
+<!--          <plus-outlined /> 新增车座-->
+<!--        </a-button>-->
       </div>
     </div>
     <div>
       <a-table :dataSource="dataSource" :columns="columns" :pagination="pagination" @change="handleTableChange" :loading="loading">
-        <template #bodyCell="{ column,  record }">
-          <template v-if="column.dataIndex === 'operation'">
-            <a-space>
-              <a @click="handleEdit(record)">编辑</a>
-              <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">
-                <a style="color: red">删除</a>
-              </a-popconfirm>
-            </a-space>
-          </template>
-        </template>
+<!--        <template #bodyCell="{ column,  record }">-->
+<!--          <template v-if="column.dataIndex === 'operation'">-->
+<!--            <a-space>-->
+<!--              <a @click="handleEdit(record)">编辑</a>-->
+<!--              <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">-->
+<!--                <a style="color: red">删除</a>-->
+<!--              </a-popconfirm>-->
+<!--            </a-space>-->
+<!--          </template>-->
+<!--        </template>-->
       </a-table>
     </div>
 
@@ -72,7 +72,6 @@
 
 <script setup>
 import {ref, reactive, onMounted} from 'vue';
-import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import TrainSelect from "@/components/TrainSelect.vue";
@@ -112,11 +111,11 @@ const columns = [
     dataIndex: 'carriageSeatIndex',
     key: 'carriageSeatIndex',
   },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-  },
+  // {
+  //   title: '操作',
+  //   dataIndex: 'operation',
+  //   key: 'operation',
+  // },
 ]
 const formData = ref({})
 const rules = {
@@ -149,35 +148,35 @@ const typeMap = window.TRAIN_SEAT_TYPE_ARRAY
 const loading = ref(false)
 const queryParams = ref({})
 
-const handleAdd = () => {
-  formData.value = {}
-  visible.value = true;
-}
+// const handleAdd = () => {
+//   formData.value = {}
+//   visible.value = true;
+// }
 
-const handleOk = () => {
-  formRef.value.validate().then(() => {
-    confirmLoading.value = true;
-    axios.post('/business/admin/train-seat/saveTrainSeat', formData.value)
-        .then(res => {
-          if (res.data.code === 200) {
-            message.success("保存成功");
-            resetForm();
-            formData.value = {}
-            visible.value = false;
-            listTrainSeats(pagination.current, pagination.pageSize)
-          } else {
-            message.error(res.data.msg);
-          }
-        })
-        .catch(err => {
-          message.error(err);
-        })
-    confirmLoading.value = false;
-  }).catch(error => {
-    confirmLoading.value = false;
-    message.error('验证失败:', error);
-  });
-};
+// const handleOk = () => {
+//   formRef.value.validate().then(() => {
+//     confirmLoading.value = true;
+//     axios.post('/business/admin/train-seat/saveTrainSeat', formData.value)
+//         .then(res => {
+//           if (res.data.code === 200) {
+//             message.success("保存成功");
+//             resetForm();
+//             formData.value = {}
+//             visible.value = false;
+//             listTrainSeats(pagination.current, pagination.pageSize)
+//           } else {
+//             message.error(res.data.msg);
+//           }
+//         })
+//         .catch(err => {
+//           message.error(err);
+//         })
+//     confirmLoading.value = false;
+//   }).catch(error => {
+//     confirmLoading.value = false;
+//     message.error('验证失败:', error);
+//   });
+// };
 
 const handleCancel = () => {
   resetForm()
@@ -211,35 +210,35 @@ const handleRefresh = () => {
   listTrainSeats(1, pagination.pageSize)
 }
 // 编辑
-const handleEdit = (record) => {
-  let seatType = null;
-  let colType = null;
-  for (const e of typeMap) {
-    if (e.value === record.seatType) {
-      seatType = e.key
-      break
-    }
-  }
-  for (const e of colMap) {
-    if (e.value === record.col) {
-      colType = e.key
-      break
-    }
-  }
-  formData.value = {...record, seatType: seatType, col: colType};
-  visible.value = true;
-}
+// const handleEdit = (record) => {
+//   let seatType = null;
+//   let colType = null;
+//   for (const e of typeMap) {
+//     if (e.value === record.seatType) {
+//       seatType = e.key
+//       break
+//     }
+//   }
+//   for (const e of colMap) {
+//     if (e.value === record.col) {
+//       colType = e.key
+//       break
+//     }
+//   }
+//   formData.value = {...record, seatType: seatType, col: colType};
+//   visible.value = true;
+// }
 // 删除
-const handleDelete = (record) => {
-  axios.delete(`/business/admin/train-seat/deleteById/${record.id}`).then(res => {
-    if (res.data.code === 200) {
-      message.success('删除成功');
-      listTrainSeats(pagination.current, pagination.pageSize)
-    }
-  }).catch(err => {
-    message.error('删除座位列号出现错误:', err);
-  })
-}
+// const handleDelete = (record) => {
+//   axios.delete(`/business/admin/train-seat/deleteById/${record.id}`).then(res => {
+//     if (res.data.code === 200) {
+//       message.success('删除成功');
+//       listTrainSeats(pagination.current, pagination.pageSize)
+//     }
+//   }).catch(err => {
+//     message.error('删除座位列号出现错误:', err);
+//   })
+// }
 
 onMounted(() => {
   listTrainSeats(pagination.current, pagination.pageSize)

@@ -45,7 +45,7 @@
           layout="vertical"
       >
         <a-form-item name="code" label="车次编码">
-          <a-input v-model:value="formData.code" placeholder="请输入车次编码" />
+          <a-input v-model:value="formData.code" placeholder="请输入车次编码" :disabled="!!formData.id"/>
         </a-form-item>
         <a-form-item name="type" label="车次类型">
           <a-select v-model:value="formData.type" placeholder="请选择车次类型">
