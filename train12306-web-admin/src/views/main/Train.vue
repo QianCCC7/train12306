@@ -279,6 +279,8 @@ watch(() => formData.value.start, () => {
 watch(() => formData.value.end, () => {
   if (formData.value.end) {
     formData.value.endPinyin = pinyin(formData.value.end, {toneType: "none"}).replaceAll(" ", "")
+  } else {
+    formData.value.endPinyin = ''
   }
 }, {immediate: true})
 </script>

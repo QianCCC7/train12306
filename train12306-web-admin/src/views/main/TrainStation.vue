@@ -261,6 +261,8 @@ onMounted(() => {
 watch(() => formData.value.name, () => {
   if (formData.value.name) {
     formData.value.namePinyin = pinyin(formData.value.name, {toneType: "none"}).replaceAll(" ", "")
+  } else {
+    formData.value.namePinyin = ''
   }
 }, {immediate: true})
 </script>

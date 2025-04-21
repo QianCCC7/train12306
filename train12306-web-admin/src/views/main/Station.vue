@@ -195,6 +195,9 @@ watch(() => formData.value.name, () => {
     // toneType不需要音调，最后将空格替换为空串
     formData.value.namePinyin = pinyin(formData.value.name, {toneType: "none"}).replaceAll(" ", "")
     formData.value.namePy = pinyin(formData.value.name, {toneType: "none", pattern: "first"}).replaceAll(" ", "")
+  } else {
+    formData.value.namePinyin = ''
+    formData.value.namePy = ''
   }
 }, {immediate: true})
 </script>
