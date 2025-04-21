@@ -20,6 +20,9 @@
               <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">
                 <a style="color: red">删除</a>
               </a-popconfirm>
+              <a-popconfirm title="生成座位将删除已有记录，确认生成座位?" @confirm="generateTrainSeats(record)" ok-text="确认" cancel-text="取消">
+                <a style="color: green">生成座位</a>
+              </a-popconfirm>
             </a-space>
           </template>
         </template>
@@ -245,6 +248,20 @@ const handleDelete = (record) => {
     if (res.data.code === 200) {
       message.success('删除成功');
       listTrains(pagination.current, pagination.pageSize)
+    }
+  }).catch(err => {
+    message.error('删除车次出现错误:', err);
+  })
+}
+// 生成座位
+const generateTrainSeats = (record) => {
+  loading.value = true
+  axios.get(`/business/admin/train/generateTrainSeats/${record.code}`).then(res => {
+    loading.value = false;
+    if (res.data.code === 200) {
+      message.success('生成成功');
+    } else {
+      message.success('生成失败：', res.data.msg);
     }
   }).catch(err => {
     message.error('删除车次出现错误:', err);
