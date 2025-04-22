@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: batch
+  datasource:
+    url: jdbc:mysql://localhost:3306/train_batch?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: xiaoqian666
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  port: 8003
+  servlet:
+    context-path: /batch # 路由前缀，方便后期网关管理路由
+logging:
+  level:
+    com.xiaoqian: debug
