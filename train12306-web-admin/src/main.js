@@ -19,7 +19,7 @@ app.use(store)
 
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 axios.interceptors.request.use(config => {
-    console.log('请求参数：', config.data);
+    console.log('请求参数：', config.data ? config.data : '无');
     return config;
 }, error => {
     return Promise.reject(error);

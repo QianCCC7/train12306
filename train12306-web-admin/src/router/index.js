@@ -66,6 +66,14 @@ const routes = [
           title: '车座管理'
         }
       },
+      {
+        path: 'batch-job',
+        name: 'batch-job',
+        component: () => import('../views/main/Job.vue'),
+        meta: {
+          title: '任务管理'
+        }
+      },
     ],
     meta: {
       title: '首页',
