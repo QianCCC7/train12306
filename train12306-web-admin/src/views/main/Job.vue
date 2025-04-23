@@ -22,9 +22,7 @@
                   cancel-text="否"
                   @confirm="handleRun(record)"
               >
-                <a-button type="primary" size="small">
-                  手动执行
-                </a-button>
+                <a style="color: green">手动执行一次</a>
               </a-popconfirm>
               <a-popconfirm
                   title="确定重启？"
@@ -32,9 +30,7 @@
                   cancel-text="否"
                   @confirm="handleResume(record)"
               >
-                <a-button v-show="record.state === 'PAUSED' || record.state === 'ERROR'" type="primary" size="small">
-                  重启
-                </a-button>
+                <a style="color: hotpink" v-show="record.state === 'PAUSED' || record.state === 'ERROR'">重启</a>
               </a-popconfirm>
               <a-popconfirm
                   title="确定暂停？"

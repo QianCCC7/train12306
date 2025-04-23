@@ -21,33 +21,33 @@
           <user-outlined />&nbsp; 关于
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/station">
-        <router-link to="/station">
-          <user-outlined />&nbsp; 车站管理
+      <a-menu-item key="/base/station">
+        <router-link to="/base/station">
+          <CarOutlined />&nbsp; 车站管理
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/train">
-        <router-link to="/train">
-          <user-outlined />&nbsp; 车次管理
+      <a-menu-item key="/base/train">
+        <router-link to="/base/train">
+          <CarOutlined />&nbsp; 车次管理
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/train-station">
-        <router-link to="/train-station">
-          <user-outlined />&nbsp; 历经车站管理
+      <a-menu-item key="/base/train-station">
+        <router-link to="/base/train-station">
+          <CarOutlined />&nbsp; 历经车站管理
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/train-carriage">
-        <router-link to="/train-carriage">
-          <user-outlined />&nbsp; 车厢管理
+      <a-menu-item key="/base/train-carriage">
+        <router-link to="/base/train-carriage">
+          <CarOutlined />&nbsp; 车厢管理
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/train-seat">
-        <router-link to="/train-seat">
-          <user-outlined />&nbsp; 车座管理
+      <a-menu-item key="/base/train-seat">
+        <router-link to="/base/train-seat">
+          <CarOutlined />&nbsp; 车座管理
         </router-link>
       </a-menu-item>
-      <a-menu-item key="/batch-job">
-        <router-link to="/batch-job">
+      <a-menu-item key="/batch/batch-job">
+        <router-link to="/batch/batch-job">
           <user-outlined />&nbsp; 任务管理
         </router-link>
       </a-menu-item>

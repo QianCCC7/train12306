@@ -27,52 +27,64 @@ const routes = [
         }
       },
       {
-        path: 'station',
-        name: 'station',
-        component: () => import('../views/main/Station.vue'),
-        meta: {
-          title: '车站管理'
-        }
+        path: 'base/',
+        name: 'base',
+        children: [
+          {
+            path: 'station',
+            name: 'station',
+            component: () => import('../views/main/Station.vue'),
+            meta: {
+              title: '车站管理'
+            }
+          },
+          {
+            path: 'train',
+            name: 'train',
+            component: () => import('../views/main/Train.vue'),
+            meta: {
+              title: '车次管理'
+            }
+          },
+          {
+            path: 'train-station',
+            name: 'train-station',
+            component: () => import('../views/main/TrainStation.vue'),
+            meta: {
+              title: '车次历经车站管理'
+            }
+          },
+          {
+            path: 'train-carriage',
+            name: 'train-carriage',
+            component: () => import('../views/main/TrainCarriage.vue'),
+            meta: {
+              title: '车厢管理'
+            }
+          },
+          {
+            path: 'train-seat',
+            name: 'train-seat',
+            component: () => import('../views/main/TrainSeat.vue'),
+            meta: {
+              title: '车座管理'
+            }
+          },
+        ]
       },
       {
-        path: 'train',
-        name: 'train',
-        component: () => import('../views/main/Train.vue'),
-        meta: {
-          title: '车次管理'
-        }
-      },
-      {
-        path: 'train-station',
-        name: 'train-station',
-        component: () => import('../views/main/TrainStation.vue'),
-        meta: {
-          title: '车次历经车站管理'
-        }
-      },
-      {
-        path: 'train-carriage',
-        name: 'train-carriage',
-        component: () => import('../views/main/TrainCarriage.vue'),
-        meta: {
-          title: '车厢管理'
-        }
-      },
-      {
-        path: 'train-seat',
-        name: 'train-seat',
-        component: () => import('../views/main/TrainSeat.vue'),
-        meta: {
-          title: '车座管理'
-        }
-      },
-      {
-        path: 'batch-job',
-        name: 'batch-job',
-        component: () => import('../views/main/Job.vue'),
-        meta: {
-          title: '任务管理'
-        }
+        path: 'batch/',
+        name: 'batch',
+        children: [
+          {
+            path: 'batch-job',
+            name: 'batch-job',
+            component: () => import('../views/main/Job.vue'),
+            meta: {
+              title: '任务管理'
+            }
+          },
+        ]
       },
     ],
     meta: {
