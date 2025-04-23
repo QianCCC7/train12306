@@ -3,9 +3,8 @@ package com.xiaoqian.batch.config;
 import com.xiaoqian.batch.job.TestJob;
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class QuartzConfig {
     // 声明一个任务
     @Bean
