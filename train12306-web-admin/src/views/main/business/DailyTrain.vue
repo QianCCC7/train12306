@@ -11,6 +11,9 @@
         <a-button type="primary" @click="handleAdd" class="add-button">
           <plus-outlined /> 新增每日车次
         </a-button>
+        <a-button type="primary" danger @click="handleGenDailyTrain" class="add-button">
+          手动生成车次信息
+        </a-button>
       </div>
     </div>
     <div>
@@ -71,6 +74,19 @@
         </a-form-item>
         <a-form-item name="endTime" label="到站时间">
           <a-time-picker v-model:value="formData.endTime" value-format="HH:mm:ss" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+    <a-modal v-model:open="genDailyTrainVisible"
+             title="生成车次信息"
+             @ok="handleGenOk"
+             @cancel="handleGenCancel"
+             :confirmLoading="genConfirmLoading"
+             ok-text="确认"
+             cancel-text="取消">
+      <a-form :model="genFormData">
+        <a-form-item name="date" label="日期">
+          <a-date-picker v-model:value="genFormData.date" value-format="YYYY-MM-DD" placeholder="请选择日期"/>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -181,6 +197,9 @@ const pagination = reactive({
 const typeMap = window.TRAIN_TYPE_ARRAY
 const loading = ref(false)
 const queryParams = ref({})
+const genDailyTrainVisible = ref(false)
+const genFormData = ref({})
+const genConfirmLoading = ref(false)
 
 const handleAdd = () => {
   formData.value = {}
@@ -281,6 +300,32 @@ const trainCodeChange = (train) => {
   }
   t.type = type
   formData.value = Object.assign(formData.value, t)
+}
+
+const handleGenDailyTrain = () => {
+  genDailyTrainVisible.value = true;
+}
+
+const handleGenOk = () => {
+  genConfirmLoading.value = true;
+  let date = genFormData.value.date
+  axios.get(`/business/admin/daily-train/generateDailyTrain/${date}`).then(res => {
+    if (res.data.code === 200) {
+      genDailyTrainVisible.value = false;
+      message.success('生成成功');
+      listDailyTrainPage(pagination.current, pagination.pageSize)
+    } else {
+      message.error(`生成失败: ${res.data.msg}`);
+    }
+  }).catch(err => {
+    message.error(`生成车次信息出现错误: ${err.message || err}`);
+  }).finally(() => {
+    genConfirmLoading.value = false;
+  })
+}
+
+const handleGenCancel = () => {
+  genDailyTrainVisible.value = false;
 }
 
 onMounted(() => {

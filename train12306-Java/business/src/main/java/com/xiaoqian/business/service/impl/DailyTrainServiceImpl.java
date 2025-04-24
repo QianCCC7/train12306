@@ -102,7 +102,8 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
         for (Train train : trainList) {
             genDailyTrain(train, date);
         }
-        return null;
+
+        return ResponseResult.okEmptyResult();
     }
 
     private void genDailyTrain(Train train, LocalDate date) {
