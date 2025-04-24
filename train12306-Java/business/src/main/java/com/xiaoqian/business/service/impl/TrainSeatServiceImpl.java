@@ -67,4 +67,8 @@ public class TrainSeatServiceImpl extends ServiceImpl<TrainSeatMapper, TrainSeat
         removeById(id);
         return ResponseResult.okEmptyResult();
     }
+
+    public List<TrainSeat> getByTrainCode(String trainCode) {
+        return lambdaQuery().eq(TrainSeat::getTrainCode, trainCode).list();
+    }
 }

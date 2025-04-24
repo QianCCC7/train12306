@@ -9,11 +9,8 @@ import com.xiaoqian.business.domain.pojo.Train;
 import com.xiaoqian.business.domain.query.DailyTrainQueryDTO;
 import com.xiaoqian.business.domain.vo.DailyTrainVo;
 import com.xiaoqian.business.mapper.DailyTrainMapper;
-import com.xiaoqian.business.service.IDailyTrainCarriageService;
-import com.xiaoqian.business.service.IDailyTrainService;
+import com.xiaoqian.business.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiaoqian.business.service.IDailyTrainStationService;
-import com.xiaoqian.business.service.ITrainService;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
 import com.xiaoqian.common.exception.BizException;
@@ -44,6 +41,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
     private final ITrainService trainService;
     private final IDailyTrainStationService dailyTrainStationService;
     private final IDailyTrainCarriageService dailyTrainCarriageService;
+    private final IDailyTrainSeatService dailyTrainSeatService;
 
     @Override
     public ResponseResult<Void> saveDailyTrain(DailyTrainDTO dailyTrainDTO) {
@@ -125,5 +123,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
         dailyTrainStationService.generateDailyTrainStation(train.getCode(), date);
         // 生成车次车厢信息
         dailyTrainCarriageService.generateDailyTrainCarriage(train.getCode(), date);
+        // 生成车次座位信息
+        dailyTrainSeatService.generateDailyTrainSeat(train.getCode(), date);
     }
 }
