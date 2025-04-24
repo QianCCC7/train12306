@@ -198,7 +198,7 @@ const listTrainSeats = (pageNum, pageSize) => {
     pagination.total = res.data.data.totalRecords
   }).catch(err => {
     loading.value = false;
-    message.error('加载座位列号列表错误:', err);
+    message.error(`加载列表出现错误: ${err.message || err}`);
   })
 }
 // 页码变化

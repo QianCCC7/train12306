@@ -33,7 +33,7 @@ const routes = [
           {
             path: 'station',
             name: 'station',
-            component: () => import('../views/main/Station.vue'),
+            component: () => import('../views/main/base/Station.vue'),
             meta: {
               title: '车站管理'
             }
@@ -41,7 +41,7 @@ const routes = [
           {
             path: 'train',
             name: 'train',
-            component: () => import('../views/main/Train.vue'),
+            component: () => import('../views/main/base/Train.vue'),
             meta: {
               title: '车次管理'
             }
@@ -49,7 +49,7 @@ const routes = [
           {
             path: 'train-station',
             name: 'train-station',
-            component: () => import('../views/main/TrainStation.vue'),
+            component: () => import('../views/main/base/TrainStation.vue'),
             meta: {
               title: '车次历经车站管理'
             }
@@ -57,7 +57,7 @@ const routes = [
           {
             path: 'train-carriage',
             name: 'train-carriage',
-            component: () => import('../views/main/TrainCarriage.vue'),
+            component: () => import('../views/main/base/TrainCarriage.vue'),
             meta: {
               title: '车厢管理'
             }
@@ -65,7 +65,7 @@ const routes = [
           {
             path: 'train-seat',
             name: 'train-seat',
-            component: () => import('../views/main/TrainSeat.vue'),
+            component: () => import('../views/main/base/TrainSeat.vue'),
             meta: {
               title: '车座管理'
             }
@@ -79,9 +79,23 @@ const routes = [
           {
             path: 'batch-job',
             name: 'batch-job',
-            component: () => import('../views/main/Job.vue'),
+            component: () => import('../views/main/batch/Job.vue'),
             meta: {
               title: '任务管理'
+            }
+          },
+        ]
+      },
+      {
+        path: 'business/',
+        name: 'business',
+        children: [
+          {
+            path: 'daily-train',
+            name: 'daily-train',
+            component: () => import('../views/main/business/DailyTrain.vue'),
+            meta: {
+              title: '每日车次管理'
             }
           },
         ]

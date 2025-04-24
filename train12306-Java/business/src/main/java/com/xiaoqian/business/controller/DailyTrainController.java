@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2025-04-24
  */
 @RestController
-@RequestMapping("/daily-train")
+@RequestMapping("/admin/daily-train")
 @RequiredArgsConstructor
 public class DailyTrainController {
     private final IDailyTrainService dailyTrainService;

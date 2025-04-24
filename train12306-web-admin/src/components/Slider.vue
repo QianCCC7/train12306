@@ -4,7 +4,7 @@
         v-model:selectedKeys="selectedKeys"
         mode="inline"
         :style="{ height: '100%', borderRight: 0 }"
-        :open-keys="['base', 'batch']"
+        :open-keys="['base', 'batch', 'business']"
     >
       <a-menu-item key="/welcome">
         <router-link to="/welcome">
@@ -59,6 +59,19 @@
         <a-menu-item key="/batch/batch-job">
           <router-link to="/batch/batch-job">
             <user-outlined />&nbsp; 任务管理
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu key="business">
+        <template #title>
+          <span>
+            <UnorderedListOutlined/>
+            每日业务管理
+          </span>
+        </template>
+        <a-menu-item key="/business/daily-train">
+          <router-link to="/business/daily-train">
+            <CalendarOutlined />&nbsp; 每日车次
           </router-link>
         </a-menu-item>
       </a-sub-menu>

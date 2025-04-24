@@ -167,7 +167,7 @@ const listPassengers = (pageNum, pageSize) => {
     pagination.total = res.data.data.totalRecords
   }).catch(err => {
     loading.value = false;
-    message.error('加载乘客列表错误:', err);
+    message.error(`加载乘客列表错误: ${err.message || err}`);
   })
 }
 // 页码变化
@@ -198,7 +198,7 @@ const handleDelete = (record) => {
       listPassengers(pagination.current, pagination.pageSize)
     }
   }).catch(err => {
-    message.error('删除乘客出现错误:', err);
+    message.error(`删除乘客出现错误: ${err.message || err}`);
   })
 }
 

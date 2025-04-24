@@ -167,7 +167,7 @@ const handleOk = () => {
           }
         })
         .catch(err => {
-          message.error(err);
+          message.error(`保存失败:${err.message || err}`);
         })
     confirmLoading.value = false;
   }).catch(error => {
@@ -196,7 +196,7 @@ const listTrainCarriages = (pageNum, pageSize) => {
     pagination.total = res.data.data.totalRecords
   }).catch(err => {
     loading.value = false;
-    message.error('加载车厢列表错误:', err);
+    message.error(`加载列表出现错误: ${err.message || err}`);
   })
 }
 // 页码变化
@@ -227,7 +227,7 @@ const handleDelete = (record) => {
       listTrainCarriages(pagination.current, pagination.pageSize)
     }
   }).catch(err => {
-    message.error('删除车厢出现错误:', err);
+    message.error(`删除数据出现错误: ${err.message || err}`);
   })
 }
 

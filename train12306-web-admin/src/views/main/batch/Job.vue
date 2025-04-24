@@ -170,7 +170,7 @@ const handleRun = (record) => {
       message.error('手动执行任务失败,', res.data.msg);
     }
   }).catch(err => {
-    message.error('重启任务出现错误:', err);
+    message.error(`手动执行任务出现错误: ${err.message || err}`);
   }).finally(() => {
     confirmLoading.value = false;
   })
@@ -187,7 +187,7 @@ const handleResume = (record) => {
       message.error('重启失败', res.data.msg);
     }
   }).catch(err => {
-    message.error('重启任务出现错误:', err);
+    message.error(`重启任务出现错误: ${err.message || err}`);
   }).finally(() => {
     confirmLoading.value = false;
   })
@@ -206,7 +206,7 @@ const handlePause = (record) => {
       message.error('暂停任务失败:', res.data.msg);
     }
   }).catch(err => {
-    message.error('暂停任务出现错误:', err);
+    message.error(`暂停任务出现错误: ${err.message || err}`);
   }).finally(() => {
     confirmLoading.value = false;
   })
@@ -229,7 +229,7 @@ const handleOk = () => {
           }
         })
         .catch(err => {
-          message.error(err);
+          message.error(`保存失败:${err.message || err}`);
         })
   }).catch(error => {
     message.error('验证失败:', error);
@@ -251,7 +251,7 @@ const listData = () => {
   axios.get('/batch/admin/job/query').then(res => {
     dataSource.value = res.data.data
   }).catch(err => {
-    message.error('加载任务列表错误:', err);
+    message.error(`加载列表出现错误: ${err.message || err}`);
   }).finally(() => {
     loading.value = false;
   })
@@ -278,7 +278,7 @@ const handleDelete = (record) => {
       message.error('删除任务失败:', res.data.msg);
     }
   }).catch(err => {
-    message.error('删除任务出现错误:', err);
+    message.error(`删除任务出现错误: ${err.message || err}`);
   })
 }
 

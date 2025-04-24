@@ -22,12 +22,15 @@ axios.interceptors.request.use(config => {
     console.log('请求参数：', config.data ? config.data : '无');
     return config;
 }, error => {
+    console.log(123)
     return Promise.reject(error);
 });
 axios.interceptors.response.use(res => {
     console.log('返回结果：', res.data);
     return res;
 }, error => {
+    console.log(123)
+    console.log(error)
     return Promise.reject(error);
 });
 
