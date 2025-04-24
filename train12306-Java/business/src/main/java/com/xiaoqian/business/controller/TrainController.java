@@ -51,4 +51,9 @@ public class TrainController {
     public ResponseResult<Void> generateTrainSeats(@PathVariable("trainCode") String trainCode) {
         return trainService.generateTrainSeats(trainCode);
     }
+
+    @GetMapping("/hello")
+    public ResponseResult<String> hello() {
+        return ResponseResult.okResult("hello");
+    }
 }
