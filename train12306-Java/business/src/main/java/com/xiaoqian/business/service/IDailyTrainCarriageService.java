@@ -8,6 +8,8 @@ import com.xiaoqian.business.domain.vo.DailyTrainCarriageVo;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
+import java.time.LocalDate;
+
 /**
  * <p>
  * 每日车厢 服务类
@@ -23,4 +25,6 @@ public interface IDailyTrainCarriageService extends IService<DailyTrainCarriage>
     ResponseResult<PageVo<DailyTrainCarriageVo>> listDailyTrainCarriagePage(DailyTrainCarriageQueryDTO queryDTO);
 
     ResponseResult<Void> deleteById(Long id);
+
+    void generateDailyTrainCarriage(String trainCode, LocalDate date);
 }
