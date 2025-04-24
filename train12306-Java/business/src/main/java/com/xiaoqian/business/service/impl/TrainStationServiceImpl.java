@@ -87,4 +87,8 @@ public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, Tra
         removeById(id);
         return ResponseResult.okEmptyResult();
     }
+
+    public List<TrainStation> getByCode(String code) {
+        return lambdaQuery().eq(TrainStation::getTrainCode, code).list();
+    }
 }

@@ -8,6 +8,8 @@ import com.xiaoqian.business.domain.vo.TrainStationVo;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 车次历经车站 服务类
@@ -23,4 +25,6 @@ public interface ITrainStationService extends IService<TrainStation> {
     ResponseResult<PageVo<TrainStationVo>> listTrainStations(TrainStationQueryDTO queryDTO);
 
     ResponseResult<Void> deleteById(Long id);
+
+    List<TrainStation> getByCode(String code);
 }

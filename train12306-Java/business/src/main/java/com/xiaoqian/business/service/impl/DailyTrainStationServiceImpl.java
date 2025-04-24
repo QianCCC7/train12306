@@ -5,17 +5,22 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.DailyTrainStationDTO;
 import com.xiaoqian.business.domain.pojo.DailyTrainStation;
+import com.xiaoqian.business.domain.pojo.TrainStation;
 import com.xiaoqian.business.domain.query.DailyTrainStationQueryDTO;
 import com.xiaoqian.business.domain.vo.DailyTrainStationVo;
 import com.xiaoqian.business.mapper.DailyTrainStationMapper;
 import com.xiaoqian.business.service.IDailyTrainStationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiaoqian.business.service.ITrainStationService;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +33,9 @@ import java.util.List;
  * @since 2025-04-24
  */
 @Service
+@RequiredArgsConstructor
 public class DailyTrainStationServiceImpl extends ServiceImpl<DailyTrainStationMapper, DailyTrainStation> implements IDailyTrainStationService {
+    private final ITrainStationService trainStationService;
 
     @Override
     public ResponseResult<Void> saveDailyTrainStation(DailyTrainStationDTO dailyTrainStationDTO) {
@@ -67,5 +74,31 @@ public class DailyTrainStationServiceImpl extends ServiceImpl<DailyTrainStationM
     public ResponseResult<Void> deleteById(Long id) {
         removeById(id);
         return ResponseResult.okEmptyResult();
+    }
+
+    /**
+     * 生成某日某车次历经车站信息
+     */
+    @Override
+    public void generateDailyTrainStation(String trainCode, LocalDate date) {
+        // 删除date天车次的信息
+        remove(new LambdaQueryWrapper<DailyTrainStation>()
+                .eq(DailyTrainStation::getTrainCode, trainCode)
+                .eq(DailyTrainStation::getDate, date));
+        // 查询车次历经的所有车站
+        List<TrainStation> trainStationList = trainStationService.getByCode(trainCode);
+        if (CollectionUtils.isEmpty(trainStationList)) {
+            log.debug("车次无历经车站信息");
+            return;
+        }
+        for (TrainStation trainStation : trainStationList) {
+            DailyTrainStation dailyTrainStation = BeanUtil.copyProperties(trainStation, DailyTrainStation.class);
+            dailyTrainStation.setId(SnowUtil.getSnowFlakeNextId());
+            dailyTrainStation.setDate(date);
+            LocalDateTime now = LocalDateTime.now();
+            dailyTrainStation.setCreateTime(now);
+            dailyTrainStation.setUpdateTime(now);
+            save(dailyTrainStation);
+        }
     }
 }

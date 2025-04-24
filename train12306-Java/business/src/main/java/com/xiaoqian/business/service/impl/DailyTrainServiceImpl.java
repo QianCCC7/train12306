@@ -11,6 +11,7 @@ import com.xiaoqian.business.domain.vo.DailyTrainVo;
 import com.xiaoqian.business.mapper.DailyTrainMapper;
 import com.xiaoqian.business.service.IDailyTrainService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiaoqian.business.service.IDailyTrainStationService;
 import com.xiaoqian.business.service.ITrainService;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
@@ -40,6 +41,7 @@ import java.util.List;
 @Slf4j
 public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTrain> implements IDailyTrainService {
     private final ITrainService trainService;
+    private final IDailyTrainStationService dailyTrainStationService;
 
     @Override
     public ResponseResult<Void> saveDailyTrain(DailyTrainDTO dailyTrainDTO) {
@@ -116,5 +118,8 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
         dailyTrain.setCreateTime(now);
         dailyTrain.setDate(date);
         save(dailyTrain);
+
+        // 生成车次历经车站信息
+        dailyTrainStationService.generateDailyTrainStation(train.getCode(), date);
     }
 }
