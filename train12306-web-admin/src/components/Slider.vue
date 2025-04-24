@@ -20,7 +20,7 @@
         <template #title>
           <span>
             <UnorderedListOutlined/>
-            火车管理
+            火车基础数据
           </span>
         </template>
         <a-menu-item key="/base/station">
@@ -53,7 +53,7 @@
         <template #title>
           <span>
             <UnorderedListOutlined/>
-            跑批管理
+            跑批任务管理
           </span>
         </template>
         <a-menu-item key="/batch/batch-job">
