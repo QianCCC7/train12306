@@ -74,6 +74,21 @@
             <CalendarOutlined />&nbsp; 每日车次
           </router-link>
         </a-menu-item>
+        <a-menu-item key="/business/daily-train-station">
+          <router-link to="/business/daily-train-station">
+            <CalendarOutlined />&nbsp; 每日历经车站
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="/business/daily-train-carriage">
+          <router-link to="/business/daily-train-carriage">
+            <CalendarOutlined />&nbsp; 每日车厢
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="/business/daily-train-seat">
+          <router-link to="/business/daily-train-seat">
+            <CalendarOutlined />&nbsp; 每日车座
+          </router-link>
+        </a-menu-item>
       </a-sub-menu>
     </a-menu>
   </a-layout-sider>

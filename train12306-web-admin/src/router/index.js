@@ -98,6 +98,30 @@ const routes = [
               title: '每日车次管理'
             }
           },
+          {
+            path: 'daily-train-station',
+            name: 'daily-train-station',
+            component: () => import('../views/main/business/DailyTrainStation.vue'),
+            meta: {
+              title: '每日历经车站管理'
+            }
+          },
+          {
+            path: 'daily-train-carriage',
+            name: 'daily-train-carriage',
+            component: () => import('../views/main/business/DailyTrainCarriage.vue'),
+            meta: {
+              title: '每日车厢管理'
+            }
+          },
+          {
+            path: 'daily-train-seat',
+            name: 'daily-train-seat',
+            component: () => import('../views/main/business/DailyTrainSeat.vue'),
+            meta: {
+              title: '每日车座管理'
+            }
+          },
         ]
       },
     ],
