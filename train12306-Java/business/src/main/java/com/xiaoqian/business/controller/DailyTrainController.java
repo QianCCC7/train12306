@@ -9,7 +9,10 @@ import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 
 /**
@@ -39,5 +42,10 @@ public class DailyTrainController {
     @DeleteMapping("/deleteById/{id}")
     public ResponseResult<Void> deleteById(@PathVariable("id") Long id) {
         return dailyTrainService.deleteById(id);
+    }
+
+    @GetMapping("/generateDailyTrain/{date}")
+    public ResponseResult<Void> generateDailyTrain(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        return dailyTrainService.generateDailyTrain(date);
     }
 }
