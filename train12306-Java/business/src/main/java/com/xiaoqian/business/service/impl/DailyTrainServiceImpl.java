@@ -16,6 +16,7 @@ import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,7 +61,10 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
     public ResponseResult<PageVo<DailyTrainVo>> listDailyTrainPage(DailyTrainQueryDTO queryDTO) {
         Page<DailyTrain> page = new Page<>(queryDTO.getPageNum(), queryDTO.getPageSize());
         page(page, new LambdaQueryWrapper<DailyTrain>()
-                .orderByAsc(true, DailyTrain::getId));
+                .eq(StringUtils.hasText(queryDTO.getCode()), DailyTrain::getCode, queryDTO.getCode())
+                .eq(queryDTO.getDate() != null, DailyTrain::getDate, queryDTO.getDate())
+                .orderByDesc(true, DailyTrain::getDate)
+                .orderByAsc(true, DailyTrain::getCode));
         List<DailyTrain> dailyTrainList = page.getRecords();
         List<DailyTrainVo> dailyTrainVoList = BeanUtil.copyToList(dailyTrainList, DailyTrainVo.class);
 

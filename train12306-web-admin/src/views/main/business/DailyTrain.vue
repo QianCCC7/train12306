@@ -3,6 +3,8 @@
     <div class="header">
       <h2>每日车次管理</h2>
       <div class="button-group">
+        <train-select v-model="queryParams.trainCode" width="400px"></train-select>
+        <a-date-picker v-model:value="queryParams.date" value-format="YYYY-MM-DD" />
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
@@ -178,6 +180,7 @@ const pagination = reactive({
 })
 const typeMap = window.TRAIN_TYPE_ARRAY
 const loading = ref(false)
+const queryParams = ref({})
 
 const handleAdd = () => {
   formData.value = {}
@@ -219,8 +222,9 @@ const resetForm = () => {
 // 分页查询
 const listDailyTrainPage = (pageNum, pageSize) => {
   loading.value = true;
+  console.log(queryParams.value)
   axios.get('/business/admin/daily-train/listDailyTrainPage', {
-    params: { pageNum: pageNum, pageSize: pageSize }
+    params: { pageNum: pageNum, pageSize: pageSize, code: queryParams.value.trainCode, date: queryParams.value.date}
   }).then(res => {
     loading.value = false;
     dataSource.value = res.data.data.rows
