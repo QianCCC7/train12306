@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, watch} from 'vue';
+import {ref, onMounted, watch} from 'vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
@@ -189,10 +189,14 @@ const rules = {
     {required: true, message: '请输入到站时间', trigger: 'change'}
   ],
 };
-const pagination = reactive({
+const pagination = ref({
   total: 0, // 数据总条数
   current: 1, // 当前页码
   pageSize: 2, // 每页条数
+  showSizeChanger: true,
+  pageSizeOptions: ['2', '5', '10', '20'],
+  showQuickJumper: true, // 是否可以快速跳转到指定页
+  showTotal: total => `共 ${total} 条`,
 })
 const typeMap = window.TRAIN_TYPE_ARRAY
 const loading = ref(false)
@@ -216,7 +220,7 @@ const handleOk = () => {
             resetForm();
             formData.value = {}
             visible.value = false;
-            listDailyTrainPage(pagination.current, pagination.pageSize)
+            listDailyTrainPage(pagination.value.current, pagination.value.pageSize)
           } else {
             message.error(res.data.msg);
           }
@@ -241,28 +245,27 @@ const resetForm = () => {
 // 分页查询
 const listDailyTrainPage = (pageNum, pageSize) => {
   loading.value = true;
-  console.log(queryParams.value)
   axios.get('/business/admin/daily-train/listDailyTrainPage', {
     params: { pageNum: pageNum, pageSize: pageSize, code: queryParams.value.trainCode, date: queryParams.value.date}
   }).then(res => {
     loading.value = false;
     dataSource.value = res.data.data.rows
-    pagination.current = pageNum
-    pagination.pageSize = pageSize
-    pagination.total = res.data.data.totalRecords
+    pagination.value.current = pageNum
+    pagination.value.pageSize = pageSize
+    pagination.value.total = res.data.data.totalRecords
   }).catch(err => {
     loading.value = false;
-    console.log('err', err)
     message.error(`加载列表出现错误: ${err.message || err}`);
   })
 }
 // 页码变化
 const handleTableChange = (page) => {
+  pagination.value.pageSize = page.pageSize
   listDailyTrainPage(page.current, page.pageSize)
 }
 // 刷新
 const handleRefresh = () => {
-  listDailyTrainPage(1, pagination.pageSize)
+  listDailyTrainPage(1, pagination.value.pageSize)
 }
 // 编辑
 const handleEdit = (record) => {
@@ -281,7 +284,7 @@ const handleDelete = (record) => {
   axios.delete(`/business/admin/daily-train/deleteById/${record.id}`).then(res => {
     if (res.data.code === 200) {
       message.success('删除成功');
-      listDailyTrainPage(pagination.current, pagination.pageSize)
+      listDailyTrainPage(pagination.value.current, pagination.value.pageSize)
     }
   }).catch(err => {
     message.error(`删除数据出现错误: ${err.message || err}`);
@@ -313,7 +316,7 @@ const handleGenOk = () => {
     if (res.data.code === 200) {
       genDailyTrainVisible.value = false;
       message.success('生成成功');
-      listDailyTrainPage(pagination.current, pagination.pageSize)
+      listDailyTrainPage(pagination.value.current, pagination.value.pageSize)
     } else {
       message.error(`生成失败: ${res.data.msg}`);
     }
@@ -329,7 +332,7 @@ const handleGenCancel = () => {
 }
 
 onMounted(() => {
-  listDailyTrainPage(pagination.current, pagination.pageSize)
+  listDailyTrainPage(pagination.value.current, pagination.value.pageSize)
 })
 watch(() => formData.value.start, () => {
   if (formData.value.start) {
