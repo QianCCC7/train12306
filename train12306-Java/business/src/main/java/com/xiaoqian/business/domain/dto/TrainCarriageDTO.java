@@ -7,15 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-/**
- * <p>
- * 火车车厢
- * </p>
- *
- * @author xiaoqian
- * @since 2025-04-20
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

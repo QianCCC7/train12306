@@ -9,14 +9,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 
-/**
- * <p>
- * 车次历经车站
- * </p>
- *
- * @author xiaoqian
- * @since 2025-04-19
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
