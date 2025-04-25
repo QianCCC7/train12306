@@ -23,6 +23,7 @@ import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -65,6 +66,10 @@ public class DailyTrainTicketServiceImpl extends ServiceImpl<DailyTrainTicketMap
     public ResponseResult<PageVo<DailyTrainTicketVo>> listDailyTrainTicketPage(DailyTrainTicketQueryDTO queryDTO) {
         Page<DailyTrainTicket> page = new Page<>(queryDTO.getPageNum(), queryDTO.getPageSize());
         page(page, new LambdaQueryWrapper<DailyTrainTicket>()
+                .eq(StringUtils.hasText(queryDTO.getCode()), DailyTrainTicket::getTrainCode, queryDTO.getCode())
+                .eq(queryDTO.getDate() != null, DailyTrainTicket::getDate, queryDTO.getDate())
+                .eq(StringUtils.hasText(queryDTO.getStart()), DailyTrainTicket::getStart, queryDTO.getStart())
+                .eq(StringUtils.hasText(queryDTO.getEnd()), DailyTrainTicket::getEnd, queryDTO.getEnd())
                 .orderByDesc(true, DailyTrainTicket::getDate)
                 .orderByAsc(true, DailyTrainTicket::getTrainCode)
                 .orderByAsc(true, DailyTrainTicket::getStartPinyin)
