@@ -5,6 +5,9 @@
       <h2>每日余票</h2>
       <div class="button-group">
         <train-select v-model="queryParams.trainCode" width="400px"></train-select>
+        <a-date-picker v-model:value="queryParams.date" value-format="YYYY-MM-DD" placeholder="选择日期"/>
+        <station-select v-model="queryParams.start" width="200px"></station-select>
+        <station-select v-model="queryParams.end" width="200px"></station-select>
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
@@ -107,6 +110,7 @@ import {ref, reactive, onMounted} from 'vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import TrainSelect from "@/components/TrainSelect.vue";
+import StationSelect from "@/components/StationSelect.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -317,7 +321,8 @@ const resetForm = () => {
 const listDailyTrainTicketPage = (pageNum, pageSize) => {
   loading.value = true;
   axios.get('/business/admin/daily-train-ticket/listDailyTrainTicketPage', {
-    params: { pageNum: pageNum, pageSize: pageSize }
+    params: { pageNum: pageNum, pageSize: pageSize, code: queryParams.value.trainCode, date: queryParams.value.date,
+    start: queryParams.value.start, end: queryParams.value.end}
   }).then(res => {
     loading.value = false;
     dataSource.value = res.data.data.rows
