@@ -89,6 +89,9 @@ public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, Tra
     }
 
     public List<TrainStation> getByCode(String code) {
-        return lambdaQuery().eq(TrainStation::getTrainCode, code).list();
+        return lambdaQuery()
+                .eq(TrainStation::getTrainCode, code)
+                .orderByAsc(true, TrainStation::getIndexOrder)
+                .list();
     }
 }

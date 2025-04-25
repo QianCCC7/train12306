@@ -19,6 +19,7 @@ import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -42,6 +43,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
     private final IDailyTrainStationService dailyTrainStationService;
     private final IDailyTrainCarriageService dailyTrainCarriageService;
     private final IDailyTrainSeatService dailyTrainSeatService;
+    private final IDailyTrainTicketService dailyTrainTicketService;
 
     @Override
     public ResponseResult<Void> saveDailyTrain(DailyTrainDTO dailyTrainDTO) {
@@ -92,6 +94,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
      * 生成某日所有车次信息
      */
     @Override
+    @Transactional
     public ResponseResult<Void> generateDailyTrain(LocalDate date) {
         // 所有车次信息
         List<Train> trainList = trainService.lambdaQuery().list();
@@ -126,5 +129,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
         dailyTrainCarriageService.generateDailyTrainCarriage(train.getCode(), date);
         // 生成车次座位信息
         dailyTrainSeatService.generateDailyTrainSeat(train.getCode(), date);
+        // 生成车次车票信息
+        dailyTrainTicketService.generateDailyTrainTicket(train.getCode(), date, dailyTrain);
     }
 }

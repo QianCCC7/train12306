@@ -8,9 +8,9 @@
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
-        <a-button type="primary" @click="handleAdd" class="add-button">
-          <plus-outlined /> 新增每日余票
-        </a-button>
+<!--        <a-button type="primary" @click="handleAdd" class="add-button">-->
+<!--          <plus-outlined /> 新增每日余票-->
+<!--        </a-button>-->
       </div>
     </div>
     <div>
@@ -203,11 +203,11 @@ const columns = [
     dataIndex: 'ywPrice',
     key: 'ywPrice',
   },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-  },
+  // {
+  //   title: '操作',
+  //   dataIndex: 'operation',
+  //   key: 'operation',
+  // },
 ]
 const formData = ref({})
 const rules = {
@@ -276,10 +276,10 @@ const typeMap = window.TRAIN_SEAT_TYPE_ARRAY
 const loading = ref(false)
 const queryParams = ref({})
 
-const handleAdd = () => {
-  formData.value = {}
-  visible.value = true;
-}
+// const handleAdd = () => {
+//   formData.value = {}
+//   visible.value = true;
+// }
 
 const handleOk = () => {
   formRef.value.validate().then(() => {

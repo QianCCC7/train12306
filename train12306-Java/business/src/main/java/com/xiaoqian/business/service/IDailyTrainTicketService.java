@@ -1,12 +1,15 @@
 package com.xiaoqian.business.service;
 
 import com.xiaoqian.business.domain.dto.DailyTrainTicketDTO;
+import com.xiaoqian.business.domain.pojo.DailyTrain;
 import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaoqian.business.domain.query.DailyTrainTicketQueryDTO;
 import com.xiaoqian.business.domain.vo.DailyTrainTicketVo;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
+
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -23,4 +26,6 @@ public interface IDailyTrainTicketService extends IService<DailyTrainTicket> {
     ResponseResult<PageVo<DailyTrainTicketVo>> listDailyTrainTicketPage(DailyTrainTicketQueryDTO queryDTO);
 
     ResponseResult<Void> deleteById(Long id);
+
+    void generateDailyTrainTicket(String trainCode, LocalDate date, DailyTrain dailyTrain);
 }

@@ -8,8 +8,11 @@ import java.time.LocalTime;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,6 +27,8 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("daily_train_ticket")
+@AllArgsConstructor
+@NoArgsConstructor
 public class DailyTrainTicket implements Serializable {
 
     private static final long serialVersionUID = 1L;
