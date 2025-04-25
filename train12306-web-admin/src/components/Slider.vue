@@ -89,6 +89,11 @@
             <CalendarOutlined />&nbsp; 每日车座
           </router-link>
         </a-menu-item>
+        <a-menu-item key="/business/daily-train-ticket">
+          <router-link to="/business/daily-train-ticket">
+            <CalendarOutlined />&nbsp; 每日余票
+          </router-link>
+        </a-menu-item>
       </a-sub-menu>
     </a-menu>
   </a-layout-sider>

@@ -119,7 +119,15 @@ const routes = [
             name: 'daily-train-seat',
             component: () => import('../views/main/business/DailyTrainSeat.vue'),
             meta: {
-              title: '每日车座管理'
+              title: '每日车座查询'
+            }
+          },
+          {
+            path: 'daily-train-ticket',
+            name: 'daily-train-ticket',
+            component: () => import('../views/main/business/DailyTrainTicket.vue'),
+            meta: {
+              title: '每日余票查询'
             }
           },
         ]
