@@ -74,7 +74,7 @@
           <a-input v-model:value="formData.group"></a-input>
         </a-form-item>
         <a-form-item name="description" label="任务描述">
-          <a-input v-model:value="formData.description" :disabled="!!formData.state"></a-input>
+          <a-input v-model:value="formData.description"></a-input>
         </a-form-item>
         <a-form-item name="cronExpression" label="cron表达式">
           <a-input v-model:value="formData.cronExpression"></a-input>

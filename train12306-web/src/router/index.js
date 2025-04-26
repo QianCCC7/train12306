@@ -44,6 +44,14 @@ const routes = [
           title: '余票查询'
         }
       },
+      {
+        path: 'train-ticket-reserve',
+        name: 'train-ticket-reserve',
+        component: () => import('../views/main/TrainTicketReserve.vue'),
+        meta: {
+          title: '余票预定'
+        }
+      },
     ],
     meta: {
       title: '首页',

@@ -1,3 +1,5 @@
+TRAIN_TICKET_RESERVE = 'TRAIN_TICKET_RESERVE'
+
 SessionStorage = {
     get: key => {
         const v = sessionStorage.getItem(key);

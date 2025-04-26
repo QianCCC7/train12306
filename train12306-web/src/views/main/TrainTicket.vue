@@ -20,10 +20,7 @@
         <template #bodyCell="{ column,  record }">
           <template v-if="column.dataIndex === 'operation'">
             <a-space>
-              <a @click="handleEdit(record)">编辑</a>
-              <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">
-                <a style="color: red">删除</a>
-              </a-popconfirm>
+              <a-button type="primary" @click="handleClickReserve(record)">预定</a-button>
             </a-space>
           </template>
           <template v-else-if="column.dataIndex === 'station'">
@@ -135,6 +132,7 @@ import {message} from "ant-design-vue";
 import TrainSelect from "@/components/TrainSelect.vue";
 import StationSelect from "@/components/StationSelect.vue";
 import dayjs from "dayjs";
+import {useRouter} from "vue-router";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -181,11 +179,11 @@ const columns = [
     dataIndex: 'yw',
     key: 'yw',
   },
-  // {
-  //   title: '操作',
-  //   dataIndex: 'operation',
-  //   key: 'operation',
-  // },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    key: 'operation',
+  },
 ]
 const formData = ref({})
 const rules = {
@@ -246,15 +244,9 @@ const pagination = reactive({
   current: 1, // 当前页码
   pageSize: 2, // 每页条数
 })
-const colMap = window.TRAIN_SEAT_COL_ARRAY
-const typeMap = window.TRAIN_SEAT_TYPE_ARRAY
 const loading = ref(false)
 const queryParams = ref({})
-
-// const handleAdd = () => {
-//   formData.value = {}
-//   visible.value = true;
-// }
+const router = useRouter();
 
 const handleOk = () => {
   formRef.value.validate().then(() => {
@@ -313,35 +305,11 @@ const handleTableChange = (page) => {
 const handleRefresh = () => {
   listDailyTrainTicketPage(1, pagination.pageSize)
 }
-// 编辑
-const handleEdit = (record) => {
-  let seatType = null;
-  let colType = null;
-  for (const e of typeMap) {
-    if (e.value === record.seatType) {
-      seatType = e.key
-      break
-    }
-  }
-  for (const e of colMap) {
-    if (e.value === record.col) {
-      colType = e.key
-      break
-    }
-  }
-  formData.value = {...record, seatType: seatType, col: colType};
-  visible.value = true;
-}
-// 删除
-const handleDelete = (record) => {
-  axios.delete(`/business/daily-train-ticket/deleteById/${record.id}`).then(res => {
-    if (res.data.code === 200) {
-      message.success('删除成功');
-      listDailyTrainTicketPage(pagination.current, pagination.pageSize)
-    }
-  }).catch(err => {
-    message.error('删除数据出现错误:', err);
-  })
+
+// 预定余票
+const handleClickReserve = (record) => {
+  SessionStorage.set(TRAIN_TICKET_RESERVE, record)
+  router.push('/train-ticket-reserve')
 }
 
 const calcDuration = (startTime, endTime) => {
