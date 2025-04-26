@@ -25,7 +25,6 @@ import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -100,7 +99,7 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
     public ResponseResult<Void> generateTrainSeats(String trainCode) {
         LocalDateTime now = LocalDateTime.now();
         // 删除当前车次
-        remove(new LambdaQueryWrapper<Train>().eq(StringUtils.hasText(trainCode), Train::getCode, trainCode));
+//        remove(new LambdaQueryWrapper<Train>().eq(StringUtils.hasText(trainCode), Train::getCode, trainCode));
         // 查找当前车次所有车厢
         List<TrainCarriage> trainCarriageList = carriageService.selectByTrainCode(trainCode);
         // 为每节车厢生成座位
