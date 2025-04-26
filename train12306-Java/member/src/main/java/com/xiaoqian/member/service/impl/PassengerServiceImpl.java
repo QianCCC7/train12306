@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import com.xiaoqian.member.domain.dto.PassengerDTO;
@@ -34,6 +36,10 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
     public ResponseResult<Void> savePassenger(PassengerDTO passengerDTO) {
         Passenger passenger = BeanUtil.copyProperties(passengerDTO, Passenger.class);
         if (passengerDTO.getId() == null) {
+            int size = getAllPassengers().getData().size();
+            if (size >= 50) {
+                throw new BizException(HttpCodeEnum.PASSENGERS_REACH_LIMIT);
+            }
             passenger.setId(SnowUtil.getSnowFlakeNextId());
             passenger.setMemberId(MemberContext.getId());
             LocalDateTime now = LocalDateTime.now();
@@ -66,5 +72,13 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
     public ResponseResult<Void> deleteById(Long id) {
         removeById(id);
         return ResponseResult.okEmptyResult();
+    }
+
+    @Override
+    public ResponseResult<List<PassengerVo>> getAllPassengers() {
+        Long userId = MemberContext.getId();
+        List<Passenger> passengerList = lambdaQuery().eq(Passenger::getId, userId).list();
+
+        return ResponseResult.okResult(BeanUtil.copyToList(passengerList, PassengerVo.class));
     }
 }

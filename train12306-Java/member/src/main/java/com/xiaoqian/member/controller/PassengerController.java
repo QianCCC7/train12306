@@ -13,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -44,8 +46,8 @@ public class PassengerController {
         return passengerService.deleteById(id);
     }
 
-    @GetMapping("/get")
-    public ResponseResult<Passenger> getPassenger() {
-        return ResponseResult.okResult(passengerService.lambdaQuery().eq(Passenger::getMemberId, 1912053495805120512L).one());
+    @GetMapping("/getAllPassengers")
+    public ResponseResult<List<PassengerVo>> getAllPassengers() {
+        return passengerService.getAllPassengers();
     }
 }

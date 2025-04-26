@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaoqian.member.domain.query.PassengerQueryDTO;
 import com.xiaoqian.member.domain.vo.PassengerVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 乘车人 服务类
@@ -23,4 +25,6 @@ public interface IPassengerService extends IService<Passenger> {
     ResponseResult<PageVo<PassengerVo>> listPassengers(PassengerQueryDTO query);
 
     ResponseResult<Void> deleteById(Long id);
+
+    ResponseResult<List<PassengerVo>> getAllPassengers();
 }
