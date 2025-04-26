@@ -16,7 +16,7 @@
         <template #bodyCell="{ column,  record }">
           <template v-if="column.dataIndex === 'operation'">
             <a-space>
-              <a @click="handleEdit(record)">Edit</a>
+              <a @click="handleEdit(record)">编辑</a>
               <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">
                 <a style="color: red">删除</a>
               </a-popconfirm>
@@ -70,6 +70,11 @@ const confirmLoading = ref(false);
 const formRef = ref(null);
 const passengerList = ref([]);
 const columns = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    customRender: ({index}) => `${pagination.pageSize * (pagination.current - 1) + index+1}`
+  },
   {
     title: '姓名',
     dataIndex: 'name',
