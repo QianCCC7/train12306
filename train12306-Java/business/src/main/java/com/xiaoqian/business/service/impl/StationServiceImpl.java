@@ -34,17 +34,24 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
     @Override
     public ResponseResult<Void> saveStation(StationDTO stationDTO) {
         Station station = getByName(stationDTO.getName());
-        if (station != null) {
-            throw new BizException(HttpCodeEnum.STATION_NAME_EXIST);
-        }
-        station = BeanUtil.copyProperties(stationDTO, Station.class);
         if (stationDTO.getId() == null) {
+            if (station != null) {
+                throw new BizException(HttpCodeEnum.STATION_NAME_EXIST);
+            }
+            station = BeanUtil.copyProperties(stationDTO, Station.class);
             station.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             station.setUpdateTime(now);
             station.setCreateTime(now);
             save(station);
         } else {
+            Station data = lambdaQuery().eq(Station::getId, stationDTO.getId()).one();
+            if (data != null && !data.getName().equals(stationDTO.getName())) {
+                if (station != null) {
+                    throw new BizException(HttpCodeEnum.STATION_NAME_EXIST);
+                }
+            }
+            station = BeanUtil.copyProperties(stationDTO, Station.class);
             station.setUpdateTime(LocalDateTime.now());
             updateById(station);
         }

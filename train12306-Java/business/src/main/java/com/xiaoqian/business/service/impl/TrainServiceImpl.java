@@ -46,17 +46,24 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
     @Override
     public ResponseResult<Void> saveTrain(TrainDTO trainDTO) {
         Train train = getByTrainCode(trainDTO.getCode());
-        if (train != null) {
-            throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
-        }
-        train = BeanUtil.copyProperties(trainDTO, Train.class);
         if (trainDTO.getId() == null) {
+            if (train != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
+            }
+            train = BeanUtil.copyProperties(trainDTO, Train.class);
             train.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             train.setUpdateTime(now);
             train.setCreateTime(now);
             save(train);
         } else {
+            Train data = lambdaQuery().eq(Train::getId, trainDTO.getId()).one();
+            if (data != null && !data.getCode().equals(trainDTO.getCode())) {
+                if (train != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
+                }
+            }
+            train = BeanUtil.copyProperties(trainDTO, Train.class);
             train.setUpdateTime(LocalDateTime.now());
             updateById(train);
         }

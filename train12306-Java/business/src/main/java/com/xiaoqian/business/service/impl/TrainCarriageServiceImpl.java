@@ -35,17 +35,24 @@ public class TrainCarriageServiceImpl extends ServiceImpl<TrainCarriageMapper, T
     @Override
     public ResponseResult<Void> saveTrainCarriage(TrainCarriageDTO trainCarriageDTO) {
         TrainCarriage trainCarriage = getByCodeAndIndexOrder(trainCarriageDTO.getTrainCode(), trainCarriageDTO.getIndexOrder());
-        if (trainCarriage != null) {
-            throw new BizException(HttpCodeEnum.TRAIN_CARRIAGE_CODE_INDEX_EXIST);
-        }
-        trainCarriage = BeanUtil.copyProperties(trainCarriageDTO, TrainCarriage.class);
         if (trainCarriageDTO.getId() == null) {
+            if (trainCarriage != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_CARRIAGE_CODE_INDEX_EXIST);
+            }
+            trainCarriage = BeanUtil.copyProperties(trainCarriageDTO, TrainCarriage.class);
             trainCarriage.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             trainCarriage.setUpdateTime(now);
             trainCarriage.setCreateTime(now);
             save(trainCarriage);
         } else {
+            TrainCarriage data = lambdaQuery().eq(TrainCarriage::getId, trainCarriageDTO.getId()).one();
+            if (data != null && !data.getTrainCode().equals(trainCarriageDTO.getTrainCode()) && !data.getIndexOrder().equals(trainCarriageDTO.getIndexOrder())) {
+                if (trainCarriage != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_CARRIAGE_CODE_INDEX_EXIST);
+                }
+            }
+            trainCarriage = BeanUtil.copyProperties(trainCarriageDTO, TrainCarriage.class);
             trainCarriage.setUpdateTime(LocalDateTime.now());
             updateById(trainCarriage);
         }

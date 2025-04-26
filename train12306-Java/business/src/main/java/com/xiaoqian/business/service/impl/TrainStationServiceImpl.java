@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -35,21 +36,32 @@ public class TrainStationServiceImpl extends ServiceImpl<TrainStationMapper, Tra
     @Override
     public ResponseResult<Void> saveTrainStation(TrainStationDTO trainStationDTO) {
         TrainStation trainStation = getByCodeAndIndexOrder(trainStationDTO.getTrainCode(), trainStationDTO.getIndexOrder());
-        if (trainStation != null) {
-            throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_INDEX_EXIST);
-        }
-        trainStation = getByCodeAndName(trainStationDTO.getTrainCode(), trainStationDTO.getName());
-        if (trainStation != null) {
-            throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_NAME_EXIST);
-        }
-        trainStation = BeanUtil.copyProperties(trainStationDTO, TrainStation.class);
         if (trainStationDTO.getId() == null) {
+            if (trainStation != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_INDEX_EXIST);
+            }
+            trainStation = getByCodeAndName(trainStationDTO.getTrainCode(), trainStationDTO.getName());
+            if (trainStation != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_NAME_EXIST);
+            }
+            trainStation = BeanUtil.copyProperties(trainStationDTO, TrainStation.class);
             trainStation.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             trainStation.setUpdateTime(now);
             trainStation.setCreateTime(now);
             save(trainStation);
         } else {
+            TrainStation data = lambdaQuery().eq(TrainStation::getId, trainStationDTO.getId()).one();
+            if (data != null && !data.getTrainCode().equals(trainStationDTO.getTrainCode()) && !data.getIndexOrder().equals(trainStationDTO.getIndexOrder())) {
+                if (trainStation != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_INDEX_EXIST);
+                }
+                trainStation = getByCodeAndName(trainStationDTO.getTrainCode(), trainStationDTO.getName());
+                if (trainStation != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_NAME_EXIST);
+                }
+            }
+            trainStation = BeanUtil.copyProperties(trainStationDTO, TrainStation.class);
             trainStation.setUpdateTime(LocalDateTime.now());
             updateById(trainStation);
         }

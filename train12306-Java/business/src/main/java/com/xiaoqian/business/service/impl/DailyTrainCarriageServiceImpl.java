@@ -13,6 +13,8 @@ import com.xiaoqian.business.service.IDailyTrainCarriageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.business.service.ITrainCarriageService;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
@@ -39,19 +41,36 @@ public class DailyTrainCarriageServiceImpl extends ServiceImpl<DailyTrainCarriag
 
     @Override
     public ResponseResult<Void> saveDailyTrainCarriage(DailyTrainCarriageDTO dailyTrainCarriageDTO) {
-        DailyTrainCarriage dailyTrainCarriage = BeanUtil.copyProperties(dailyTrainCarriageDTO, DailyTrainCarriage.class);
+        DailyTrainCarriage dailyTrainCarriage = getByCodeAndIndexOrder(dailyTrainCarriageDTO.getTrainCode(), dailyTrainCarriageDTO.getIndexOrder());
         if (dailyTrainCarriageDTO.getId() == null) {
+            if (dailyTrainCarriage != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_CARRIAGE_CODE_INDEX_EXIST);
+            }
+            dailyTrainCarriage = BeanUtil.copyProperties(dailyTrainCarriageDTO, DailyTrainCarriage.class);
             dailyTrainCarriage.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             dailyTrainCarriage.setUpdateTime(now);
             dailyTrainCarriage.setCreateTime(now);
             save(dailyTrainCarriage);
         } else {
+            DailyTrainCarriage data = lambdaQuery().eq(DailyTrainCarriage::getId, dailyTrainCarriageDTO.getId()).one();
+            if (data != null && !data.getTrainCode().equals(dailyTrainCarriageDTO.getTrainCode()) && !data.getIndexOrder().equals(dailyTrainCarriageDTO.getIndexOrder())) {
+                if (dailyTrainCarriage != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_CARRIAGE_CODE_INDEX_EXIST);
+                }
+            }
+            dailyTrainCarriage = BeanUtil.copyProperties(dailyTrainCarriageDTO, DailyTrainCarriage.class);
             dailyTrainCarriage.setUpdateTime(LocalDateTime.now());
             updateById(dailyTrainCarriage);
         }
 
         return ResponseResult.okEmptyResult();
+    }
+
+    private DailyTrainCarriage getByCodeAndIndexOrder(String trainCode, Integer indexOrder) {
+        return lambdaQuery().eq(DailyTrainCarriage::getTrainCode, trainCode)
+                .eq(DailyTrainCarriage::getIndexOrder, indexOrder)
+                .one();
     }
 
     @Override

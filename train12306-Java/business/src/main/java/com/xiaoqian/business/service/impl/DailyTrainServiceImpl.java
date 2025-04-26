@@ -48,17 +48,24 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
     @Override
     public ResponseResult<Void> saveDailyTrain(DailyTrainDTO dailyTrainDTO) {
         DailyTrain dailyTrain = getByTrainCode(dailyTrainDTO.getCode());
-        if (dailyTrain != null) {
-            throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
-        }
-        dailyTrain = BeanUtil.copyProperties(dailyTrainDTO, DailyTrain.class);
         if (dailyTrainDTO.getId() == null) {
+            if (dailyTrain != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
+            }
+            dailyTrain = BeanUtil.copyProperties(dailyTrainDTO, DailyTrain.class);
             dailyTrain.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             dailyTrain.setUpdateTime(now);
             dailyTrain.setCreateTime(now);
             save(dailyTrain);
         } else {
+            DailyTrain data = lambdaQuery().eq(DailyTrain::getId, dailyTrainDTO.getId()).one();
+            if (data != null && !data.getCode().equals(dailyTrainDTO.getCode())) {
+                if (dailyTrain != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_CODE_EXIST);
+                }
+            }
+            dailyTrain = BeanUtil.copyProperties(dailyTrainDTO, DailyTrain.class);
             dailyTrain.setUpdateTime(LocalDateTime.now());
             updateById(dailyTrain);
         }

@@ -13,6 +13,8 @@ import com.xiaoqian.business.service.IDailyTrainStationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.business.service.ITrainStationService;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
@@ -39,19 +41,48 @@ public class DailyTrainStationServiceImpl extends ServiceImpl<DailyTrainStationM
 
     @Override
     public ResponseResult<Void> saveDailyTrainStation(DailyTrainStationDTO dailyTrainStationDTO) {
-        DailyTrainStation dailyTrainStation = BeanUtil.copyProperties(dailyTrainStationDTO, DailyTrainStation.class);
+        DailyTrainStation dailyTrainStation = getByCodeAndIndexOrder(dailyTrainStationDTO.getTrainCode(), dailyTrainStationDTO.getIndexOrder());
         if (dailyTrainStationDTO.getId() == null) {
+            if (dailyTrainStation != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_INDEX_EXIST);
+            }
+            dailyTrainStation = getByCodeAndName(dailyTrainStationDTO.getTrainCode(), dailyTrainStationDTO.getName());
+            if (dailyTrainStation != null) {
+                throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_NAME_EXIST);
+            }
+            dailyTrainStation = BeanUtil.copyProperties(dailyTrainStationDTO, DailyTrainStation.class);
             dailyTrainStation.setId(SnowUtil.getSnowFlakeNextId());
             LocalDateTime now = LocalDateTime.now();
             dailyTrainStation.setUpdateTime(now);
             dailyTrainStation.setCreateTime(now);
             save(dailyTrainStation);
         } else {
+            DailyTrainStation data = lambdaQuery().eq(DailyTrainStation::getId, dailyTrainStationDTO.getId()).one();
+            if (data != null && !data.getTrainCode().equals(dailyTrainStationDTO.getTrainCode()) && !data.getIndexOrder().equals(dailyTrainStationDTO.getIndexOrder())) {
+                if (dailyTrainStation != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_INDEX_EXIST);
+                }
+                dailyTrainStation = getByCodeAndName(dailyTrainStationDTO.getTrainCode(), dailyTrainStationDTO.getName());
+                if (dailyTrainStation != null) {
+                    throw new BizException(HttpCodeEnum.TRAIN_STATION_CODE_NAME_EXIST);
+                }
+            }
+            dailyTrainStation = BeanUtil.copyProperties(dailyTrainStationDTO, DailyTrainStation.class);
             dailyTrainStation.setUpdateTime(LocalDateTime.now());
             updateById(dailyTrainStation);
         }
 
         return ResponseResult.okEmptyResult();
+    }
+
+    private DailyTrainStation getByCodeAndIndexOrder(String trainCode, Integer indexOrder) {
+        return lambdaQuery().eq(DailyTrainStation::getTrainCode, trainCode)
+                .eq(DailyTrainStation::getIndexOrder, indexOrder).one();
+    }
+
+    private DailyTrainStation getByCodeAndName(String trainCode, String name) {
+        return lambdaQuery().eq(DailyTrainStation::getTrainCode, trainCode)
+                .eq(DailyTrainStation::getName, name).one();
     }
 
     @Override
