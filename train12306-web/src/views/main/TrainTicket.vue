@@ -4,7 +4,6 @@
     <div class="header">
       <h2>每日余票</h2>
       <div class="button-group">
-        <train-select v-model="queryParams.trainCode" width="400px"></train-select>
         <a-date-picker v-model:value="queryParams.date" value-format="YYYY-MM-DD" placeholder="选择日期"/>
         <station-select v-model="queryParams.start" width="200px"></station-select>
         <station-select v-model="queryParams.end" width="200px"></station-select>
@@ -75,9 +74,6 @@
       >
         <a-form-item name="trainCode" label="车次编码">
           <train-select v-model:value="formData.trainCode" width="300px"></train-select>
-        </a-form-item>
-        <a-form-item name="date" label="日期">
-          <a-date-picker v-model:value="formData.date" value-format="YYYY-MM-DD" placeholder="请输入日期"/>
         </a-form-item>
         <a-form-item name="start" label="始发站">
           <a-input v-model:value="formData.start" placeholder="请输入始发站" />
@@ -151,11 +147,6 @@ const columns = [
     key: 'trainCode',
   },
   {
-    title: '日期',
-    dataIndex: 'date',
-    key: 'date',
-  },
-  {
     title: '车站',
     dataIndex: 'station',
     key: 'station',
@@ -200,9 +191,6 @@ const formData = ref({})
 const rules = {
   trainCode: [
     {required: true, message: '请输入车次编码', trigger: 'blur'}
-  ],
-  date: [
-    {required: true, message: '请输入日期', trigger: 'blur'}
   ],
   start: [
     {required: true, message: '请输入始发站', trigger: 'blur'},
