@@ -36,6 +36,14 @@ const routes = [
           title: '乘客管理'
         }
       },
+      {
+        path: 'train-ticket',
+        name: 'train-ticket',
+        component: () => import('../views/main/TrainTicket.vue'),
+        meta: {
+          title: '余票查询'
+        }
+      },
     ],
     meta: {
       title: '首页',
