@@ -121,6 +121,7 @@
         style="top: 50px; width: 800px"
         ok-text="确认"
         cancel-text="取消"
+        @ok="handleOk"
     >
       <div class="confirmation-header">
         <div class="train-info-summary">
@@ -181,7 +182,7 @@
       <div v-if="checkCanChooseSeat === 0" style="color: red;">
         您购买的车票不支持选座
         <div>12306规则：只有全部是一等座或全部是二等座才支持选座</div>
-        <div>12306规则：余票小于一定20时，不允许选座</div>
+        <div>12306规则：余票小于20时，不允许选座</div>
       </div>
       <div v-else >
         <div style="color: #999999; margin-bottom: 10px">提示：您可以选择{{passengerTickets.length}}个座位</div>
@@ -268,11 +269,12 @@ const handleSubmit = () => {
   // 判断是否可以选座，全部是一等座或全部是二等座才支持选座
   const choseSeatTypes = new Set()
   passengerTickets.value.forEach(item => choseSeatTypes.add(item.seatType))
+  let type;
   if (choseSeatTypes.size !== 1) {
     checkCanChooseSeat.value = 0 // 选了多种座位类型，不支持选座
   } else {
     // 判断座位类型
-    const type = choseSeatTypes.values().next().value
+    type = choseSeatTypes.values().next().value
     if (type === 'ydz') {
       checkCanChooseSeat.value = 1
     } else if (type === 'edz') {
@@ -282,8 +284,34 @@ const handleSubmit = () => {
     }
   }
 
+  // 判断余票是否小于20
+  if (checkCanChooseSeat.value !== 0) {
+    const exists = seatInfoList.some(item => item.type === type && item.count < 20);
+    if (exists) checkCanChooseSeat.value = 0 // 余票小于20，不支持选座
+  }
 
   visible.value = true;
+}
+
+// 提交表单
+const handleOk = () => {
+  passengerTickets.value.forEach(item => item.seat = '') // 清空乘客已选具体座位信息
+  let i = 0;
+  for (let key in choseSeat.value) {
+    if (choseSeat.value[key]) {
+      if (i >= passengerTickets.value.length) {
+        message.error('所选座位数大于购票数');
+        return
+      }
+      passengerTickets.value[i].seat = key // 乘客的选座信息
+      i++;
+    }
+  }
+  if (i !== 0 && i !== passengerTickets.value.length) {
+    message.error('所选座位数小于购票数');
+    return
+  }
+  visible.value = false;
 }
 
 const getPassengerTypeColor = (type) => {
@@ -320,6 +348,7 @@ const handlePassengerChange = (e, option) => {
         passengerName: original.name,
         passengerIdCard: original.idCard,
         seatType: seatInfoList.length > 0 ? seatInfoList[0].type : 'edz',
+        seat: ''
       });
     }
   } else {
