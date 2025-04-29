@@ -5,7 +5,6 @@ import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.member.domain.dto.PassengerDTO;
-import com.xiaoqian.member.domain.pojo.Passenger;
 import com.xiaoqian.member.domain.query.PassengerQueryDTO;
 import com.xiaoqian.member.domain.vo.PassengerVo;
 import com.xiaoqian.member.service.IPassengerService;

@@ -77,7 +77,7 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
     @Override
     public ResponseResult<List<PassengerVo>> getAllPassengers() {
         Long userId = MemberContext.getId();
-        List<Passenger> passengerList = lambdaQuery().eq(Passenger::getId, userId).list();
+        List<Passenger> passengerList = lambdaQuery().eq(Passenger::getMemberId, userId).list();
 
         return ResponseResult.okResult(BeanUtil.copyToList(passengerList, PassengerVo.class));
     }
