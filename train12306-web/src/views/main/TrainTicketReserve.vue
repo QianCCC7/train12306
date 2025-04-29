@@ -5,7 +5,6 @@
       <div class="ticket-info">
         <div class="train-header">
           <div class="train-code">
-            <train-outlined />
             <span>{{ trainTicketReserve.trainCode }}</span>
           </div>
           <div class="train-date">
@@ -81,7 +80,7 @@
             </div>
             <div class="row-cell seat-cell">
               <a-select
-                  v-model:value="ticket.seatTypeCode"
+                  v-model:value="ticket.seatType"
                   class="seat-select"
                   size="middle"
               >
@@ -126,7 +125,6 @@
       <div class="confirmation-header">
         <div class="train-info-summary">
           <div class="train-code-summary">
-            <train-outlined />
             {{ trainTicketReserve.trainCode }}
           </div>
           <div class="train-date-summary">
@@ -159,14 +157,14 @@
           </div>
           <div class="row-cell seat-cell">
             <span v-for="item in trainSeatType" :key="item.type">
-              <span v-if="item.type === ticket.seatTypeCode">
+              <span v-if="item.type === ticket.seatType">
                 {{item.value}}
               </span>
             </span>
           </div>
           <div class="row-cell price-cell">
             <span v-for="item in seatInfoList" :key="item.type">
-              <span v-if="item.type === ticket.seatTypeCode" class="ticket-price">
+              <span v-if="item.type === ticket.seatType" class="ticket-price">
                 ¥{{item.price}}
               </span>
             </span>
@@ -187,6 +185,7 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {message} from "ant-design-vue";
+import {deepCopy} from "@/utils/copyUtils";
 
 const trainTicketReserve = SessionStorage.get(TRAIN_TICKET_RESERVE) || {}
 const trainSeatType = window.TRAIN_SEAT_TYPE_ARRAY || []
@@ -230,6 +229,19 @@ const handleSubmit = () => {
     message.error('最多只能购买5张车票');
     return;
   }
+  const tempSeatInfoList = deepCopy(seatInfoList)
+  for (let passengerTicket of passengerTickets.value) {
+    for (let ticket of tempSeatInfoList) {
+      if (ticket.type === passengerTicket.seatType) {
+        ticket.count -= 1;
+        if (ticket.count < 0) {
+          message.error(`${ticket.value}数量不足`);
+          return;
+        }
+      }
+    }
+  }
+
   visible.value = true;
 }
 
@@ -245,7 +257,7 @@ const getPassengerTypeColor = (type) => {
 const calculateTotalPrice = () => {
   let total = 0;
   passengerTickets.value.forEach(ticket => {
-    const seatInfo = seatInfoList.find(item => item.type === ticket.seatTypeCode);
+    const seatInfo = seatInfoList.find(item => item.type === ticket.seatType);
     if (seatInfo) {
       total += parseFloat(seatInfo.price);
     }
@@ -253,6 +265,7 @@ const calculateTotalPrice = () => {
   return total.toFixed(2);
 };
 
+// 乘车人复选框变化监听
 const handlePassengerChange = (e, option) => {
   const checked = e.target.checked;
   if (checked) {
@@ -265,7 +278,7 @@ const handlePassengerChange = (e, option) => {
         passengerType: window.PASSENGER_TYPE_ARRAY.filter(t => t.value === original.type)[0].value,
         passengerName: original.name,
         passengerIdCard: original.idCard,
-        seatTypeCode: seatInfoList.length > 0 ? seatInfoList[0].type : 'edz',
+        seatType: seatInfoList.length > 0 ? seatInfoList[0].type : 'edz',
       });
     }
   } else {
@@ -284,6 +297,8 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  height: 78vh;
+  overflow-y: auto;
 }
 
 .section-title {
