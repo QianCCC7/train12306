@@ -116,7 +116,7 @@
     </div>
 
     <a-modal
-        v-model:visible="visible"
+        v-model:open="visible"
         title="请核对以下乘客信息"
         style="top: 50px; width: 800px"
         ok-text="确认"
@@ -177,12 +177,27 @@
           总计: <span class="total-price">¥{{ calculateTotalPrice() }}</span>
         </div>
       </div>
+      <br>
+      <div v-if="checkCanChooseSeat === 0" style="color: red;">
+        您购买的车票不支持选座
+        <div>12306规则：只有全部是一等座或全部是二等座才支持选座</div>
+        <div>12306规则：余票小于一定20时，不允许选座</div>
+      </div>
+      <div v-else >
+        <div style="color: #999999; margin-bottom: 10px">提示：您可以选择{{passengerTickets.length}}个座位</div>
+        <a-switch class="choose-seat-item" v-for="item in seatColArray" :key="item.key"
+                  v-model:checked="choseSeat[item.key + '-1']" />
+        <div v-if="passengerTickets.length > 1" style="margin-top: 5px">
+          <a-switch class="choose-seat-item" v-for="item in seatColArray" :key="item.key"
+                    v-model:checked="choseSeat[item.key + '-2']" />
+        </div>
+      </div>
     </a-modal>
   </div>
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {deepCopy} from "@/utils/copyUtils";
@@ -195,6 +210,12 @@ const passengerOptions = ref([]) // passengerList的另一种形式展示在复�
 const passengerChecked = ref([]) // 选中的乘客
 const passengerTickets = ref([]) // 乘客的购票信息
 const visible = ref(false)
+const checkCanChooseSeat = ref(0) // 是否可以选座，0不支持选座，1选一等坐，2选二等座
+// 根据checkCanChooseSeat的值决定展示ACDF还是ABCDF
+const seatColArray = computed(() => {
+  return window.TRAIN_SEAT_COL_ARRAY.filter(item => item.type === checkCanChooseSeat.value.toString())
+})
+const choseSeat = ref({}) // 已选择的座位
 
 // 车座信息处理
 for (const e of trainSeatType) {
@@ -224,11 +245,13 @@ const getAllPassengers = () => {
   })
 }
 
+// 提交订单
 const handleSubmit = () => {
   if (passengerTickets.value.length > 5) {
     message.error('最多只能购买5张车票');
     return;
   }
+  // 校验余票
   const tempSeatInfoList = deepCopy(seatInfoList)
   for (let passengerTicket of passengerTickets.value) {
     for (let ticket of tempSeatInfoList) {
@@ -241,6 +264,24 @@ const handleSubmit = () => {
       }
     }
   }
+
+  // 判断是否可以选座，全部是一等座或全部是二等座才支持选座
+  const choseSeatTypes = new Set()
+  passengerTickets.value.forEach(item => choseSeatTypes.add(item.seatType))
+  if (choseSeatTypes.size !== 1) {
+    checkCanChooseSeat.value = 0 // 选了多种座位类型，不支持选座
+  } else {
+    // 判断座位类型
+    const type = choseSeatTypes.values().next().value
+    if (type === 'ydz') {
+      checkCanChooseSeat.value = 1
+    } else if (type === 'edz') {
+      checkCanChooseSeat.value = 2
+    } else {
+      checkCanChooseSeat.value = 0 // 选了软卧或硬卧，不支持选座
+    }
+  }
+
 
   visible.value = true;
 }
@@ -290,6 +331,15 @@ const handlePassengerChange = (e, option) => {
 onMounted(() => {
   getAllPassengers()
 })
+watch(() => seatColArray.value, () => {
+  choseSeat.value = {}
+  for (let i = 1; i <= 2; i++) {
+    seatColArray.value.forEach(item => {
+      // 拼接成A1-1,C1-1的格式，表示
+      choseSeat.value[item.key + '-' + i] = false
+    })
+  }
+}, {immediate: true})
 </script>
 
 <style scoped>
