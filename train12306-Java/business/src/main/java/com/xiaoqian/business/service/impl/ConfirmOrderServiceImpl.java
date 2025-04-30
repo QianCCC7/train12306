@@ -1,20 +1,27 @@
 package com.xiaoqian.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.ConfirmOrderDTO;
 import com.xiaoqian.business.domain.pojo.ConfirmOrder;
+import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
+import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
 import com.xiaoqian.business.mapper.ConfirmOrderMapper;
 import com.xiaoqian.business.service.IConfirmOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiaoqian.business.service.IDailyTrainTicketService;
+import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +34,9 @@ import java.util.List;
  * @since 2025-04-30
  */
 @Service
+@RequiredArgsConstructor
 public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, ConfirmOrder> implements IConfirmOrderService {
+    private final IDailyTrainTicketService dailyTrainTicketService;
 
     @Override
     public ResponseResult<Void> saveOrder(ConfirmOrderDTO confirmOrderDTO) {
@@ -56,5 +65,30 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         List<ConfirmOrderVo> confirmOrderVoList = BeanUtil.copyToList(confirmOrderList, ConfirmOrderVo.class);
 
         return ResponseResult.okResult(new PageVo<>(confirmOrderVoList, page.getPages(), page.getTotal()));
+    }
+
+    @Override
+    public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
+        // 数据校验：车次是否存在，余票是否存在，车次是否在有效期内，ticket条数>0，同乘客同车次是否已经买过
+        // 初始化订单状态
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate date = confirmOrderDTO.getDate();
+        String code = confirmOrderDTO.getTrainCode(), start = confirmOrderDTO.getStart(), end = confirmOrderDTO.getEnd();
+        ConfirmOrder confirmOrder =
+                new ConfirmOrder(SnowUtil.getSnowFlakeNextId(), MemberContext.getId(), date, code, start, end,
+                        confirmOrderDTO.getDailyTrainTicketId(), confirmOrderDTO.getTotalPrice(), JSON.toJSONString(confirmOrderDTO.getTickets()),
+                        ConfirmOrderStatusEnum.INIT, now, now);
+        save(confirmOrder);
+        // 查询余票，得到真实库存
+        DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.geyByDateAndCodeAndStartAndEnd(date, code, start, end);
+        // 预扣减库存，校验一票是否充足
+        // 选座逻辑
+            // 遍历车厢获取座位数据
+            // 筛选合适座位
+        // 更新座位售卖情况
+        // 更新余票数量
+        // 增加购票记录
+        // 更新订单状态
+        return ResponseResult.okEmptyResult();
     }
 }

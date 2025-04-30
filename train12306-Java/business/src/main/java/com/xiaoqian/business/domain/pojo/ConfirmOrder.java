@@ -7,12 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
-import java.util.List;
 
-import com.xiaoqian.business.domain.dto.PassengerTicketsDTO;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -24,6 +24,8 @@ import lombok.experimental.Accessors;
  * @since 2025-04-30
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("confirm_order")
@@ -75,7 +77,7 @@ public class ConfirmOrder implements Serializable {
     /**
      * 车票与乘车人信息
      */
-    private List<PassengerTicketsDTO> tickets;
+    private String tickets;
 
     /**
      * 订单状态|枚举[ConfirmOrderStatusEnum]

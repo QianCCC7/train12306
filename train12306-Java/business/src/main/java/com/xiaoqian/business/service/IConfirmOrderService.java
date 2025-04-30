@@ -21,4 +21,6 @@ public interface IConfirmOrderService extends IService<ConfirmOrder> {
     ResponseResult<Void> saveOrder(ConfirmOrderDTO confirmOrderDTO);
 
     ResponseResult<PageVo<ConfirmOrderVo>> listOrderPage(ConfirmOrderQueryDTO confirmOrderQueryDTO);
+
+    ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO);
 }

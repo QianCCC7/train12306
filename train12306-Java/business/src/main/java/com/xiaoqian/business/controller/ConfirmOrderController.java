@@ -7,6 +7,7 @@ import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.service.IConfirmOrderService;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class ConfirmOrderController {
     private final IConfirmOrderService confirmOrderService;
 
     @PostMapping("/saveOrder")
-    public ResponseResult<Void> saveOrder(@RequestBody ConfirmOrderDTO confirmOrderDTO) {
+    public ResponseResult<Void> saveOrder(@RequestBody @Valid ConfirmOrderDTO confirmOrderDTO) {
         return confirmOrderService.saveOrder(confirmOrderDTO);
     }
 

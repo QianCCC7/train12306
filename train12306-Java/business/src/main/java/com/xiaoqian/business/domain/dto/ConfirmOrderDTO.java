@@ -1,6 +1,5 @@
 package com.xiaoqian.business.domain.dto;
 
-import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,8 +16,6 @@ import java.util.List;
 public class ConfirmOrderDTO {
 
     private Long id;
-    @NotNull(message = "会员ID不能为空")
-    private Long memberId;
     @NotNull(message = "日期不能为空")
     private LocalDate date;
     @NotBlank(message = "车次编码不能为空")
@@ -31,9 +28,7 @@ public class ConfirmOrderDTO {
     private Long dailyTrainTicketId;
     @NotNull(message = "总票价不能为空")
     private BigDecimal totalPrice;
-    @NotBlank(message = "车票与乘车人信息不能为空")
+    @NotNull(message = "车票与乘车人信息不能为空")
     private List<PassengerTicketsDTO> tickets;
-    @NotNull(message = "订单状态不能为空")
-    private ConfirmOrderStatusEnum status;
 
 }

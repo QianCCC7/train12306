@@ -129,4 +129,13 @@ public class DailyTrainTicketServiceImpl extends ServiceImpl<DailyTrainTicketMap
             }
         }
     }
+
+    @Override
+    public DailyTrainTicket geyByDateAndCodeAndStartAndEnd(LocalDate date, String code, String start, String end) {
+        return lambdaQuery().eq(DailyTrainTicket::getDate, date)
+                .eq(DailyTrainTicket::getTrainCode, code)
+                .eq(DailyTrainTicket::getStart, start)
+                .eq(DailyTrainTicket::getEnd, end)
+                .one();
+    }
 }
