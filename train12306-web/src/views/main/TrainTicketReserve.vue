@@ -121,6 +121,7 @@
         style="top: 50px; width: 800px"
         ok-text="确认"
         cancel-text="取消"
+        :confirmLoading="confirmLoading"
         @ok="handleOk"
     >
       <div class="confirmation-header">
@@ -175,7 +176,7 @@
 
       <div class="confirmation-footer">
         <div class="total-summary">
-          总计: <span class="total-price">¥{{ calculateTotalPrice() }}</span>
+          总计: <span class="total-price">¥{{ totalPrice }}</span>
         </div>
       </div>
       <br>
@@ -217,6 +218,8 @@ const seatColArray = computed(() => {
   return window.TRAIN_SEAT_COL_ARRAY.filter(item => item.type === checkCanChooseSeat.value.toString())
 })
 const choseSeat = ref({}) // 已选择的座位
+const totalPrice = ref(0)
+const confirmLoading = ref(false);
 
 // 车座信息处理
 for (const e of trainSeatType) {
@@ -248,6 +251,7 @@ const getAllPassengers = () => {
 
 // 提交订单
 const handleSubmit = () => {
+  totalPrice.value = calculateTotalPrice()
   if (passengerTickets.value.length > 5) {
     message.error('最多只能购买5张车票');
     return;
@@ -311,6 +315,29 @@ const handleOk = () => {
     message.error('所选座位数小于购票数');
     return
   }
+
+  totalPrice.value = calculateTotalPrice()
+  confirmLoading.value = true
+  axios.post('/business/confirm-order/submitOrder', {
+    date: trainTicketReserve.date,
+    trainCode: trainTicketReserve.trainCode,
+    start: trainTicketReserve.start,
+    end: trainTicketReserve.end,
+    dailyTrainTicketId: trainTicketReserve.id,
+    totalPrice: totalPrice.value,
+    tickets: passengerTickets.value
+  }).then(res => {
+    if (res.data.code === 200) {
+      message.success('下单成功');
+    } else {
+      message.error(`下单失败: ${res.data.msg}`);
+    }
+  }).catch(err => {
+    message.error(`加载列表出现错误: ${err.message || err}`);
+  }).finally(() => {
+    confirmLoading.value = false
+  })
+
   visible.value = false;
 }
 
