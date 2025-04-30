@@ -130,6 +130,14 @@ const routes = [
               title: '每日余票查询'
             }
           },
+          {
+            path: 'confirm-order',
+            name: 'confirm-order',
+            component: () => import('../views/main/business/ConfirmOrder.vue'),
+            meta: {
+              title: '订单信息查询'
+            }
+          },
         ]
       },
     ],
