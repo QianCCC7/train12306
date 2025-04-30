@@ -11,10 +11,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Getter
 public enum SeatTypeEnum {
-    YDZ("1", "一等座", new BigDecimal("0.4")),
-    EDZ("2", "二等座", new BigDecimal("0.3")),
-    RW("3", "软卧", new BigDecimal("0.6")),
-    YW("4", "硬卧", new BigDecimal("0.5"))
+    YDZ("1", "一等座", new BigDecimal("0.4"), "ydz"),
+    EDZ("2", "二等座", new BigDecimal("0.3"), "edz"),
+    RW("3", "软卧", new BigDecimal("0.6"), "rw"),
+    YW("4", "硬卧", new BigDecimal("0.5"), "yw")
     ;
     @EnumValue
     private final String code;
@@ -24,6 +24,7 @@ public enum SeatTypeEnum {
      * 基础票价 N元/公里，0.4即为0.4元/公里
      */
     private final BigDecimal price;
+    private final String type;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static SeatTypeEnum fromCode(String code) {

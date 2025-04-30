@@ -16,6 +16,7 @@ public enum HttpCodeEnum {
     TRAIN_STATION_CODE_NAME_EXIST(400, "同车次站名已存在"),
     TRAIN_CARRIAGE_CODE_INDEX_EXIST(400, "同车次厢号已存在"),
     PASSENGERS_REACH_LIMIT(400, "乘车人数量已达上限"),
+    TICKET_COUNT_NOT_ENOUGH(400, "车票数量不足"),
     ;
 
     private final Integer code;

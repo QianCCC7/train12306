@@ -5,20 +5,25 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.ConfirmOrderDTO;
+import com.xiaoqian.business.domain.dto.PassengerTicketsDTO;
 import com.xiaoqian.business.domain.pojo.ConfirmOrder;
 import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
+import com.xiaoqian.business.enums.SeatTypeEnum;
 import com.xiaoqian.business.mapper.ConfirmOrderMapper;
 import com.xiaoqian.business.service.IConfirmOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.business.service.IDailyTrainTicketService;
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,6 +39,7 @@ import java.util.List;
  * @since 2025-04-30
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, ConfirmOrder> implements IConfirmOrderService {
     private final IDailyTrainTicketService dailyTrainTicketService;
@@ -82,6 +88,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         // 查询余票，得到真实库存
         DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.geyByDateAndCodeAndStartAndEnd(date, code, start, end);
         // 预扣减库存，校验一票是否充足
+        reduceTicketsCount(dailyTrainTicket, confirmOrderDTO.getTickets());
         // 选座逻辑
             // 遍历车厢获取座位数据
             // 筛选合适座位
@@ -90,5 +97,41 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         // 增加购票记录
         // 更新订单状态
         return ResponseResult.okEmptyResult();
+    }
+
+    private void reduceTicketsCount(DailyTrainTicket dailyTrainTicket, List<PassengerTicketsDTO> tickets) {
+        for (PassengerTicketsDTO ticket : tickets) {
+            String seatType = ticket.getSeatType();
+            for (SeatTypeEnum value : SeatTypeEnum.values()) {
+                if (seatType.equals(value.getType())) {
+                    switch (value) {
+                        case YDZ:
+                            dailyTrainTicket.setYdz(dailyTrainTicket.getYdz() - 1);
+                            if (dailyTrainTicket.getYdz() < 0) {
+                                throw new BizException(HttpCodeEnum.TICKET_COUNT_NOT_ENOUGH);
+                            }
+                            break;
+                        case EDZ:
+                            dailyTrainTicket.setEdz(dailyTrainTicket.getEdz() - 1);
+                            if (dailyTrainTicket.getEdz() < 0) {
+                                throw new BizException(HttpCodeEnum.TICKET_COUNT_NOT_ENOUGH);
+                            }
+                            break;
+                        case RW:
+                            dailyTrainTicket.setRw(dailyTrainTicket.getRw() - 1);
+                            if (dailyTrainTicket.getRw() < 0) {
+                                throw new BizException(HttpCodeEnum.TICKET_COUNT_NOT_ENOUGH);
+                            }
+                            break;
+                        case YW:
+                            dailyTrainTicket.setYw(dailyTrainTicket.getYw() - 1);
+                            if (dailyTrainTicket.getYw() < 0) {
+                                throw new BizException(HttpCodeEnum.TICKET_COUNT_NOT_ENOUGH);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
     }
 }
