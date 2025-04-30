@@ -325,7 +325,9 @@ const handleOk = () => {
     end: trainTicketReserve.end,
     dailyTrainTicketId: trainTicketReserve.id,
     totalPrice: totalPrice.value,
-    tickets: passengerTickets.value
+    tickets: passengerTickets.value.map(item => {
+      return {...item, passengerType: window.PASSENGER_TYPE_ARRAY.filter(t => t.value === item.passengerType)[0].key}
+    })
   }).then(res => {
     if (res.data.code === 200) {
       message.success('下单成功');
