@@ -35,4 +35,14 @@ public enum SeatTypeEnum {
         }
         throw new IllegalArgumentException("无效的车座类型: " + code);
     }
+
+    public static SeatTypeEnum getByType(String type) {
+        for (SeatTypeEnum seatTypeEnum : SeatTypeEnum.values()) {
+            if (seatTypeEnum.type.equals(type)) {
+                return seatTypeEnum;
+            }
+        }
+
+        throw new IllegalArgumentException("没有匹配的车座类型: " + type);
+    }
 }
