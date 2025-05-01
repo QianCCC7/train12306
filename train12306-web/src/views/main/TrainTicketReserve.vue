@@ -183,15 +183,15 @@
       <div v-if="checkCanChooseSeat === 0" style="color: red;">
         您购买的车票不支持选座
         <div>12306规则：只有全部是一等座或全部是二等座才支持选座</div>
-        <div>12306规则：余票小于20时，不允许选座</div>
+        <div>12306规则：余票小于5时，不允许选座</div>
       </div>
       <div v-else >
         <div style="color: #999999; margin-bottom: 10px">提示：您可以选择{{passengerTickets.length}}个座位</div>
-        <a-switch class="choose-seat-item" v-for="item in seatColArray" :key="item.key"
-                  v-model:checked="choseSeat[item.key + '-1']" />
+        <a-switch v-for="item in seatColArray" :key="item.key" v-model:checked="choseSeat[item.key + '-1']"
+                  :checked-children="item.key + '-' + item.type" :un-checked-children="item.key + '-' + item.type" style="margin-left: 8px"/>
         <div v-if="passengerTickets.length > 1" style="margin-top: 5px">
-          <a-switch class="choose-seat-item" v-for="item in seatColArray" :key="item.key"
-                    v-model:checked="choseSeat[item.key + '-2']" />
+          <a-switch v-for="item in seatColArray" :key="item.key" v-model:checked="choseSeat[item.key + '-2']"
+                    :checked-children="item.key + '-' + item.type" :un-checked-children="item.key + '-' + item.type" style="margin-left: 8px"/>
         </div>
       </div>
     </a-modal>
@@ -288,10 +288,10 @@ const handleSubmit = () => {
     }
   }
 
-  // 判断余票是否小于20
+  // 判断余票是否小于5
   if (checkCanChooseSeat.value !== 0) {
-    const exists = seatInfoList.some(item => item.type === type && item.count < 20);
-    if (exists) checkCanChooseSeat.value = 0 // 余票小于20，不支持选座
+    const exists = seatInfoList.some(item => item.type === type && item.count < 5);
+    if (exists) checkCanChooseSeat.value = 0 // 余票小于5，不支持选座
   }
 
   visible.value = true;
@@ -393,7 +393,7 @@ watch(() => seatColArray.value, () => {
   choseSeat.value = {}
   for (let i = 1; i <= 2; i++) {
     seatColArray.value.forEach(item => {
-      // 拼接成A1-1,C1-1的格式，表示
+      // 拼接成A1-1,C1-1的格式，A1表示一等座的第一列，后面的1表示在第一排
       choseSeat.value[item.key + '-' + i] = false
     })
   }
