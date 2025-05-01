@@ -9,6 +9,7 @@ import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -29,4 +30,6 @@ public interface IDailyTrainSeatService extends IService<DailyTrainSeat> {
     void generateDailyTrainSeat(String trainCode, LocalDate date);
 
     int getSeatCountByCodeAndDateAndSeatType(String trainCode, LocalDate date, String seatType);
+
+    List<DailyTrainSeat> getListByDateAndCodeAndCarriageIndex(String trainCode, LocalDate date, Integer carriageIndex);
 }

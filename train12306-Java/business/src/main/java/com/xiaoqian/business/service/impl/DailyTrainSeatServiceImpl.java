@@ -114,4 +114,13 @@ public class DailyTrainSeatServiceImpl extends ServiceImpl<DailyTrainSeatMapper,
                 .count().intValue();
         return count == 0 ? -1 : count;
     }
+
+    @Override
+    public List<DailyTrainSeat> getListByDateAndCodeAndCarriageIndex(String trainCode, LocalDate date, Integer carriageIndex) {
+        return lambdaQuery().eq(DailyTrainSeat::getTrainCode, trainCode)
+                .eq(DailyTrainSeat::getDate, date)
+                .eq(DailyTrainSeat::getCarriageIndex, carriageIndex)
+                .orderByAsc(true, DailyTrainSeat::getCarriageSeatIndex)
+                .list();
+    }
 }

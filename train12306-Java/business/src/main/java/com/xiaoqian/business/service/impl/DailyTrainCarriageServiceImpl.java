@@ -118,4 +118,11 @@ public class DailyTrainCarriageServiceImpl extends ServiceImpl<DailyTrainCarriag
             save(dailyTrainCarriage);
         }
     }
+
+    public List<DailyTrainCarriage> getListByDateAndCodeAndSeatType(LocalDate date, String code, String seatType) {
+        return lambdaQuery().eq(DailyTrainCarriage::getDate, date)
+                .eq(DailyTrainCarriage::getTrainCode, code)
+                .eq(DailyTrainCarriage::getSeatType, seatType)
+                .list();
+    }
 }

@@ -9,6 +9,7 @@ import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -27,4 +28,6 @@ public interface IDailyTrainCarriageService extends IService<DailyTrainCarriage>
     ResponseResult<Void> deleteById(Long id);
 
     void generateDailyTrainCarriage(String trainCode, LocalDate date);
+
+    List<DailyTrainCarriage> getListByDateAndCodeAndSeatType(LocalDate date, String code, String seatType);
 }
