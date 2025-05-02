@@ -130,7 +130,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         }
         log.info("最终选座结果:{}", finalTrainSeatList);
         // 选座后的事务处理
-        confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList);
+        confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode());
 
         return ResponseResult.okEmptyResult();
     }

@@ -331,6 +331,7 @@ const handleOk = () => {
   }).then(res => {
     if (res.data.code === 200) {
       message.success('下单成功');
+      visible.value = false;
     } else {
       message.error(`下单失败: ${res.data.msg}`);
     }
@@ -339,8 +340,6 @@ const handleOk = () => {
   }).finally(() => {
     confirmLoading.value = false
   })
-
-  visible.value = false;
 }
 
 const getPassengerTypeColor = (type) => {
