@@ -188,10 +188,10 @@
       <div v-else >
         <div style="color: #999999; margin-bottom: 10px">提示：您可以选择{{passengerTickets.length}}个座位</div>
         <a-switch v-for="item in seatColArray" :key="item.key" v-model:checked="choseSeat[item.key + '-1']"
-                  :checked-children="item.key + '-' + item.type" :un-checked-children="item.key + '-' + item.type" style="margin-left: 8px"/>
+                  :checked-children="item.key + '-1'" :un-checked-children="item.key + '-1'" style="margin-left: 8px"/>
         <div v-if="passengerTickets.length > 1" style="margin-top: 5px">
           <a-switch v-for="item in seatColArray" :key="item.key" v-model:checked="choseSeat[item.key + '-2']"
-                    :checked-children="item.key + '-' + item.type" :un-checked-children="item.key + '-' + item.type" style="margin-left: 8px"/>
+                    :checked-children="item.key + '-2'" :un-checked-children="item.key + '-2'" style="margin-left: 8px"/>
         </div>
       </div>
     </a-modal>

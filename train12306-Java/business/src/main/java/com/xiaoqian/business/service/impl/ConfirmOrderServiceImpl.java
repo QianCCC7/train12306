@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.business.service.IDailyTrainCarriageService;
 import com.xiaoqian.business.service.IDailyTrainSeatService;
 import com.xiaoqian.business.service.IDailyTrainTicketService;
+import com.xiaoqian.business.service.transaction.ConfirmOrderTransaction;
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
@@ -53,6 +54,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     private final IDailyTrainTicketService dailyTrainTicketService;
     private final IDailyTrainCarriageService dailyTrainCarriageService;
     private final IDailyTrainSeatService dailyTrainSeatService;
+    private final ConfirmOrderTransaction confirmOrderTransaction;
 
     @Override
     public ResponseResult<Void> saveOrder(ConfirmOrderDTO confirmOrderDTO) {
@@ -127,13 +129,9 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             }
         }
         log.info("最终选座结果:{}", finalTrainSeatList);
-        // 选座逻辑
-            // 遍历车厢获取座位数据
-            // 筛选合适座位
-        // 更新座位售卖情况
-        // 更新余票数量
-        // 增加购票记录
-        // 更新订单状态
+        // 选座后的事务处理
+        confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList);
+
         return ResponseResult.okEmptyResult();
     }
 

@@ -27,6 +27,7 @@
             {{record.start}} ~ {{record.end}}
           </template>
           <template v-else-if="column.dataIndex === 'time'">
+            {{record.date}} <br>
             {{record.startTime}} ~ {{record.endTime}}
           </template>
           <template v-else-if="column.dataIndex === 'duration'">
