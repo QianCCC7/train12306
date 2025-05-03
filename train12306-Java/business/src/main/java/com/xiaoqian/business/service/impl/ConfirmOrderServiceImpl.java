@@ -78,6 +78,8 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     public ResponseResult<PageVo<ConfirmOrderVo>> listOrderPage(ConfirmOrderQueryDTO query) {
         Page<ConfirmOrder> page = new Page<>(query.getPageNum(), query.getPageSize());
         page(page, new LambdaQueryWrapper<ConfirmOrder>()
+                .eq(StringUtils.hasText(query.getCode()), ConfirmOrder::getTrainCode, query.getCode())
+                .eq(query.getDate() != null, ConfirmOrder::getDate, query.getDate())
                 .orderByAsc(true, ConfirmOrder::getDate)
                 .orderByAsc(true, ConfirmOrder::getTrainCode));
         List<ConfirmOrder> confirmOrderList = page.getRecords();
