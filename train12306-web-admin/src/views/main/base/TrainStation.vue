@@ -162,7 +162,7 @@ const rules = {
 const pagination = reactive({
   total: 0, // 数据总条数
   current: 1, // 当前页码
-  pageSize: 2, // 每页条数
+  pageSize: 8, // 每页条数
 })
 const typeMap = window.TRAIN_TYPE_ARRAY
 const loading = ref(false)

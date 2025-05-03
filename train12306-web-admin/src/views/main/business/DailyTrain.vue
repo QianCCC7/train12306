@@ -192,7 +192,7 @@ const rules = {
 const pagination = ref({
   total: 0, // 数据总条数
   current: 1, // 当前页码
-  pageSize: 2, // 每页条数
+  pageSize: 8, // 每页条数
   showSizeChanger: true,
   pageSizeOptions: ['2', '5', '10', '20'],
   showQuickJumper: true, // 是否可以快速跳转到指定页
