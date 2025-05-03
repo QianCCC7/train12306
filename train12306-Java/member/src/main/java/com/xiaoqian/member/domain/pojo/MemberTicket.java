@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
 import com.xiaoqian.common.enums.SeatColEnum;
+import com.xiaoqian.common.enums.SeatTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -98,7 +99,7 @@ public class MemberTicket implements Serializable {
     /**
      * 座位类型|枚举[SeatTypeEnum]
      */
-    private String seatType;
+    private SeatTypeEnum seatType;
 
     /**
      * 新增时间

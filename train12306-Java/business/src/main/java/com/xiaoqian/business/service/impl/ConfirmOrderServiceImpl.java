@@ -140,8 +140,13 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             }
         }
         log.info("最终选座结果:{}", finalTrainSeatList);
+        if (finalTrainSeatList.size() == passengerTickets.size()) {
+            log.info("购票成功!");
+        } else {
+            log.info("购票失败，座位不足！");
+        }
         // 选座后的事务处理
-        confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode());
+        confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets);
 
         return ResponseResult.okEmptyResult();
     }

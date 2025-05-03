@@ -1,9 +1,13 @@
 package com.xiaoqian.business.service.transaction;
 
+import com.xiaoqian.business.client.MemberTicketClient;
+import com.xiaoqian.business.domain.dto.PassengerTicketsDTO;
 import com.xiaoqian.business.domain.pojo.DailyTrainSeat;
 import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.mapper.DailyTrainSeatMapper;
 import com.xiaoqian.business.service.IDailyTrainTicketService;
+import com.xiaoqian.common.context.MemberContext;
+import com.xiaoqian.common.domain.dto.MemberTicketDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,14 +23,17 @@ import java.util.stream.Collectors;
 public class ConfirmOrderTransaction {
     private final DailyTrainSeatMapper dailyTrainSeatMapper;
     private final IDailyTrainTicketService dailyTrainTicketService;
+    private final MemberTicketClient memberTicketClient;
 
     @Transactional
-    public void afterConfirmOrder(List<DailyTrainSeat> finalTrainSeatList, DailyTrainTicket dailyTrainTicket, String seatType) {
-        for (DailyTrainSeat dailyTrainSeat : finalTrainSeatList) {
+    public void afterConfirmOrder(List<DailyTrainSeat> finalTrainSeatList, DailyTrainTicket dailyTrainTicket, String seatType,
+                                  List<PassengerTicketsDTO> passengerTickets) {
+        for (int i = 0; i < finalTrainSeatList.size(); i++) {
+            DailyTrainSeat seat = finalTrainSeatList.get(i);
             // 更新座位售卖情况
             DailyTrainSeat dailyTrainSeatForUpdate = new DailyTrainSeat();
-            dailyTrainSeatForUpdate.setId(dailyTrainSeat.getId());
-            dailyTrainSeatForUpdate.setSell(dailyTrainSeat.getSell());
+            dailyTrainSeatForUpdate.setId(seat.getId());
+            dailyTrainSeatForUpdate.setSell(seat.getSell());
             dailyTrainSeatForUpdate.setUpdateTime(LocalDateTime.now());
             dailyTrainSeatMapper.updateById(dailyTrainSeatForUpdate);
 
@@ -60,9 +67,15 @@ public class ConfirmOrderTransaction {
                     dailyTrainTicketService.updateBatchById(collect);
                     break;
             }
+
+            // 增加会员购票记录
+            PassengerTicketsDTO passengerTicketsDTO = passengerTickets.get(i);
+            MemberTicketDTO memberTicketDTO = new MemberTicketDTO(MemberContext.getId(), passengerTicketsDTO.getPassengerId(), passengerTicketsDTO.getPassengerName(),
+                    seat.getDate(), seat.getTrainCode(), seat.getCarriageIndex(), seat.getRowOrder(), seat.getCol().getCode(), dailyTrainTicket.getStart(),
+                    dailyTrainTicket.getStartTime(), dailyTrainTicket.getEnd(), dailyTrainTicket.getEndTime(), seat.getSeatType().getCode());
+            memberTicketClient.saveMemberTicket(memberTicketDTO);
         }
 
-        // 增加购票记录
         // 更新订单状态
     }
 }

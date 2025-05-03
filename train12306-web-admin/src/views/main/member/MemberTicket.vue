@@ -75,8 +75,8 @@ const columns = [
   },
   {
     title: '到达时间',
-    dataIndex: 'entTime',
-    key: 'entTime',
+    dataIndex: 'endTime',
+    key: 'endTime',
   },
   {
     title: '座位类型',

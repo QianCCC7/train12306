@@ -2,15 +2,14 @@ package com.xiaoqian.member.controller.admin;
 
 
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.domain.dto.MemberTicketDTO;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.member.domain.query.MemberTicketQueryDTO;
 import com.xiaoqian.member.domain.vo.MemberTicketVo;
 import com.xiaoqian.member.service.IMemberTicketService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -29,5 +28,10 @@ public class MemberTicketController {
     @GetMapping("/listMemberTicketPage")
     public ResponseResult<PageVo<MemberTicketVo>> listMemberTicketPage(MemberTicketQueryDTO query) {
         return passengerTicketService.listMemberTicketPage(query);
+    }
+
+    @PostMapping("/saveMemberTicket")
+    public ResponseResult<Void> saveMemberTicket(@RequestBody @Valid MemberTicketDTO memberTicketDTO) {
+        return passengerTicketService.saveMemberTicket(memberTicketDTO);
     }
 }
