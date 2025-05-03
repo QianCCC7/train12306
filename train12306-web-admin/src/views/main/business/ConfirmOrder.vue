@@ -18,12 +18,17 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue';
+import {ref, reactive, onMounted, h, resolveComponent} from 'vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import TrainSelect from "@/components/TrainSelect.vue";
 const dataSource = ref([]);
 const columns = [
+  {
+    title: '订单ID',
+    dataIndex: 'id',
+    key: 'id',
+  },
   {
     title: '车次编码',
     dataIndex: 'trainCode',
@@ -49,6 +54,29 @@ const columns = [
     dataIndex: 'totalPrice',
     key: 'totalPrice',
   },
+  {
+    title: '订单状态',
+    dataIndex: 'status',
+    key: 'status',
+    customRender: ({ record }) => {
+      const statusMap = {
+        "初始":    { color: 'default' },
+        "处理中":  { color: 'blue' },
+        "成功":    { color: 'green' },
+        "失败":    { color: 'red' },
+        "无票":    { color: 'orange' },
+        "取消":    { color: 'volcano' },
+      };
+      const { color } = statusMap[record.status] || { color: 'gray' };
+      const ATag = resolveComponent('a-tag');
+      return h(ATag, { color }, () => record.status || '未知');
+    },
+  },
+  {
+    title: '生成时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+  }
 ]
 const pagination = reactive({
   total: 0, // 数据总条数
