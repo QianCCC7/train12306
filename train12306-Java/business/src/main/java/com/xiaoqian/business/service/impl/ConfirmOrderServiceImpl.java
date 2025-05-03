@@ -3,6 +3,7 @@ package com.xiaoqian.business.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.ConfirmOrderDTO;
@@ -80,7 +81,15 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 .orderByAsc(true, ConfirmOrder::getDate)
                 .orderByAsc(true, ConfirmOrder::getTrainCode));
         List<ConfirmOrder> confirmOrderList = page.getRecords();
-        List<ConfirmOrderVo> confirmOrderVoList = BeanUtil.copyToList(confirmOrderList, ConfirmOrderVo.class);
+        List<ConfirmOrderVo> confirmOrderVoList = new ArrayList<>(confirmOrderList.size());
+        for (ConfirmOrder confirmOrder : confirmOrderList) {
+            String tickets = confirmOrder.getTickets();
+            List<PassengerTicketsDTO> passengerTicketsDTOList = JSONObject.parseArray(tickets, PassengerTicketsDTO.class);
+            ConfirmOrderVo confirmOrderVo = new ConfirmOrderVo(confirmOrder.getId(), confirmOrder.getMemberId(), confirmOrder.getDate(),
+                    confirmOrder.getTrainCode(), confirmOrder.getStart(), confirmOrder.getEnd(), confirmOrder.getDailyTrainTicketId(),
+                    confirmOrder.getTotalPrice(), passengerTicketsDTOList, confirmOrder.getStatus(), confirmOrder.getCreateTime(), confirmOrder.getUpdateTime());
+            confirmOrderVoList.add(confirmOrderVo);
+        }
 
         return ResponseResult.okResult(new PageVo<>(confirmOrderVoList, page.getPages(), page.getTotal()));
     }
