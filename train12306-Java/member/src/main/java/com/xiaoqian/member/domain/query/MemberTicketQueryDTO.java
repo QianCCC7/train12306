@@ -15,4 +15,5 @@ import java.time.LocalDate;
 public class MemberTicketQueryDTO extends PageQuery {
     private String trainCode;
     private LocalDate date;
+    private Long memberId;
 }

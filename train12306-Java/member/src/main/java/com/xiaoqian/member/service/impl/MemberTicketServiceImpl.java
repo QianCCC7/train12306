@@ -1,6 +1,7 @@
 package com.xiaoqian.member.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.domain.dto.MemberTicketDTO;
@@ -15,6 +16,7 @@ import com.xiaoqian.member.mapper.MemberTicketMapper;
 import com.xiaoqian.member.service.IMemberTicketService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +35,10 @@ public class MemberTicketServiceImpl extends ServiceImpl<MemberTicketMapper, Mem
     @Override
     public ResponseResult<PageVo<MemberTicketVo>> listMemberTicketPage(MemberTicketQueryDTO query) {
         Page<MemberTicket> page = new Page<>(query.getPageNum(), query.getPageSize());
-        page(page);
+        page(page, new LambdaQueryWrapper<MemberTicket>()
+                .eq(query.getMemberId() != null, MemberTicket::getMemberId, query.getMemberId())
+                .eq(StringUtils.hasText(query.getTrainCode()), MemberTicket::getTrainCode, query.getTrainCode())
+                .eq(query.getDate() != null, MemberTicket::getTrainDate, query.getDate()));
         List<MemberTicket> memberTicketList =page.getRecords();
         List<MemberTicketVo> memberTicketVoList = BeanUtil.copyToList(memberTicketList, MemberTicketVo.class);
 
