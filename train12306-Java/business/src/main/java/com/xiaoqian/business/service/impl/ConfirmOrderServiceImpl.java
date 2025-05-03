@@ -15,7 +15,7 @@ import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
-import com.xiaoqian.business.enums.SeatColEnum;
+import com.xiaoqian.common.enums.SeatColEnum;
 import com.xiaoqian.business.enums.SeatTypeEnum;
 import com.xiaoqian.business.mapper.ConfirmOrderMapper;
 import com.xiaoqian.business.service.IConfirmOrderService;

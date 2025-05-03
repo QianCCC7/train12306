@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
-import com.xiaoqian.business.enums.SeatColEnum;
+import com.xiaoqian.common.enums.SeatColEnum;
 import com.xiaoqian.business.enums.SeatTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
