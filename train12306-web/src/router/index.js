@@ -52,6 +52,14 @@ const routes = [
           title: '余票预定'
         }
       },
+      {
+        path: 'member-ticket',
+        name: 'member-ticket',
+        component: () => import('../views/main/MemberTicket.vue'),
+        meta: {
+          title: '购票记录'
+        }
+      },
     ],
     meta: {
       title: '首页',

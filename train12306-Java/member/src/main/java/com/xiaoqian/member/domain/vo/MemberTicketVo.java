@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.xiaoqian.common.enums.SeatColEnum;
+import com.xiaoqian.common.enums.SeatTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,7 +44,7 @@ public class MemberTicketVo {
     @JsonFormat(pattern = "HH:mm:ss", timezone = "GMT+08")
     private LocalTime endTime;
 
-    private String seatType;
+    private SeatTypeEnum seatType;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+08")
     private LocalDateTime createTime;
 

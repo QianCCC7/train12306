@@ -20,6 +20,11 @@
           <AuditOutlined />&nbsp; 余票查询
         </router-link>
       </a-menu-item>
+      <a-menu-item key="/member-ticket">
+        <router-link to="/member-ticket">
+          <AuditOutlined />&nbsp; 购票记录
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
