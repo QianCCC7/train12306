@@ -140,6 +140,20 @@ const routes = [
           },
         ]
       },
+      {
+        path: 'member/',
+        name: 'member',
+        children: [
+          {
+            path: 'member-ticket',
+            name: 'member-ticket',
+            component: () => import('../views/main/member/MemberTicket.vue'),
+            meta: {
+              title: '会员购票信息'
+            }
+          },
+        ]
+      }
     ],
     meta: {
       title: '首页',
