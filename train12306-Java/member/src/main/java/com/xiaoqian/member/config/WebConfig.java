@@ -13,6 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new MemberInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns("/member/member/sendCode",
-                        "/member/member/login");
+                        "/member/member/login", "/member/admin/**");
     }
 }
