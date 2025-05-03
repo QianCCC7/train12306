@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
 import com.xiaoqian.common.enums.SeatColEnum;
-import com.xiaoqian.business.enums.SeatTypeEnum;
+import com.xiaoqian.common.enums.SeatTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

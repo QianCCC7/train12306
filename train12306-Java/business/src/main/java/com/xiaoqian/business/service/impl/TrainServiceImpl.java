@@ -11,7 +11,7 @@ import com.xiaoqian.business.domain.pojo.TrainSeat;
 import com.xiaoqian.business.domain.query.TrainQueryDTO;
 import com.xiaoqian.business.domain.vo.TrainVo;
 import com.xiaoqian.common.enums.SeatColEnum;
-import com.xiaoqian.business.enums.SeatTypeEnum;
+import com.xiaoqian.common.enums.SeatTypeEnum;
 import com.xiaoqian.business.mapper.TrainMapper;
 import com.xiaoqian.business.service.ITrainCarriageService;
 import com.xiaoqian.business.service.ITrainSeatService;

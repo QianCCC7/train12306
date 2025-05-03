@@ -10,7 +10,7 @@ import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.domain.pojo.TrainStation;
 import com.xiaoqian.business.domain.query.DailyTrainTicketQueryDTO;
 import com.xiaoqian.business.domain.vo.DailyTrainTicketVo;
-import com.xiaoqian.business.enums.SeatTypeEnum;
+import com.xiaoqian.common.enums.SeatTypeEnum;
 import com.xiaoqian.business.enums.TrainTypeEnum;
 import com.xiaoqian.business.mapper.DailyTrainTicketMapper;
 import com.xiaoqian.business.service.IDailyTrainSeatService;

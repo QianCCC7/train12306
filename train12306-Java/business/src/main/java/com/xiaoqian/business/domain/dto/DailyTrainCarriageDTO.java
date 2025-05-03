@@ -1,6 +1,6 @@
 package com.xiaoqian.business.domain.dto;
 
-import com.xiaoqian.business.enums.SeatTypeEnum;
+import com.xiaoqian.common.enums.SeatTypeEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
