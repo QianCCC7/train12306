@@ -9,6 +9,8 @@ import com.xiaoqian.member.domain.vo.MemberTicketVo;
 import com.xiaoqian.member.service.IMemberTicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/member-ticket")
 @RequiredArgsConstructor
+@RefreshScope
 public class MemberTicketAdminController {
     private final IMemberTicketService passengerTicketService;
 
@@ -33,5 +36,13 @@ public class MemberTicketAdminController {
     @PostMapping("/saveMemberTicket")
     public ResponseResult<Void> saveMemberTicket(@RequestBody @Valid MemberTicketDTO memberTicketDTO) {
         return passengerTicketService.saveMemberTicket(memberTicketDTO);
+    }
+
+    @Value("${test.myValue}")
+    private String myValue;
+
+    @GetMapping("/testNacos")
+    public String testNacos() {
+        return myValue;
     }
 }
