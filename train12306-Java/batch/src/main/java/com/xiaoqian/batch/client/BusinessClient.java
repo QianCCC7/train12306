@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.time.LocalDate;
 
 
-@FeignClient(name = "business", url = "localhost:8000/business", path = "/admin/daily-train")
+@FeignClient(name = "business", path = "/business/admin/daily-train")
 public interface BusinessClient {
     @GetMapping("/generateDailyTrain/{date}")
     ResponseResult<Void> generateDailyTrain(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date);
