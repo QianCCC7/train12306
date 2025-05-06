@@ -15,6 +15,7 @@ import com.xiaoqian.member.domain.vo.MemberTicketVo;
 import com.xiaoqian.member.mapper.MemberTicketMapper;
 import com.xiaoqian.member.service.IMemberTicketService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.seata.core.context.RootContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -49,7 +50,9 @@ public class MemberTicketServiceImpl extends ServiceImpl<MemberTicketMapper, Mem
 
     @Override
     public ResponseResult<Void> saveMemberTicket(MemberTicketDTO memberTicketDTO) {
+        log.info("seata全局事务ID：{}", RootContext.getXID());
         LocalDateTime now = LocalDateTime.now();
+        int t = 1 / 0;
         MemberTicket memberTicket = new MemberTicket(SnowUtil.getSnowFlakeNextId(), memberTicketDTO.getMemberId(),
                 memberTicketDTO.getPassengerId(), memberTicketDTO.getPassengerName(), memberTicketDTO.getTrainDate(),
                 memberTicketDTO.getTrainCode(), memberTicketDTO.getCarriageIndex(), memberTicketDTO.getSeatRow(),

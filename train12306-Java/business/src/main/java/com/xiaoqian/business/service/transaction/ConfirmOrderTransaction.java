@@ -11,10 +11,11 @@ import com.xiaoqian.business.mapper.DailyTrainSeatMapper;
 import com.xiaoqian.business.service.IDailyTrainTicketService;
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.dto.MemberTicketDTO;
+import io.seata.core.context.RootContext;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,9 +30,10 @@ public class ConfirmOrderTransaction {
     private final MemberTicketClient memberTicketClient;
     private final ConfirmOrderMapper confirmOrderMapper;
 
-    @Transactional
-    public Integer afterConfirmOrder(List<DailyTrainSeat> finalTrainSeatList, DailyTrainTicket dailyTrainTicket, String seatType,
+    @GlobalTransactional
+    public Boolean afterConfirmOrder(List<DailyTrainSeat> finalTrainSeatList, DailyTrainTicket dailyTrainTicket, String seatType,
                                   List<PassengerTicketsDTO> passengerTickets, ConfirmOrder confirmOrder) {
+        log.info("seata全局事务ID：{}", RootContext.getXID());
         for (int i = 0; i < finalTrainSeatList.size(); i++) {
             DailyTrainSeat seat = finalTrainSeatList.get(i);
             // 更新座位售卖情况
@@ -84,11 +86,11 @@ public class ConfirmOrderTransaction {
             confirmOrder.setStatus(ConfirmOrderStatusEnum.EMPTY);
             confirmOrderMapper.updateById(confirmOrder);
             log.info("购票失败，座位不足！");
-            return 0;
+            return false;
         }
         confirmOrder.setStatus(ConfirmOrderStatusEnum.SUCCESS);
         confirmOrderMapper.updateById(confirmOrder);
         log.info("购票成功!");
-        return 1;
+        return true;
     }
 }

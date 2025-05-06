@@ -2,7 +2,9 @@ package com.xiaoqian.common.handler;
 
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.exception.BizException;
+import io.seata.core.context.RootContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,7 +35,11 @@ public class MyExceptionHandler {
      * 所有异常统一处理
      */
     @ExceptionHandler(Exception.class)
-    public ResponseResult<Void> exceptionHandler(Exception ex) {
+    public ResponseResult<Void> exceptionHandler(Exception ex) throws Exception {
+        log.info("seata全局事务ID：{}", RootContext.getXID());
+        if (StringUtils.hasText(RootContext.getXID())) {
+            throw ex;
+        }
         log.debug("系统出现异常：{}", ex.getMessage());
         return ResponseResult.errorResult(500, "系统出现异常，请联系管理员");
     }

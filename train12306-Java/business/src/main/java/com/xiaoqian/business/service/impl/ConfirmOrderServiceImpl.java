@@ -141,11 +141,9 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         }
         log.info("最终选座结果:{}", finalTrainSeatList);
         // 选座后的事务处理
-        int res = confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
-        if (res == 1) {
-            return ResponseResult.okEmptyResult();
-        }
-        return ResponseResult.errorResult(400, "部分选座余票不足");
+        boolean success = confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
+
+        return success ? ResponseResult.okEmptyResult() : ResponseResult.errorResult(400, "部分选座余票不足");
     }
 
     // 选座逻辑
