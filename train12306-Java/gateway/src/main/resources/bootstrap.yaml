@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: gateway # 服务名称
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # nacos服务地址
+      discovery:
+        server-addr: localhost:8848 # nacos服务地址
+        namespace: 8558e8aa-362e-4532-b220-50aa63b98e3b

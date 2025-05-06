@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: batch # 服务名称
+  profiles:
+    active: dev # 服务环境
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # nacos服务地址
+      discovery:
+        server-addr: localhost:8848 # nacos服务地址
+        namespace: 8558e8aa-362e-4532-b220-50aa63b98e3b
+      config:
+        file-extension: yaml # 文件后缀
+        namespace: 8558e8aa-362e-4532-b220-50aa63b98e3b
