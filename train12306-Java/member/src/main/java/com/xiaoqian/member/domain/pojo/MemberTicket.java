@@ -10,8 +10,10 @@ import java.io.Serializable;
 
 import com.xiaoqian.common.enums.SeatColEnum;
 import com.xiaoqian.common.enums.SeatTypeEnum;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -23,6 +25,8 @@ import lombok.experimental.Accessors;
  * @since 2025-05-03
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("member_ticket")

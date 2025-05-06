@@ -15,6 +15,7 @@ import com.xiaoqian.member.domain.vo.MemberTicketVo;
 import com.xiaoqian.member.mapper.MemberTicketMapper;
 import com.xiaoqian.member.service.IMemberTicketService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +31,7 @@ import java.util.List;
  * @since 2025-05-03
  */
 @Service
+@Slf4j
 public class MemberTicketServiceImpl extends ServiceImpl<MemberTicketMapper, MemberTicket> implements IMemberTicketService {
 
     @Override
@@ -47,15 +49,13 @@ public class MemberTicketServiceImpl extends ServiceImpl<MemberTicketMapper, Mem
 
     @Override
     public ResponseResult<Void> saveMemberTicket(MemberTicketDTO memberTicketDTO) {
-        MemberTicket memberTicket = BeanUtil.copyProperties(memberTicketDTO, MemberTicket.class);
         LocalDateTime now = LocalDateTime.now();
-        SeatColEnum seatColEnum = SeatColEnum.fromCode(memberTicketDTO.getSeatCol());
-        SeatTypeEnum seatTypeEnum = SeatTypeEnum.fromCode(memberTicketDTO.getSeatType());
-        memberTicket.setSeatCol(seatColEnum);
-        memberTicket.setSeatType(seatTypeEnum);
-        memberTicket.setId(SnowUtil.getSnowFlakeNextId());
-        memberTicket.setCreateTime(now);
-        memberTicket.setUpdateTime(now);
+        MemberTicket memberTicket = new MemberTicket(SnowUtil.getSnowFlakeNextId(), memberTicketDTO.getMemberId(),
+                memberTicketDTO.getPassengerId(), memberTicketDTO.getPassengerName(), memberTicketDTO.getTrainDate(),
+                memberTicketDTO.getTrainCode(), memberTicketDTO.getCarriageIndex(), memberTicketDTO.getSeatRow(),
+                SeatColEnum.fromCode(memberTicketDTO.getSeatCol()), memberTicketDTO.getStartStation(), memberTicketDTO.getStartTime(),
+                memberTicketDTO.getEndStation(), memberTicketDTO.getEndTime(), SeatTypeEnum.fromCode(memberTicketDTO.getSeatType()),
+                now, now);
         save(memberTicket);
 
         return ResponseResult.okEmptyResult();
