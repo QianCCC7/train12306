@@ -52,7 +52,7 @@ public class MemberTicketServiceImpl extends ServiceImpl<MemberTicketMapper, Mem
     public ResponseResult<Void> saveMemberTicket(MemberTicketDTO memberTicketDTO) {
         log.info("seata全局事务ID：{}", RootContext.getXID());
         LocalDateTime now = LocalDateTime.now();
-        int t = 1 / 0;
+//        int t = 1 / 0;
         MemberTicket memberTicket = new MemberTicket(SnowUtil.getSnowFlakeNextId(), memberTicketDTO.getMemberId(),
                 memberTicketDTO.getPassengerId(), memberTicketDTO.getPassengerName(), memberTicketDTO.getTrainDate(),
                 memberTicketDTO.getTrainCode(), memberTicketDTO.getCarriageIndex(), memberTicketDTO.getSeatRow(),
