@@ -14,9 +14,26 @@ logging:
   level:
     com.xiaoqian: debug
 seata:
+  config:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      namespace: 8558e8aa-362e-4532-b220-50aa63b98e3b
+      group: SEATA_GROUP
+      username: nacos
+      password: nacos
+      context-path:
+      data-id: seataServer.properties
+  registry:
+    # support: nacos, eureka, redis, zk, consul, etcd3, sofa
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      namespace: 8558e8aa-362e-4532-b220-50aa63b98e3b
+      cluster: default
+      username: nacos
+      password: nacos
+      context-path:
   tx-service-group: train-group # 事务组名称
-  service:
-    vgroup-mapping:
-      train-group: default # 事务组和seata集群做关联
-    grouplist:
-      default: localhost:8091 # seata集群对应的机器
