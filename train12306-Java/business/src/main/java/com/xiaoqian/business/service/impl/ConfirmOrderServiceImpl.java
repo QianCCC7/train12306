@@ -32,7 +32,8 @@ import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -58,7 +59,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     private final IDailyTrainCarriageService dailyTrainCarriageService;
     private final IDailyTrainSeatService dailyTrainSeatService;
     private final ConfirmOrderTransaction confirmOrderTransaction;
-    private final StringRedisTemplate redisTemplate;
+    private final RedissonClient redissonClient;
 
     @Override
     public ResponseResult<Void> saveOrder(ConfirmOrderDTO confirmOrderDTO) {
@@ -102,13 +103,15 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     @Override
     public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
         String key = confirmOrderDTO.getDate() + confirmOrderDTO.getTrainCode();
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
-        if (Boolean.FALSE.equals(lock)) {
-            log.info("获取锁失败");
-            throw new BizException(HttpCodeEnum.TICKET_GET_LOCK_FAIL);
-        }
-        log.info("获取锁成功");
+        RLock lock = null;
         try {
+            lock = redissonClient.getLock(key);
+            boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS);
+            if (!tryLock) {
+                log.info("获取锁失败");
+                throw new BizException(HttpCodeEnum.TICKET_GET_LOCK_FAIL);
+            }
+            log.info("获取锁成功");
             // 数据校验：车次是否存在，余票是否存在，车次是否在有效期内，ticket条数>0，同乘客同车次是否已经买过
             // 初始化订单状态
             LocalDateTime now = LocalDateTime.now();
@@ -152,10 +155,16 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             boolean success = confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
 
             return success ? ResponseResult.okEmptyResult() : ResponseResult.errorResult(400, "部分选座余票不足");
+        } catch (InterruptedException e) {
+            log.error("购票异常:{}", String.valueOf(e));
         } finally {
             log.info("释放锁");
-            redisTemplate.delete(key); // 释放锁
+            if (lock != null && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
+
+        return ResponseResult.errorResult(400, "部分选座余票不足");
     }
 
     // 选座逻辑
