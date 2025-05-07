@@ -3,6 +3,7 @@ package com.xiaoqian.business.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -296,9 +297,15 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         }
     }
 
-    @SentinelResource("testSentinel")
+    @SentinelResource(value = "testSentinel", blockHandler = "handleBlock")
     @Override
     public ResponseResult<String> testSentinel() {
         return ResponseResult.okResult("sentinel success");
+    }
+
+    // 注意方法的参数和返回值类型要和testSentinel方法的参数一致，再加一个BlockException
+    public ResponseResult<String> handleBlock(BlockException blockException) {
+        log.info("请求被限流:{}", blockException.toString());
+        throw new BizException(HttpCodeEnum.SENTINEL_FLOW_EXCEPTION);
     }
 }
