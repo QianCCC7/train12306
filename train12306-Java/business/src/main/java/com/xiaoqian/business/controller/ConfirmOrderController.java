@@ -34,4 +34,9 @@ public class ConfirmOrderController {
     public ResponseResult<PageVo<ConfirmOrderVo>> listOrderPage(ConfirmOrderQueryDTO confirmOrderQueryDTO) {
         return confirmOrderService.listOrderPage(confirmOrderQueryDTO);
     }
+
+    @GetMapping("/testSentinel")
+    public ResponseResult<String> testSentinel() {
+        return confirmOrderService.testSentinel();
+    }
 }

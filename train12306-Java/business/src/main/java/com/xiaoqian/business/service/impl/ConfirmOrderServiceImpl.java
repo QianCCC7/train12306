@@ -2,6 +2,7 @@ package com.xiaoqian.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -293,5 +294,11 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 }
             }
         }
+    }
+
+    @SentinelResource("testSentinel")
+    @Override
+    public ResponseResult<String> testSentinel() {
+        return ResponseResult.okResult("sentinel success");
     }
 }
