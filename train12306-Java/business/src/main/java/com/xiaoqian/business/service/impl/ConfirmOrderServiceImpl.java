@@ -97,7 +97,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     }
 
     @Override
-    public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
+    public synchronized ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
         // 数据校验：车次是否存在，余票是否存在，车次是否在有效期内，ticket条数>0，同乘客同车次是否已经买过
         // 初始化订单状态
         LocalDateTime now = LocalDateTime.now();
@@ -126,13 +126,10 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                     seatColmap.put(seatColEnum.getCode() + "-" + i, index++);
                 }
             }
-            log.info("newSeatCol:{}", seatColmap);
             // 处理每个乘客座位的绝对偏移值，以第一个座位基准，比如绝对偏移值为 [1, 3, 5]
             List<Integer> absoluteOffsetList = passengerTickets.stream().map(el -> seatColmap.get(el.getSeat())).collect(Collectors.toList());
-            log.info("absoluteOffsetList:{}", absoluteOffsetList);
             // 最终偏移值, 将绝对偏移值优化为 [0, 2, 4]
             List<Integer> offsetList = absoluteOffsetList.stream().map(el -> el - absoluteOffsetList.get(0)).collect(Collectors.toList());
-            log.info("offsetList:{}", offsetList);
             chooseSeat(date, code, seatType.getCode(), dailyTrainTicket.getStartIndex(), dailyTrainTicket.getEndIndex(), passengerTicket.getSeat().split("-")[0], offsetList, finalTrainSeatList);
         } else { // 未选座
             for (int i = 0; i < passengerTickets.size(); i++) {
