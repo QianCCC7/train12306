@@ -15,6 +15,14 @@ spring:
       transport:
         port: 8719
         dashboard: localhost:18080
+      datasource:
+        nacos:
+          nacos:
+            server-addr: localhost:8848
+            namespace: 8558e8aa-362e-4532-b220-50aa63b98e3b
+            data-id: sentinel
+            group-id: SENTINEL_GROUP
+            rule-type: flow
 server:
   port: 8002
   servlet:
