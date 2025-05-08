@@ -10,6 +10,11 @@ spring:
     redis:
       port: 6379
       host: 10.211.55.3
+  cloud:
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:18080
 server:
   port: 8002
   servlet:

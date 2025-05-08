@@ -29,7 +29,7 @@ public class BusinessApplication {
         LOG.info("business服务启动成功");
         LOG.info("地址: http://127.0.0.1:{}", environment.getProperty("server.port"));
 
-        initFlowRules();
+//        initFlowRules();
     }
 
     // sentinel限流规则
