@@ -19,6 +19,6 @@ public class SentinelController {
     public ResponseResult<String> hello() {
         ResponseResult<String> stringResponseResult = businessClient.testSentinel2();
         log.info("business:{}", stringResponseResult.getData());
-        return ResponseResult.okResult("batch模块测试sentinel熔断");
+        return ResponseResult.okResult(stringResponseResult.getData());
     }
 }
