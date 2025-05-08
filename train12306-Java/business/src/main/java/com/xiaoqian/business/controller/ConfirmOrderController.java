@@ -39,4 +39,9 @@ public class ConfirmOrderController {
     public ResponseResult<String> testSentinel() {
         return confirmOrderService.testSentinel();
     }
+
+    @GetMapping("/testSentinel2")
+    public ResponseResult<String> testSentinel2() {
+        return confirmOrderService.testSentinel2();
+    }
 }

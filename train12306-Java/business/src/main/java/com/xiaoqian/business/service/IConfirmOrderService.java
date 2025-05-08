@@ -25,4 +25,6 @@ public interface IConfirmOrderService extends IService<ConfirmOrder> {
     ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO);
 
     ResponseResult<String> testSentinel();
+
+    ResponseResult<String> testSentinel2();
 }

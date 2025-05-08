@@ -308,4 +308,15 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         log.info("请求被限流:{}", blockException.toString());
         throw new BizException(HttpCodeEnum.SENTINEL_FLOW_EXCEPTION);
     }
+
+    // 测试熔断
+    @Override
+    public ResponseResult<String> testSentinel2() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseResult.okResult("business模块测试sentinel熔断降级");
+    }
 }
