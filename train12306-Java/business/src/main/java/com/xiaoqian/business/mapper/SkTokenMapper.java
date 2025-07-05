@@ -14,5 +14,5 @@ import java.time.LocalDate;
  * @since 2025-06-02
  */
 public interface SkTokenMapper extends BaseMapper<SkToken> {
-    int decrease(String trainCode, LocalDate date);
+    int decrease(String trainCode, LocalDate date, Integer count);
 }

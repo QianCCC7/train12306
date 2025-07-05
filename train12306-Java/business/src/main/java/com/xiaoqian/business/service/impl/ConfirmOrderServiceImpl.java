@@ -18,6 +18,7 @@ import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
 import com.xiaoqian.business.service.*;
+import com.xiaoqian.common.enums.RedisKeyPreEnum;
 import com.xiaoqian.common.enums.SeatColEnum;
 import com.xiaoqian.common.enums.SeatTypeEnum;
 import com.xiaoqian.business.mapper.ConfirmOrderMapper;
@@ -109,7 +110,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             log.info("令牌校验不通过");
             throw new BizException(HttpCodeEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
         }
-        String key = confirmOrderDTO.getDate() + confirmOrderDTO.getTrainCode();
+        String key = RedisKeyPreEnum.CONFIRM_ORDER.getCode() + confirmOrderDTO.getDate() + confirmOrderDTO.getTrainCode();
         RLock lock = null;
         try {
             lock = redissonClient.getLock(key);

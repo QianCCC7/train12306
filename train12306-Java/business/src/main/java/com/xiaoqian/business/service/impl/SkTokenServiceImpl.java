@@ -15,12 +15,14 @@ import com.xiaoqian.business.service.ISkTokenService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.enums.RedisKeyPreEnum;
 import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -104,13 +106,35 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
 
     @Override
     public boolean checkSkToken(String trainCode, LocalDate date, Long memberId) {
+        // 防止机器人刷票
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String key = formatter.format(date) + "-" + trainCode + "-" + memberId;
-        Boolean ok = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
+        String robotKey = RedisKeyPreEnum.SK_TOKEN.getCode() + formatter.format(date) + "-" + trainCode + "-" + memberId;
+        Boolean ok = redisTemplate.opsForValue().setIfAbsent(robotKey, robotKey, 5, TimeUnit.SECONDS);
         if (Boolean.FALSE.equals(ok)) {
             throw new BizException(HttpCodeEnum.SK_TOKEN_GET_LOCK_FAIL);
         }
-        return skTokenMapper.decrease(trainCode, date) > 0;
+        // 利用redis缓存优化减少令牌余量逻辑
+        String countKey = RedisKeyPreEnum.SK_TOKEN_COUNT.getCode() + formatter.format(date) + "-" + trainCode + "-" + memberId;
+        String countValue = redisTemplate.opsForValue().get(countKey);
+        if (StringUtils.hasText(countValue)) {
+            Long curCount = redisTemplate.opsForValue().decrement(countKey, 1);
+            redisTemplate.expire(countKey, 1, TimeUnit.MINUTES);
+            if (curCount != null && curCount >= 0) {
+                // 每减少五次令牌更新一次数据库
+                if (curCount % 5 == 0) {
+                    return skTokenMapper.decrease(trainCode, date, 5) > 0;
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            SkToken skToken = lambdaQuery().eq(SkToken::getDate, date).eq(SkToken::getTrainCode, trainCode).one();
+            int count = skToken.getCount();
+            if (count <= 0) return false;
+            redisTemplate.opsForValue().set(countKey, String.valueOf(count - 1), 1, TimeUnit.MINUTES);
+            return true;
+        }
     }
 
 }
