@@ -35,6 +35,7 @@ import java.util.List;
 public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> implements ISkTokenService {
     private final IDailyTrainStationService dailyTrainStationService;
     private final IDailyTrainSeatService dailyTrainSeatService;
+    private final SkTokenMapper skTokenMapper;
 
     @Override
     public ResponseResult<Void> saveSkToken(SkTokenDTO skTokenDTO) {
@@ -73,7 +74,7 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
     }
 
     @Override
-    public ResponseResult<Void> generateDailyStToken(String trainCode, LocalDate date) {
+    public void generateDailyStToken(String trainCode, LocalDate date) {
         // 删除date天令牌余量
         remove(new LambdaQueryWrapper<SkToken>()
                 .eq(SkToken::getTrainCode, trainCode)
@@ -92,6 +93,11 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
         // 令牌余量最大为：车座的数量 * 车站数量
         skToken.setCount(stationCount * seatCount);
         save(skToken);
-        return ResponseResult.okEmptyResult();
     }
+
+    @Override
+    public boolean checkSkToken(String trainCode, LocalDate date) {
+        return skTokenMapper.decrease(trainCode, date) > 0;
+    }
+
 }

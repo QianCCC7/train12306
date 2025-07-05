@@ -17,14 +17,11 @@ import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
+import com.xiaoqian.business.service.*;
 import com.xiaoqian.common.enums.SeatColEnum;
 import com.xiaoqian.common.enums.SeatTypeEnum;
 import com.xiaoqian.business.mapper.ConfirmOrderMapper;
-import com.xiaoqian.business.service.IConfirmOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xiaoqian.business.service.IDailyTrainCarriageService;
-import com.xiaoqian.business.service.IDailyTrainSeatService;
-import com.xiaoqian.business.service.IDailyTrainTicketService;
 import com.xiaoqian.business.service.transaction.ConfirmOrderTransaction;
 import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.ResponseResult;
@@ -62,6 +59,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     private final IDailyTrainSeatService dailyTrainSeatService;
     private final ConfirmOrderTransaction confirmOrderTransaction;
     private final RedissonClient redissonClient;
+    private final ISkTokenService skTokenService;
 
     @Override
     public ResponseResult<Void> saveOrder(ConfirmOrderDTO confirmOrderDTO) {
@@ -104,6 +102,13 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
 
     @Override
     public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
+        boolean checked = skTokenService.checkSkToken(confirmOrderDTO.getTrainCode(), confirmOrderDTO.getDate());
+        if (checked) {
+            log.info("令牌校验通过");
+        } else {
+            log.info("令牌校验不通过");
+            throw new BizException(HttpCodeEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+        }
         String key = confirmOrderDTO.getDate() + confirmOrderDTO.getTrainCode();
         RLock lock = null;
         try {

@@ -26,5 +26,7 @@ public interface ISkTokenService extends IService<SkToken> {
 
     ResponseResult<Void> deleteById(Long id);
 
-    ResponseResult<Void> generateDailyStToken(String trainCode, LocalDate date);
+    void generateDailyStToken(String trainCode, LocalDate date);
+
+    boolean checkSkToken(String trainCode, LocalDate date);
 }
