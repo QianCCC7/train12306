@@ -8,6 +8,8 @@ import com.xiaoqian.business.domain.vo.SkTokenVo;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
+import java.time.LocalDate;
+
 /**
  * <p>
  * 秒杀令牌 服务类
@@ -23,4 +25,6 @@ public interface ISkTokenService extends IService<SkToken> {
     ResponseResult<PageVo<SkTokenVo>> listSkTokenPage(SkTokenQueryDTO queryDTO);
 
     ResponseResult<Void> deleteById(Long id);
+
+    ResponseResult<Void> generateDailyStToken(String trainCode, LocalDate date);
 }

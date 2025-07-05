@@ -44,6 +44,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
     private final IDailyTrainCarriageService dailyTrainCarriageService;
     private final IDailyTrainSeatService dailyTrainSeatService;
     private final IDailyTrainTicketService dailyTrainTicketService;
+    private final ISkTokenService skTokenService;
 
     @Override
     public ResponseResult<Void> saveDailyTrain(DailyTrainDTO dailyTrainDTO) {
@@ -138,5 +139,7 @@ public class DailyTrainServiceImpl extends ServiceImpl<DailyTrainMapper, DailyTr
         dailyTrainSeatService.generateDailyTrainSeat(train.getCode(), date);
         // 生成车次车票信息
         dailyTrainTicketService.generateDailyTrainTicket(train.getCode(), date, dailyTrain);
+        // 生成令牌数量
+        skTokenService.generateDailyStToken(train.getCode(), date);
     }
 }

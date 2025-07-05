@@ -110,7 +110,7 @@ public class DailyTrainSeatServiceImpl extends ServiceImpl<DailyTrainSeatMapper,
     public int getSeatCountByCodeAndDateAndSeatType(String trainCode, LocalDate date, String seatType) {
         int count = lambdaQuery().eq(DailyTrainSeat::getTrainCode, trainCode)
                 .eq(DailyTrainSeat::getDate, date)
-                .eq(DailyTrainSeat::getSeatType, seatType)
+                .eq(StringUtils.hasText(seatType), DailyTrainSeat::getSeatType, seatType)
                 .count().intValue();
         return count == 0 ? -1 : count;
     }

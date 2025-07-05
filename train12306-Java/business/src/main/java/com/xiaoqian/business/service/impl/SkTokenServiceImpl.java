@@ -8,13 +8,17 @@ import com.xiaoqian.business.domain.pojo.SkToken;
 import com.xiaoqian.business.domain.query.SkTokenQueryDTO;
 import com.xiaoqian.business.domain.vo.SkTokenVo;
 import com.xiaoqian.business.mapper.SkTokenMapper;
+import com.xiaoqian.business.service.IDailyTrainSeatService;
+import com.xiaoqian.business.service.IDailyTrainStationService;
 import com.xiaoqian.business.service.ISkTokenService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +31,10 @@ import java.util.List;
  * @since 2025-06-02
  */
 @Service
+@RequiredArgsConstructor
 public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> implements ISkTokenService {
+    private final IDailyTrainStationService dailyTrainStationService;
+    private final IDailyTrainSeatService dailyTrainSeatService;
 
     @Override
     public ResponseResult<Void> saveSkToken(SkTokenDTO skTokenDTO) {
@@ -62,6 +69,29 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
     @Override
     public ResponseResult<Void> deleteById(Long id) {
         removeById(id);
+        return ResponseResult.okEmptyResult();
+    }
+
+    @Override
+    public ResponseResult<Void> generateDailyStToken(String trainCode, LocalDate date) {
+        // 删除date天令牌余量
+        remove(new LambdaQueryWrapper<SkToken>()
+                .eq(SkToken::getTrainCode, trainCode)
+                .eq(SkToken::getDate, date));
+
+        SkToken skToken = new SkToken();
+        skToken.setId(SnowUtil.getSnowFlakeNextId());
+        skToken.setDate(date);
+        skToken.setTrainCode(trainCode);
+        LocalDateTime now = LocalDateTime.now();
+        skToken.setCreateTime(now);
+        skToken.setUpdateTime(now);
+
+        int stationCount = dailyTrainStationService.getStationCountByCodeAndDate(trainCode, date);
+        int seatCount = dailyTrainSeatService.getSeatCountByCodeAndDateAndSeatType(trainCode, date, null);
+        // 令牌余量最大为：车座的数量 * 车站数量
+        skToken.setCount(stationCount * seatCount);
+        save(skToken);
         return ResponseResult.okEmptyResult();
     }
 }

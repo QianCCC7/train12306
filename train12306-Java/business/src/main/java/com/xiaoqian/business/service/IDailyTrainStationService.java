@@ -28,4 +28,6 @@ public interface IDailyTrainStationService extends IService<DailyTrainStation> {
 
 
     void generateDailyTrainStation(String trainCode, LocalDate date);
+
+    int getStationCountByCodeAndDate(String trainCode, LocalDate date);
 }

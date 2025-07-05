@@ -132,4 +132,12 @@ public class DailyTrainStationServiceImpl extends ServiceImpl<DailyTrainStationM
             save(dailyTrainStation);
         }
     }
+
+    @Override
+    public int getStationCountByCodeAndDate(String trainCode, LocalDate date) {
+        int count = lambdaQuery().eq(DailyTrainStation::getTrainCode, trainCode)
+                .eq(DailyTrainStation::getDate, date)
+                .count().intValue();
+        return count == 0 ? -1 : count;
+    }
 }

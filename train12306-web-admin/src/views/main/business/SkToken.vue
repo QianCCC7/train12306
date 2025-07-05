@@ -6,9 +6,6 @@
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
-        <a-button type="primary" @click="handleAdd" class="add-button">
-          <plus-outlined /> 新增令牌余量
-        </a-button>
       </div>
     </div>
     <div>
@@ -17,9 +14,6 @@
           <template v-if="column.dataIndex === 'operation'">
             <a-space>
               <a @click="handleEdit(record)">编辑</a>
-              <a-popconfirm title="删除后不可恢复，确认删除?" @confirm="handleDelete(record)" ok-text="确认" cancel-text="取消">
-                <a style="color: red">删除</a>
-              </a-popconfirm>
             </a-space>
           </template>
         </template>
@@ -42,10 +36,10 @@
           layout="vertical"
       >
         <a-form-item name="trainCode" label="车次编码">
-          <train-select v-model:value="formData.trainCode" width="300px"></train-select>
+          <train-select v-model:value="formData.trainCode" width="300px" disable></train-select>
         </a-form-item>
         <a-form-item name="date" label="日期">
-          <a-date-picker v-model:value="formData.date" value-format="YYYY-MM-DD" />
+          <a-date-picker v-model:value="formData.date" value-format="YYYY-MM-DD" disabled />
         </a-form-item>
         <a-form-item name="count" label="令牌余量">
           <a-input v-model:value="formData.count" placeholder="请输入令牌余量" />
@@ -56,7 +50,6 @@
 </template>
 
 <script setup>
-import {PlusOutlined} from "@ant-design/icons-vue";
 import TrainSelect from "@/components/TrainSelect.vue";
 import {onMounted, reactive, ref} from "vue";
 import axios from "axios";
@@ -105,11 +98,6 @@ const pagination = reactive({
   current: 1, // 当前页码
   pageSize: 8, // 每页条数
 })
-
-const handleAdd = () => {
-  formData.value = {}
-  visible.value = true;
-}
 
 const handleOk = () => {
   formRef.value.validate().then(() => {
@@ -171,17 +159,6 @@ const handleRefresh = () => {
 const handleEdit = (record) => {
   formData.value = record
   visible.value = true;
-}
-
-const handleDelete = (record) => {
-  axios.delete(`/business/admin/sk-token/deleteById/${record.id}`).then(res => {
-    if (res.data.code === 200) {
-      message.success('删除成功');
-      listSkTokenPage(pagination.current, pagination.pageSize)
-    }
-  }).catch(err => {
-    message.error(`删除数据出现错误: ${err.message || err}`);
-  })
 }
 
 onMounted(() => {
