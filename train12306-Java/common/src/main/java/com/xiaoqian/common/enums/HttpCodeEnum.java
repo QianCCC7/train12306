@@ -20,6 +20,7 @@ public enum HttpCodeEnum {
     TICKET_GET_LOCK_FAIL(400, "当前抢票人数过多，请稍后再试"),
     SENTINEL_FLOW_EXCEPTION(400, "当前抢票人数过多，请稍后再试"),
     CONFIRM_ORDER_SK_TOKEN_FAIL(400, "票已卖光"),
+    SK_TOKEN_GET_LOCK_FAIL(400, "请求过于频繁，请稍后再试")
     ;
 
     private final Integer code;

@@ -102,7 +102,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
 
     @Override
     public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
-        boolean checked = skTokenService.checkSkToken(confirmOrderDTO.getTrainCode(), confirmOrderDTO.getDate());
+        boolean checked = skTokenService.checkSkToken(confirmOrderDTO.getTrainCode(), confirmOrderDTO.getDate(), MemberContext.getId());
         if (checked) {
             log.info("令牌校验通过");
         } else {

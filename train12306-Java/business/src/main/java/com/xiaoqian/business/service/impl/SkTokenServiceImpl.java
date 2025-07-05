@@ -1,6 +1,7 @@
 package com.xiaoqian.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.SkTokenDTO;
@@ -13,14 +14,19 @@ import com.xiaoqian.business.service.IDailyTrainStationService;
 import com.xiaoqian.business.service.ISkTokenService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiaoqian.common.domain.ResponseResult;
+import com.xiaoqian.common.enums.HttpCodeEnum;
+import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -36,6 +42,7 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
     private final IDailyTrainStationService dailyTrainStationService;
     private final IDailyTrainSeatService dailyTrainSeatService;
     private final SkTokenMapper skTokenMapper;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public ResponseResult<Void> saveSkToken(SkTokenDTO skTokenDTO) {
@@ -96,7 +103,13 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
     }
 
     @Override
-    public boolean checkSkToken(String trainCode, LocalDate date) {
+    public boolean checkSkToken(String trainCode, LocalDate date, Long memberId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String key = formatter.format(date) + "-" + trainCode + "-" + memberId;
+        Boolean ok = redisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
+        if (Boolean.FALSE.equals(ok)) {
+            throw new BizException(HttpCodeEnum.SK_TOKEN_GET_LOCK_FAIL);
+        }
         return skTokenMapper.decrease(trainCode, date) > 0;
     }
 

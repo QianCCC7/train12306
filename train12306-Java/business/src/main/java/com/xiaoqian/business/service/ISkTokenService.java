@@ -28,5 +28,5 @@ public interface ISkTokenService extends IService<SkToken> {
 
     void generateDailyStToken(String trainCode, LocalDate date);
 
-    boolean checkSkToken(String trainCode, LocalDate date);
+    boolean checkSkToken(String trainCode, LocalDate date, Long memberId);
 }
