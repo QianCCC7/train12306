@@ -99,6 +99,11 @@
             <CalendarOutlined />&nbsp; 订单信息
           </router-link>
         </a-menu-item>
+        <a-menu-item key="/business/sk-token">
+          <router-link to="/business/sk-token">
+            <CalendarOutlined />&nbsp; 令牌余量
+          </router-link>
+        </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="member">
         <template #title>

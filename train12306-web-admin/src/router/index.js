@@ -138,6 +138,14 @@ const routes = [
               title: '订单信息查询'
             }
           },
+          {
+            path: 'sk-token',
+            name: 'sk-token',
+            component: () => import('../views/main/business/SkToken.vue'),
+            meta: {
+              title: '令牌余量查询'
+            }
+          },
         ]
       },
       {
