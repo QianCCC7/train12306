@@ -54,3 +54,7 @@ seata:
       password: nacos
       context-path:
   tx-service-group: train-group # 事务组名称
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: default

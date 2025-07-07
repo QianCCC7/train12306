@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConfirmOrderDTO {
-
+    private Long memberId;
     private Long id;
     @NotNull(message = "日期不能为空")
     private LocalDate date;

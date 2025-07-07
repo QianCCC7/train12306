@@ -9,7 +9,6 @@ import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
 import com.xiaoqian.business.mapper.ConfirmOrderMapper;
 import com.xiaoqian.business.mapper.DailyTrainSeatMapper;
 import com.xiaoqian.business.service.IDailyTrainTicketService;
-import com.xiaoqian.common.context.MemberContext;
 import com.xiaoqian.common.domain.dto.MemberTicketDTO;
 import io.seata.core.context.RootContext;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -31,7 +30,7 @@ public class ConfirmOrderTransaction {
     private final ConfirmOrderMapper confirmOrderMapper;
 
     @GlobalTransactional
-    public Boolean afterConfirmOrder(List<DailyTrainSeat> finalTrainSeatList, DailyTrainTicket dailyTrainTicket, String seatType,
+    public void afterConfirmOrder(List<DailyTrainSeat> finalTrainSeatList, DailyTrainTicket dailyTrainTicket, String seatType,
                                   List<PassengerTicketsDTO> passengerTickets, ConfirmOrder confirmOrder) {
         log.info("seata全局事务ID：{}", RootContext.getXID());
         for (int i = 0; i < finalTrainSeatList.size(); i++) {
@@ -76,7 +75,7 @@ public class ConfirmOrderTransaction {
 
             // 增加会员购票记录
             PassengerTicketsDTO passengerTicketsDTO = passengerTickets.get(i);
-            MemberTicketDTO memberTicketDTO = new MemberTicketDTO(MemberContext.getId(), passengerTicketsDTO.getPassengerId(), passengerTicketsDTO.getPassengerName(),
+            MemberTicketDTO memberTicketDTO = new MemberTicketDTO(confirmOrder.getMemberId(), passengerTicketsDTO.getPassengerId(), passengerTicketsDTO.getPassengerName(),
                     seat.getDate(), seat.getTrainCode(), seat.getCarriageIndex(), seat.getRowOrder(), seat.getCol().getCode(), dailyTrainTicket.getStart(),
                     dailyTrainTicket.getStartTime(), dailyTrainTicket.getEnd(), dailyTrainTicket.getEndTime(), seat.getSeatType().getCode());
             memberTicketClient.saveMemberTicket(memberTicketDTO);
@@ -86,11 +85,10 @@ public class ConfirmOrderTransaction {
             confirmOrder.setStatus(ConfirmOrderStatusEnum.EMPTY);
             confirmOrderMapper.updateById(confirmOrder);
             log.info("购票失败，座位不足！");
-            return false;
+            return;
         }
         confirmOrder.setStatus(ConfirmOrderStatusEnum.SUCCESS);
         confirmOrderMapper.updateById(confirmOrder);
         log.info("购票成功!");
-        return true;
     }
 }

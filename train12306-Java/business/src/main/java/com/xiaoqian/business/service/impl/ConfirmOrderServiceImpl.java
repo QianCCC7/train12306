@@ -17,6 +17,7 @@ import com.xiaoqian.business.domain.pojo.DailyTrainTicket;
 import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
+import com.xiaoqian.business.enums.RocketMQTopicEnum;
 import com.xiaoqian.business.service.*;
 import com.xiaoqian.common.enums.RedisKeyPreEnum;
 import com.xiaoqian.common.enums.SeatColEnum;
@@ -32,6 +33,7 @@ import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -61,6 +63,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     private final ConfirmOrderTransaction confirmOrderTransaction;
     private final RedissonClient redissonClient;
     private final ISkTokenService skTokenService;
+    private final RocketMQTemplate rocketMQTemplate;
 
     @Override
     public ResponseResult<Void> saveOrder(ConfirmOrderDTO confirmOrderDTO) {
@@ -103,13 +106,32 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
 
     @Override
     public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
-        boolean checked = skTokenService.checkSkToken(confirmOrderDTO.getTrainCode(), confirmOrderDTO.getDate(), MemberContext.getId());
+        confirmOrderDTO.setMemberId(MemberContext.getId());
+        boolean checked = skTokenService.checkSkToken(confirmOrderDTO.getTrainCode(), confirmOrderDTO.getDate(), confirmOrderDTO.getMemberId());
         if (checked) {
             log.info("令牌校验通过");
         } else {
             log.info("令牌校验不通过");
             throw new BizException(HttpCodeEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
         }
+        // 初始化订单状态
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate date = confirmOrderDTO.getDate();
+        String code = confirmOrderDTO.getTrainCode(), start = confirmOrderDTO.getStart(), end = confirmOrderDTO.getEnd();
+        List<PassengerTicketsDTO> passengerTickets = confirmOrderDTO.getTickets();
+        ConfirmOrder confirmOrder =
+                new ConfirmOrder(SnowUtil.getSnowFlakeNextId(), confirmOrderDTO.getMemberId(), date, code, start, end,
+                        confirmOrderDTO.getDailyTrainTicketId(), confirmOrderDTO.getTotalPrice(), JSON.toJSONString(passengerTickets),
+                        ConfirmOrderStatusEnum.INIT, now, now);
+        save(confirmOrder);
+        // MQ处理后续的选座购票逻辑
+        rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getTopic(), JSONObject.toJSONString(confirmOrderDTO));
+
+        return ResponseResult.okEmptyResult();
+    }
+
+    // 选座购票逻辑
+    public void doConfirm(ConfirmOrderDTO confirmOrderDTO) {
         String key = RedisKeyPreEnum.CONFIRM_ORDER.getCode() + confirmOrderDTO.getDate() + confirmOrderDTO.getTrainCode();
         RLock lock = null;
         try {
@@ -121,16 +143,9 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             }
             log.info("获取锁成功");
             // 数据校验：车次是否存在，余票是否存在，车次是否在有效期内，ticket条数>0，同乘客同车次是否已经买过
-            // 初始化订单状态
-            LocalDateTime now = LocalDateTime.now();
             LocalDate date = confirmOrderDTO.getDate();
             String code = confirmOrderDTO.getTrainCode(), start = confirmOrderDTO.getStart(), end = confirmOrderDTO.getEnd();
             List<PassengerTicketsDTO> passengerTickets = confirmOrderDTO.getTickets();
-            ConfirmOrder confirmOrder =
-                    new ConfirmOrder(SnowUtil.getSnowFlakeNextId(), MemberContext.getId(), date, code, start, end,
-                            confirmOrderDTO.getDailyTrainTicketId(), confirmOrderDTO.getTotalPrice(), JSON.toJSONString(passengerTickets),
-                            ConfirmOrderStatusEnum.INIT, now, now);
-            save(confirmOrder);
             // 查询余票，得到真实库存
             DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.geyByDateAndCodeAndStartAndEnd(date, code, start, end);
             // 预扣减库存，校验余票是否充足
@@ -159,10 +174,13 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 }
             }
             log.info("最终选座结果:{}", finalTrainSeatList);
+            ConfirmOrder confirmOrder = lambdaQuery()
+                    .eq(ConfirmOrder::getDate, confirmOrderDTO.getDate())
+                    .eq(ConfirmOrder::getTrainCode, confirmOrderDTO.getTrainCode())
+                    .eq(ConfirmOrder::getMemberId, confirmOrderDTO.getMemberId())
+                    .eq(ConfirmOrder::getStatus, ConfirmOrderStatusEnum.INIT).one();
             // 选座后的事务处理
-            boolean success = confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
-
-            return success ? ResponseResult.okEmptyResult() : ResponseResult.errorResult(400, "部分选座余票不足");
+            confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
         } catch (InterruptedException e) {
             log.error("购票异常:{}", String.valueOf(e));
         } finally {
@@ -171,8 +189,6 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 lock.unlock();
             }
         }
-
-        return ResponseResult.errorResult(400, "部分选座余票不足");
     }
 
     // 选座逻辑
