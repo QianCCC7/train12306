@@ -1,7 +1,7 @@
-package com.xiaoqian.business.mq;
+package com.xiaoqian.business.mq.consumer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.xiaoqian.business.domain.dto.ConfirmOrderDTO;
+import com.xiaoqian.business.mq.dto.ConfirmOrderMQDto;
 import com.xiaoqian.business.service.IConfirmOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public class ConfirmOrderConsumer implements RocketMQListener<MessageExt> {
     public void onMessage(MessageExt messageExt) {
         byte[] body = messageExt.getBody();
         log.info("MQ收到消息：{}", new String(body));
-        ConfirmOrderDTO confirmOrderDTO = JSONObject.parseObject(new String(body), ConfirmOrderDTO.class);
-        confirmOrderService.doConfirm(confirmOrderDTO);
+        ConfirmOrderMQDto confirmOrderMQDto = JSONObject.parseObject(new String(body), ConfirmOrderMQDto.class);
+        confirmOrderService.doConfirm(confirmOrderMQDto);
     }
 }

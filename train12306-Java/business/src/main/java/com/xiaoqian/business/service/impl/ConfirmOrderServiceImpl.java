@@ -18,6 +18,7 @@ import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
 import com.xiaoqian.business.enums.ConfirmOrderStatusEnum;
 import com.xiaoqian.business.enums.RocketMQTopicEnum;
+import com.xiaoqian.business.mq.dto.ConfirmOrderMQDto;
 import com.xiaoqian.business.service.*;
 import com.xiaoqian.common.enums.RedisKeyPreEnum;
 import com.xiaoqian.common.enums.SeatColEnum;
@@ -37,6 +38,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
@@ -125,62 +127,36 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                         ConfirmOrderStatusEnum.INIT, now, now);
         save(confirmOrder);
         // MQ处理后续的选座购票逻辑
-        rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getTopic(), JSONObject.toJSONString(confirmOrderDTO));
+        ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto(date, code);
+        rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getTopic(), JSONObject.toJSONString(confirmOrderMQDto));
 
         return ResponseResult.okEmptyResult();
     }
 
     // 选座购票逻辑
-    public void doConfirm(ConfirmOrderDTO confirmOrderDTO) {
-        String key = RedisKeyPreEnum.CONFIRM_ORDER.getCode() + confirmOrderDTO.getDate() + confirmOrderDTO.getTrainCode();
+    public void doConfirm(ConfirmOrderMQDto confirmOrderMQDto) {
+        String key = RedisKeyPreEnum.CONFIRM_ORDER.getCode() + confirmOrderMQDto.getDate() + confirmOrderMQDto.getTrainCode();
         RLock lock = null;
         try {
             lock = redissonClient.getLock(key);
             boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS);
             if (!tryLock) {
                 log.info("获取锁失败");
-                throw new BizException(HttpCodeEnum.TICKET_GET_LOCK_FAIL);
+                return; // 没抢到锁直接return, 等待下次处理
             }
             log.info("获取锁成功");
-            // 数据校验：车次是否存在，余票是否存在，车次是否在有效期内，ticket条数>0，同乘客同车次是否已经买过
-            LocalDate date = confirmOrderDTO.getDate();
-            String code = confirmOrderDTO.getTrainCode(), start = confirmOrderDTO.getStart(), end = confirmOrderDTO.getEnd();
-            List<PassengerTicketsDTO> passengerTickets = confirmOrderDTO.getTickets();
-            // 查询余票，得到真实库存
-            DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.geyByDateAndCodeAndStartAndEnd(date, code, start, end);
-            // 预扣减库存，校验余票是否充足
-            reduceTicketsCount(dailyTrainTicket, confirmOrderDTO.getTickets());
-            // 判断是否选座，只需要随机判断一个乘客是否选座即可，因为要么全部选座，要么全部不选
-            PassengerTicketsDTO passengerTicket = passengerTickets.get(0);
-            SeatTypeEnum seatType = SeatTypeEnum.getByType(passengerTicket.getSeatType()); // 车座类型 ydz edz rw yw
-            List<DailyTrainSeat> finalTrainSeatList = new ArrayList<>();
-            if (StringUtils.hasText(passengerTicket.getSeat())) { // 选了座
-                List<SeatColEnum> seatColEnumList = SeatColEnum.getColsByType(seatType.getCode()); // 座位列 A1 B1 C1 D1 F1
-                Map<String, Integer> seatColmap = new HashMap<>(); // 座位排列 A1-1 B1-1 后面的1是第几排
-                int index = 0;
-                for (int i = 1; i <= 2; i++) {
-                    for (SeatColEnum seatColEnum : seatColEnumList) {
-                        seatColmap.put(seatColEnum.getCode() + "-" + i, index++);
-                    }
+            while (true) {
+                Page<ConfirmOrder> page = lambdaQuery().eq(ConfirmOrder::getDate, confirmOrderMQDto.getDate())
+                        .eq(ConfirmOrder::getTrainCode, confirmOrderMQDto.getTrainCode())
+                        .eq(ConfirmOrder::getStatus, ConfirmOrderStatusEnum.INIT)
+                        .page(new Page<>(1, 5));
+                List<ConfirmOrder> records = page.getRecords();
+                if (CollectionUtils.isEmpty(records)) {
+                    log.info("没有正在处理的订单~");
+                    break;
                 }
-                // 处理每个乘客座位的绝对偏移值，以第一个座位基准，比如绝对偏移值为 [1, 3, 5]
-                List<Integer> absoluteOffsetList = passengerTickets.stream().map(el -> seatColmap.get(el.getSeat())).collect(Collectors.toList());
-                // 最终偏移值, 将绝对偏移值优化为 [0, 2, 4]
-                List<Integer> offsetList = absoluteOffsetList.stream().map(el -> el - absoluteOffsetList.get(0)).collect(Collectors.toList());
-                chooseSeat(date, code, seatType.getCode(), dailyTrainTicket.getStartIndex(), dailyTrainTicket.getEndIndex(), passengerTicket.getSeat().split("-")[0], offsetList, finalTrainSeatList);
-            } else { // 未选座
-                for (int i = 0; i < passengerTickets.size(); i++) {
-                    chooseSeat(date, code, seatType.getCode(), dailyTrainTicket.getStartIndex(), dailyTrainTicket.getEndIndex(), null, Collections.emptyList(), finalTrainSeatList);
-                }
+                records.forEach(this::handleSellingTickets);
             }
-            log.info("最终选座结果:{}", finalTrainSeatList);
-            ConfirmOrder confirmOrder = lambdaQuery()
-                    .eq(ConfirmOrder::getDate, confirmOrderDTO.getDate())
-                    .eq(ConfirmOrder::getTrainCode, confirmOrderDTO.getTrainCode())
-                    .eq(ConfirmOrder::getMemberId, confirmOrderDTO.getMemberId())
-                    .eq(ConfirmOrder::getStatus, ConfirmOrderStatusEnum.INIT).one();
-            // 选座后的事务处理
-            confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
         } catch (InterruptedException e) {
             log.error("购票异常:{}", String.valueOf(e));
         } finally {
@@ -188,6 +164,55 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             if (lock != null && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
+        }
+    }
+
+    /**
+     * 获取锁后的排队售票逻辑
+     */
+    private void handleSellingTickets(ConfirmOrder confirmOrder) {
+        // 更新订单状态为处理中
+        confirmOrder.setStatus(ConfirmOrderStatusEnum.PENDING);
+        confirmOrder.setUpdateTime(LocalDateTime.now());
+        updateById(confirmOrder);
+        // 数据校验：车次是否存在，余票是否存在，车次是否在有效期内，ticket条数>0，同乘客同车次是否已经买过
+        LocalDate date = confirmOrder.getDate();
+        String code = confirmOrder.getTrainCode(), start = confirmOrder.getStart(), end = confirmOrder.getEnd();
+        List<PassengerTicketsDTO> passengerTickets = JSONObject.parseArray(confirmOrder.getTickets(), PassengerTicketsDTO.class);
+        // 查询余票，得到真实库存
+        DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.geyByDateAndCodeAndStartAndEnd(date, code, start, end);
+        // 预扣减库存，校验余票是否充足
+        reduceTicketsCount(dailyTrainTicket, passengerTickets);
+        // 判断是否选座，只需要随机判断一个乘客是否选座即可，因为要么全部选座，要么全部不选
+        PassengerTicketsDTO passengerTicket = passengerTickets.get(0);
+        SeatTypeEnum seatType = SeatTypeEnum.getByType(passengerTicket.getSeatType()); // 车座类型 ydz edz rw yw
+        List<DailyTrainSeat> finalTrainSeatList = new ArrayList<>();
+        if (StringUtils.hasText(passengerTicket.getSeat())) { // 选了座
+            List<SeatColEnum> seatColEnumList = SeatColEnum.getColsByType(seatType.getCode()); // 座位列 A1 B1 C1 D1 F1
+            Map<String, Integer> seatColmap = new HashMap<>(); // 座位排列 A1-1 B1-1 后面的1是第几排
+            int index = 0;
+            for (int i = 1; i <= 2; i++) {
+                for (SeatColEnum seatColEnum : seatColEnumList) {
+                    seatColmap.put(seatColEnum.getCode() + "-" + i, index++);
+                }
+            }
+            // 处理每个乘客座位的绝对偏移值，以第一个座位基准，比如绝对偏移值为 [1, 3, 5]
+            List<Integer> absoluteOffsetList = passengerTickets.stream().map(el -> seatColmap.get(el.getSeat())).collect(Collectors.toList());
+            // 最终偏移值, 将绝对偏移值优化为 [0, 2, 4]
+            List<Integer> offsetList = absoluteOffsetList.stream().map(el -> el - absoluteOffsetList.get(0)).collect(Collectors.toList());
+            chooseSeat(date, code, seatType.getCode(), dailyTrainTicket.getStartIndex(), dailyTrainTicket.getEndIndex(), passengerTicket.getSeat().split("-")[0], offsetList, finalTrainSeatList);
+        } else { // 未选座
+            for (int i = 0; i < passengerTickets.size(); i++) {
+                chooseSeat(date, code, seatType.getCode(), dailyTrainTicket.getStartIndex(), dailyTrainTicket.getEndIndex(), null, Collections.emptyList(), finalTrainSeatList);
+            }
+        }
+        log.info("最终选座结果:{}", finalTrainSeatList);
+        // 选座后的事务处理
+        try {
+            confirmOrderTransaction.afterConfirmOrder(finalTrainSeatList, dailyTrainTicket, seatType.getCode(), passengerTickets, confirmOrder);
+        } catch (Exception ex) {
+            log.error("选座后的事务处理出现异常", ex);
+            throw new BizException(HttpCodeEnum.HANDLE_CONFIRM_ORDER_EXCEPTION);
         }
     }
 

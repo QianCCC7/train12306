@@ -5,6 +5,7 @@ import com.xiaoqian.business.domain.pojo.ConfirmOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaoqian.business.domain.query.ConfirmOrderQueryDTO;
 import com.xiaoqian.business.domain.vo.ConfirmOrderVo;
+import com.xiaoqian.business.mq.dto.ConfirmOrderMQDto;
 import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
@@ -28,5 +29,5 @@ public interface IConfirmOrderService extends IService<ConfirmOrder> {
 
     ResponseResult<String> testSentinel2();
 
-    void doConfirm(ConfirmOrderDTO confirmOrderDTO);
+    void doConfirm(ConfirmOrderMQDto confirmOrderMQDto);
 }

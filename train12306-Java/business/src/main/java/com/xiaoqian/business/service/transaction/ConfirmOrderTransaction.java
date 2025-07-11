@@ -81,6 +81,7 @@ public class ConfirmOrderTransaction {
             memberTicketClient.saveMemberTicket(memberTicketDTO);
         }
         // 更新订单状态
+        confirmOrder.setUpdateTime(LocalDateTime.now());
         if (finalTrainSeatList.size() != passengerTickets.size()) {
             confirmOrder.setStatus(ConfirmOrderStatusEnum.EMPTY);
             confirmOrderMapper.updateById(confirmOrder);

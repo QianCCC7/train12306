@@ -1,7 +1,6 @@
 package com.xiaoqian.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiaoqian.business.domain.dto.SkTokenDTO;
@@ -20,6 +19,7 @@ import com.xiaoqian.common.exception.BizException;
 import com.xiaoqian.common.query.PageVo;
 import com.xiaoqian.common.utils.SnowUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -45,6 +45,8 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
     private final IDailyTrainSeatService dailyTrainSeatService;
     private final SkTokenMapper skTokenMapper;
     private final StringRedisTemplate redisTemplate;
+    @Value("${spring.profiles.active}")
+    private String env;
 
     @Override
     public ResponseResult<Void> saveSkToken(SkTokenDTO skTokenDTO) {
@@ -106,13 +108,16 @@ public class SkTokenServiceImpl extends ServiceImpl<SkTokenMapper, SkToken> impl
 
     @Override
     public boolean checkSkToken(String trainCode, LocalDate date, Long memberId) {
-        // 防止机器人刷票
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String robotKey = RedisKeyPreEnum.SK_TOKEN.getCode() + formatter.format(date) + "-" + trainCode + "-" + memberId;
-        Boolean ok = redisTemplate.opsForValue().setIfAbsent(robotKey, robotKey, 5, TimeUnit.SECONDS);
-        if (Boolean.FALSE.equals(ok)) {
-            throw new BizException(HttpCodeEnum.SK_TOKEN_GET_LOCK_FAIL);
+        if (!env.equals("dev")) { // 解除开发环境的刷票限制
+            // 防止机器人刷票
+            String robotKey = RedisKeyPreEnum.SK_TOKEN.getCode() + formatter.format(date) + "-" + trainCode + "-" + memberId;
+            Boolean ok = redisTemplate.opsForValue().setIfAbsent(robotKey, robotKey, 5, TimeUnit.SECONDS);
+            if (Boolean.FALSE.equals(ok)) {
+                throw new BizException(HttpCodeEnum.SK_TOKEN_GET_LOCK_FAIL);
+            }
         }
+
         // 利用redis缓存优化减少令牌余量逻辑
         String countKey = RedisKeyPreEnum.SK_TOKEN_COUNT.getCode() + formatter.format(date) + "-" + trainCode + "-" + memberId;
         String countValue = redisTemplate.opsForValue().get(countKey);
