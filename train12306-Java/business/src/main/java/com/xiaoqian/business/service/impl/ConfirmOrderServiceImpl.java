@@ -1,7 +1,6 @@
 package com.xiaoqian.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
@@ -199,7 +198,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             case CANCEL: result = -4; break;// 取消
             case INIT: result = 999; break;// 排队中，需要查表得到实际排队数量
             default: result = 0;
-        };
+        }
         if (result == 999) {
             // 查询排在第几位
             int count = lambdaQuery().eq(ConfirmOrder::getDate, confirmOrder.getDate())
@@ -211,6 +210,20 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         }
 
         return ResponseResult.okResult(result);
+    }
+
+    @Override
+    public ResponseResult<Void> cancelOrder(Long orderId) {
+        ConfirmOrder confirmOrder = lambdaQuery().eq(ConfirmOrder::getId, orderId)
+                .eq(ConfirmOrder::getStatus, ConfirmOrderStatusEnum.INIT)
+                .one();
+        if (confirmOrder == null) {
+            throw new BizException(HttpCodeEnum.CONFIRM_ORDER_NOT_EXIST);
+        }
+        confirmOrder.setStatus(ConfirmOrderStatusEnum.CANCEL);
+        confirmOrder.setUpdateTime(LocalDateTime.now());
+        updateById(confirmOrder);
+        return ResponseResult.okEmptyResult();
     }
 
     /**

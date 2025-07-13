@@ -32,4 +32,6 @@ public interface IConfirmOrderService extends IService<ConfirmOrder> {
     void doConfirm(ConfirmOrderMQDto confirmOrderMQDto);
 
     ResponseResult<Integer> getLineCount(Long orderId);
+
+    ResponseResult<Void> cancelOrder(Long orderId);
 }

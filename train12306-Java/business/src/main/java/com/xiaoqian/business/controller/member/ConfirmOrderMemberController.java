@@ -31,4 +31,9 @@ public class ConfirmOrderMemberController {
     public ResponseResult<Integer> getLineCount(@PathVariable Long orderId) {
         return confirmOrderService.getLineCount(orderId);
     }
+
+    @PutMapping("/cancelOrder/{orderId}")
+    public ResponseResult<Void> cancelOrder(@PathVariable Long orderId) {
+        return confirmOrderService.cancelOrder(orderId);
+    }
 }

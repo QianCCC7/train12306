@@ -202,6 +202,7 @@
       <div v-show="waitLineCount >= 0">
         <loading-outlined /> 您前面还有{{ waitLineCount }}位用户在购票，排队中，请稍候
       </div>
+      <a-button type="primary" danger @click="cancelOrder">取消购票</a-button>
     </a-modal>
   </div>
 </template>
@@ -391,6 +392,21 @@ const getLineCount = () => {
       clearInterval(queryLineCountInterval);
     });
   }, 500);
+}
+
+const cancelOrder = () => {
+  axios.put("/business/confirm-order/cancelOrder/" + orderId.value).then((response) => {
+    let data = response.data;
+    if (data.code === 200) {
+      notification.success({description: "取消成功！"});
+      waitVisible.value = false;
+      clearInterval(queryLineCountInterval);
+    } else {
+      notification.error({description: data.msg});
+    }
+  }).catch(err => {
+    message.error(`取消订单出现错误: ${err.message || err}`);
+  });
 }
 
 const getPassengerTypeColor = (type) => {
