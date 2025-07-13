@@ -195,13 +195,21 @@
         </div>
       </div>
     </a-modal>
+    <a-modal v-model:open="waitVisible" title="排队等票" style="top: 50px; width: 800px" :footer="null" :maskClosable="false" :closable="false">
+      <div v-show="waitLineCount < 0">
+        <loading-outlined /> 系统正在处理订单中...
+      </div>
+      <div v-show="waitLineCount >= 0">
+        <loading-outlined /> 您前面还有{{ waitLineCount }}位用户在购票，排队中，请稍候
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
 import axios from "axios";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
 import {deepCopy} from "@/utils/copyUtils";
 
 const trainTicketReserve = SessionStorage.get(TRAIN_TICKET_RESERVE) || {}
@@ -220,6 +228,9 @@ const seatColArray = computed(() => {
 const choseSeat = ref({}) // 已选择的座位
 const totalPrice = ref(0)
 const confirmLoading = ref(false);
+const waitVisible = ref(false) // 排队等票
+const orderId = ref(null)
+const waitLineCount = ref(-1) // 排队人数
 
 // 车座信息处理
 for (const e of trainSeatType) {
@@ -331,15 +342,55 @@ const handleOk = () => {
   }).then(res => {
     if (res.data.code === 200) {
       message.success('下单成功');
+      orderId.value = res.data.data
       visible.value = false;
+      waitVisible.value = true; // 进入排队等票的状态
+      getLineCount(); // 查询前面还有多少人排队
     } else {
       message.error(`下单失败: ${res.data.msg}`);
     }
   }).catch(err => {
-    message.error(`加载列表出现错误: ${err.message || err}`);
+    message.error(`下单出现错误: ${err.message || err}`);
   }).finally(() => {
-    confirmLoading.value = false
+    confirmLoading.value = false;
   })
+}
+
+let queryLineCountInterval;
+const getLineCount = () => {
+  waitLineCount.value = -1;
+  queryLineCountInterval = setInterval(() => {
+    axios.get("/business/confirm-order/getLineCount/" + orderId.value).then((response) => {
+      let data = response.data;
+      if (data.code === 200) {
+        let result = data.data;
+        switch (result) {
+          case -1 :
+            notification.success({description: "购票成功！"});
+            waitVisible.value = false;
+            clearInterval(queryLineCountInterval);
+            break;
+          case -2:
+            notification.error({description: "购票失败！"});
+            waitVisible.value = false;
+            clearInterval(queryLineCountInterval);
+            break;
+          case -3:
+            notification.error({description: "抱歉，没票了！"});
+            waitVisible.value = false;
+            clearInterval(queryLineCountInterval);
+            break;
+          default:
+            waitLineCount.value = result;
+        }
+      } else {
+        notification.error({description: data.msg});
+      }
+    }).catch(err => {
+      message.error(`查询排名出现错误: ${err.message || err}`);
+      clearInterval(queryLineCountInterval);
+    });
+  }, 500);
 }
 
 const getPassengerTypeColor = (type) => {

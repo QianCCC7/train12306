@@ -26,4 +26,9 @@ public class ConfirmOrderMemberController {
     public ResponseResult<String> submitOrder(@RequestBody @Valid ConfirmOrderDTO confirmOrderDTO) {
         return confirmOrderService.submitOrder(confirmOrderDTO);
     }
+
+    @GetMapping("/getLineCount/{orderId}")
+    public ResponseResult<Integer> getLineCount(@PathVariable Long orderId) {
+        return confirmOrderService.getLineCount(orderId);
+    }
 }

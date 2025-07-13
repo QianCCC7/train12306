@@ -21,7 +21,8 @@ public enum HttpCodeEnum {
     SENTINEL_FLOW_EXCEPTION(400, "当前抢票人数过多，请稍后再试"),
     CONFIRM_ORDER_SK_TOKEN_FAIL(400, "票已卖光"),
     SK_TOKEN_GET_LOCK_FAIL(400, "请求过于频繁，请稍后再试"),
-    HANDLE_CONFIRM_ORDER_EXCEPTION(400, "处理订单出现异常")
+    HANDLE_CONFIRM_ORDER_EXCEPTION(400, "处理订单出现异常"),
+    CONFIRM_ORDER_NOT_EXIST(400, "订单不存在"),
     ;
 
     private final Integer code;

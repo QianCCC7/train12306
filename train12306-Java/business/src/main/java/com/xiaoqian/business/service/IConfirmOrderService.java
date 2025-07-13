@@ -30,4 +30,6 @@ public interface IConfirmOrderService extends IService<ConfirmOrder> {
     ResponseResult<String> testSentinel2();
 
     void doConfirm(ConfirmOrderMQDto confirmOrderMQDto);
+
+    ResponseResult<Integer> getLineCount(Long orderId);
 }

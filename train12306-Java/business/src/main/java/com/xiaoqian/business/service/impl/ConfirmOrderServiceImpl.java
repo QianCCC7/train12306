@@ -1,6 +1,7 @@
 package com.xiaoqian.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
@@ -182,10 +183,45 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         }
     }
 
+    @Override
+    public ResponseResult<Integer> getLineCount(Long orderId) {
+        ConfirmOrder confirmOrder = getById(orderId);
+        if (confirmOrder == null) {
+            throw new BizException(HttpCodeEnum.CONFIRM_ORDER_NOT_EXIST);
+        }
+        ConfirmOrderStatusEnum orderStatusEnum = ConfirmOrderStatusEnum.fromCode(confirmOrder.getStatus().getCode());
+        int result;
+        switch (orderStatusEnum) {
+            case PENDING: result = 0; break; // 已经在处理
+            case SUCCESS: result = -1; break; // 成功
+            case FAILURE: result = -2; break;// 失败
+            case EMPTY: result = -3; break;// 无票
+            case CANCEL: result = -4; break;// 取消
+            case INIT: result = 999; break;// 排队中，需要查表得到实际排队数量
+            default: result = 0;
+        };
+        if (result == 999) {
+            // 查询排在第几位
+            int count = lambdaQuery().eq(ConfirmOrder::getDate, confirmOrder.getDate())
+                    .eq(ConfirmOrder::getTrainCode, confirmOrder.getTrainCode())
+                    .le(ConfirmOrder::getCreateTime, confirmOrder.getCreateTime())
+                    .in(ConfirmOrder::getStatus, ConfirmOrderStatusEnum.INIT, ConfirmOrderStatusEnum.PENDING)
+                    .count().intValue();
+            return ResponseResult.okResult(count > 0 ? count - 1 : 0);
+        }
+
+        return ResponseResult.okResult(result);
+    }
+
     /**
      * 获取锁后的排队售票逻辑
      */
     private void handleSellingTickets(ConfirmOrder confirmOrder) {
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         // 更新订单状态为处理中
         confirmOrder.setStatus(ConfirmOrderStatusEnum.PENDING);
         confirmOrder.setUpdateTime(LocalDateTime.now());
