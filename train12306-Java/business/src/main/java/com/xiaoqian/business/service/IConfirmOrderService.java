@@ -23,7 +23,7 @@ public interface IConfirmOrderService extends IService<ConfirmOrder> {
 
     ResponseResult<PageVo<ConfirmOrderVo>> listOrderPage(ConfirmOrderQueryDTO confirmOrderQueryDTO);
 
-    ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO);
+    ResponseResult<String> submitOrder(ConfirmOrderDTO confirmOrderDTO);
 
     ResponseResult<String> testSentinel();
 

@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class ConfirmOrderMemberController {
     private final IConfirmOrderService confirmOrderService;
 
-        @PostMapping("/submitOrder")
-    public ResponseResult<Void> submitOrder(@RequestBody @Valid ConfirmOrderDTO confirmOrderDTO) {
+    @PostMapping("/submitOrder")
+    public ResponseResult<String> submitOrder(@RequestBody @Valid ConfirmOrderDTO confirmOrderDTO) {
         return confirmOrderService.submitOrder(confirmOrderDTO);
     }
 }

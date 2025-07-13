@@ -107,7 +107,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     }
 
     @Override
-    public ResponseResult<Void> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
+    public ResponseResult<String> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
         confirmOrderDTO.setMemberId(MemberContext.getId());
         boolean checked = skTokenService.checkSkToken(confirmOrderDTO.getTrainCode(), confirmOrderDTO.getDate(), confirmOrderDTO.getMemberId());
         if (checked) {
@@ -130,7 +130,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         ConfirmOrderMQDto confirmOrderMQDto = new ConfirmOrderMQDto(date, code);
         rocketMQTemplate.convertAndSend(RocketMQTopicEnum.CONFIRM_ORDER.getTopic(), JSONObject.toJSONString(confirmOrderMQDto));
 
-        return ResponseResult.okEmptyResult();
+        return ResponseResult.okResult(String.valueOf(confirmOrder.getId()));
     }
 
     // 选座购票逻辑
@@ -146,6 +146,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             }
             log.info("获取锁成功");
             while (true) {
+                // 处理的是所有人购买某天该车次且为初始状态的票
                 Page<ConfirmOrder> page = lambdaQuery().eq(ConfirmOrder::getDate, confirmOrderMQDto.getDate())
                         .eq(ConfirmOrder::getTrainCode, confirmOrderMQDto.getTrainCode())
                         .eq(ConfirmOrder::getStatus, ConfirmOrderStatusEnum.INIT)
@@ -155,7 +156,21 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                     log.info("没有正在处理的订单~");
                     break;
                 }
-                records.forEach(this::handleSellingTickets);
+                records.forEach(confirmOrder -> {
+                    try {
+                        // 部分订单可能没票，因为这里处理的是某日某车次的票，而某车次不同站的票数不一样，所以需要分别处理
+                        handleSellingTickets(confirmOrder);
+                    } catch (BizException ex) {
+                        if (ex.getMsg().equals(HttpCodeEnum.TICKET_COUNT_NOT_ENOUGH.getDesc())) {
+                            log.info("本订单余票不足，售卖下一个订单");
+                            confirmOrder.setStatus(ConfirmOrderStatusEnum.EMPTY);
+                            confirmOrder.setUpdateTime(LocalDateTime.now());
+                            updateById(confirmOrder);
+                        } else {
+                            throw ex;
+                        }
+                    }
+                });
             }
         } catch (InterruptedException e) {
             log.error("购票异常:{}", String.valueOf(e));
