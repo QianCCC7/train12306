@@ -123,4 +123,12 @@ public class DailyTrainSeatServiceImpl extends ServiceImpl<DailyTrainSeatMapper,
                 .orderByAsc(true, DailyTrainSeat::getCarriageSeatIndex)
                 .list();
     }
+
+    @Override
+    public ResponseResult<List<DailyTrainSeatVo>> getSellSeatList(DailyTrainSeatQueryDTO dailyTrainSeatQueryDTO) {
+        List<DailyTrainSeat> list = lambdaQuery().eq(DailyTrainSeat::getDate, dailyTrainSeatQueryDTO.getLocalDate())
+                .eq(DailyTrainSeat::getTrainCode, dailyTrainSeatQueryDTO.getTrainCode())
+                .list();
+        return ResponseResult.okResult(BeanUtil.copyToList(list, DailyTrainSeatVo.class));
+    }
 }

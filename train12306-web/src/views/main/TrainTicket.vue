@@ -19,6 +19,7 @@
             <a-space>
               <a-button type="primary" @click="handleClickReserve(record)">预定</a-button>
               <a-button type="primary" @click="showStation(record)">历经车站</a-button>
+              <a-button type="primary" @click="showSeatSellDetails(record)">车座售卖详情</a-button>
             </a-space>
           </template>
           <template v-else-if="column.dataIndex === 'station'">
@@ -122,7 +123,7 @@
       </a-form>
     </a-modal>
     <!-- 历经车站 -->
-    <a-modal style="top: 30px" v-model:visible="stationVisible" title="历经车站" :footer="null" :closable="false">
+    <a-modal style="top: 30px" v-model:visible="stationVisible" title="历经车站" :footer="null">
       <a-table :data-source="stationList" :pagination="false">
         <a-table-column key="index" title="站序" data-index="indexOrder" />
         <a-table-column key="name" title="站名" data-index="name" />
@@ -143,6 +144,10 @@
         </a-table-column>
       </a-table>
     </a-modal>
+    <!-- 售卖详情 -->
+    <a-modal v-model:open="seatSellDetailsVisible" title="车座售卖详情" style="top: 50px; width: 800px" :footer="null" :maskClosable="false">
+      <SeatSellDetails :selectedStation="selectStation"></SeatSellDetails>
+    </a-modal>
   </div>
 </template>
 
@@ -154,6 +159,7 @@ import TrainSelect from "@/components/TrainSelect.vue";
 import StationSelect from "@/components/StationSelect.vue";
 import dayjs from "dayjs";
 import {useRouter} from "vue-router";
+import SeatSellDetails from "@/views/main/SeatSellDetails.vue";
 
 const visible = ref(false);
 const confirmLoading = ref(false);
@@ -270,6 +276,8 @@ const queryParams = ref({})
 const router = useRouter();
 const stationVisible = ref(false)
 const stationList = ref([])
+const seatSellDetailsVisible = ref(false)
+const selectStation = ref([])
 
 const handleOk = () => {
   formRef.value.validate().then(() => {
@@ -354,6 +362,12 @@ const showStation = (record) => {
 const calcDuration = (startTime, endTime) => {
   let diff = dayjs(endTime, 'HH:mm:ss').diff(dayjs(startTime, 'HH:mm:ss'), 'seconds')
   return dayjs('00:00:00', 'HH:mm:ss').second(diff).format('HH:mm:ss')
+}
+
+const showSeatSellDetails = (record) => {
+  seatSellDetailsVisible.value = true;
+  selectStation.value = record
+  console.log('record', record)
 }
 
 onMounted(() => {

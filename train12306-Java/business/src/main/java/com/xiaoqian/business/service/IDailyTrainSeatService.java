@@ -32,4 +32,6 @@ public interface IDailyTrainSeatService extends IService<DailyTrainSeat> {
     int getSeatCountByCodeAndDateAndSeatType(String trainCode, LocalDate date, String seatType);
 
     List<DailyTrainSeat> getListByDateAndCodeAndCarriageIndex(String trainCode, LocalDate date, Integer carriageIndex);
+
+    ResponseResult<List<DailyTrainSeatVo>> getSellSeatList(DailyTrainSeatQueryDTO dailyTrainSeatQueryDTO);
 }
