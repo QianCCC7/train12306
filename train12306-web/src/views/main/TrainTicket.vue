@@ -4,7 +4,7 @@
     <div class="header">
       <h2>每日余票</h2>
       <div class="button-group">
-        <a-date-picker v-model:value="queryParams.date" value-format="YYYY-MM-DD" placeholder="选择日期"/>
+        <a-date-picker v-model:value="queryParams.date" value-format="YYYY-MM-DD" placeholder="选择日期" :disabled-date="disableDate"/>
         <station-select v-model="queryParams.start" width="200px"></station-select>
         <station-select v-model="queryParams.end" width="200px"></station-select>
         <a-button @click="handleRefresh" class="refresh-button">
@@ -17,7 +17,7 @@
         <template #bodyCell="{ column,  record }">
           <template v-if="column.dataIndex === 'operation'">
             <a-space>
-              <a-button type="primary" @click="handleClickReserve(record)">预定</a-button>
+              <a-button type="primary" @click="handleClickReserve(record)" :disabled="isExpire(record)">{{isExpire(record) ? "已过期" : '预定'}}</a-button>
               <a-button type="primary" @click="showStation(record)">历经车站</a-button>
               <a-button type="primary" @click="showSeatSellDetails(record)">车座售卖详情</a-button>
             </a-space>
@@ -210,6 +210,7 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
+    align: 'center'
   },
 ]
 const formData = ref({})
@@ -369,6 +370,19 @@ const showSeatSellDetails = (record) => {
   selectStation.value = record
   console.log('record', record)
 }
+
+// 不能选择今天以前及两周以后的日期
+const disableDate = current => {
+  return current && (current <= dayjs().add(-1, 'day') || current > dayjs().add(14, 'day'));
+};
+
+// 判断当前车票是否已经无法购买
+const isExpire = (record) => {
+  let startDateTimeString = record.date.replace(/-/g, "/") + " " + record.startTime; // 格式化为 yyyy/MM/dd HH:mm:ss
+  let startDateTime = new Date(startDateTimeString);
+  let now = new Date();
+  return now.valueOf() >= startDateTime.valueOf();
+};
 
 onMounted(() => {
   listDailyTrainTicketPage(pagination.current, pagination.pageSize)
