@@ -10,9 +10,6 @@
         <a-button @click="handleRefresh" class="refresh-button">
           <reload-outlined /> 刷新
         </a-button>
-<!--        <a-button type="primary" @click="handleAdd" class="add-button">-->
-<!--          <plus-outlined /> 新增每日余票-->
-<!--        </a-button>-->
       </div>
     </div>
     <div>
@@ -21,6 +18,7 @@
           <template v-if="column.dataIndex === 'operation'">
             <a-space>
               <a-button type="primary" @click="handleClickReserve(record)">预定</a-button>
+              <a-button type="primary" @click="showStation(record)">历经车站</a-button>
             </a-space>
           </template>
           <template v-else-if="column.dataIndex === 'station'">
@@ -122,6 +120,28 @@
           <a-input v-model:value="formData.ywPrice" placeholder="请输入硬卧票价" />
         </a-form-item>
       </a-form>
+    </a-modal>
+    <!-- 历经车站 -->
+    <a-modal style="top: 30px" v-model:visible="stationVisible" title="历经车站" :footer="null" :closable="false">
+      <a-table :data-source="stationList" :pagination="false">
+        <a-table-column key="index" title="站序" data-index="indexOrder" />
+        <a-table-column key="name" title="站名" data-index="name" />
+        <a-table-column key="inTime" title="进站时间" data-index="inTime">
+          <template #default="{ record }">
+            {{record.indexOrder === 0 ? '-' : record.inTime}}
+          </template>
+        </a-table-column>
+        <a-table-column key="outTime" title="出站时间" data-index="outTime">
+          <template #default="{ record }">
+            {{record.indexOrder === (stationList.length - 1) ? '-' : record.outTime}}
+          </template>
+        </a-table-column>
+        <a-table-column key="stopTime" title="停站时长" data-index="stopTime">
+          <template #default="{ record }">
+            {{record.indexOrder === 0 || record.indexOrder === (stationList.length - 1) ? '-' : record.stopTime}}
+          </template>
+        </a-table-column>
+      </a-table>
     </a-modal>
   </div>
 </template>
@@ -248,6 +268,8 @@ const pagination = reactive({
 const loading = ref(false)
 const queryParams = ref({})
 const router = useRouter();
+const stationVisible = ref(false)
+const stationList = ref([])
 
 const handleOk = () => {
   formRef.value.validate().then(() => {
@@ -311,6 +333,22 @@ const handleRefresh = () => {
 const handleClickReserve = (record) => {
   SessionStorage.set(TRAIN_TICKET_RESERVE, record)
   router.push('/train-ticket-reserve')
+}
+
+const showStation = (record) => {
+  axios.get('/business/daily-train-station/getByTrainCodeAndDate', {
+    params: { code: record.trainCode, date: record.date }
+  }).then(res => {
+    const data = res.data;
+    if (data.code === 200) {
+      stationVisible.value = true;
+      stationList.value = data.data
+    } else {
+      message.error(`加载车站列表失败: ${data.msg}`);
+    }
+  }).catch(err => {
+    message.error(`加载车站列表出现错误: ${err.message || err}`);
+  })
 }
 
 const calcDuration = (startTime, endTime) => {

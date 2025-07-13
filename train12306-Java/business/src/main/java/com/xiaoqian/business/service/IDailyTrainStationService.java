@@ -9,6 +9,7 @@ import com.xiaoqian.common.domain.ResponseResult;
 import com.xiaoqian.common.query.PageVo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -30,4 +31,6 @@ public interface IDailyTrainStationService extends IService<DailyTrainStation> {
     void generateDailyTrainStation(String trainCode, LocalDate date);
 
     int getStationCountByCodeAndDate(String trainCode, LocalDate date);
+
+    ResponseResult<List<DailyTrainStationVo>> getByTrainCodeAndDate(DailyTrainStationQueryDTO queryDTO);
 }

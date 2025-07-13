@@ -140,4 +140,13 @@ public class DailyTrainStationServiceImpl extends ServiceImpl<DailyTrainStationM
                 .count().intValue();
         return count == 0 ? -1 : count;
     }
+
+    @Override
+    public ResponseResult<List<DailyTrainStationVo>> getByTrainCodeAndDate(DailyTrainStationQueryDTO queryDTO) {
+        List<DailyTrainStation> list = lambdaQuery().eq(DailyTrainStation::getDate, queryDTO.getDate())
+                .eq(DailyTrainStation::getTrainCode, queryDTO.getCode())
+                .list();
+
+        return ResponseResult.okResult(BeanUtil.copyToList(list, DailyTrainStationVo.class));
+    }
 }
