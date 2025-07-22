@@ -106,6 +106,14 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         return ResponseResult.okResult(new PageVo<>(confirmOrderVoList, page.getPages(), page.getTotal()));
     }
 
+    /**
+     * 1. 校验机器人刷票，令牌余量校验与更新
+     * 2. 写入订单，同时更新订单状态为INIT，MQ发送消息处理选座购票逻辑
+     * 3. 尝试获取锁，拿到锁后，先循环处理所有状态为INIT的订单
+     * 4. 处理订单状态时先更新订单状态为处理中，查余票、选座
+     * 5. 确定选座后，更新座位售卖情况，余票数量，购票记录以及订单状态
+     * 6. 释放锁
+     */
     @Override
     public ResponseResult<String> submitOrder(ConfirmOrderDTO confirmOrderDTO) {
         confirmOrderDTO.setMemberId(MemberContext.getId());
